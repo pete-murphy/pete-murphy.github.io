@@ -30,18 +30,27 @@ source-repository head
 executable build-site
   main-is: Main.hs
   other-modules:
-      Paths_slick_template
+      Slick
+      Slick.Caching
+      Slick.Mustache
+      Slick.Pandoc
+      Slick.Shake
+      Slick.Utils
   hs-source-dirs:
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall
   build-depends:
       aeson
     , base >=4.7 && <5
+    , bytestring
     , containers
+    , directory
+    , extra
     , lens
     , lens-aeson
+    , mustache
+    , pandoc
     , shake
-    , slick
     , text
     , time
     , unordered-containers
