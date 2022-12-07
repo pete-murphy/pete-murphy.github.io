@@ -22,7 +22,9 @@ body {
   width: calc(100% - 1rem);
 
   margin-inline: auto;
-  grid-template-columns: [gutter-start] 3rem [main-start content-start] 60ch [content-end] 1fr [main-end gutter-end];
+  grid-template-columns:
+    [gutter-start] 3rem [main-start content-start] 3fr
+    [content-end] 1fr [main-end gutter-end];
 }
 
 .post > * {
@@ -32,6 +34,23 @@ body {
 .post > multicodeblock-tabs,
 .post > div.sourceCode {
   grid-column: gutter;
+}
+
+.post > multicodeblock-tabs {
+  max-width: 100%;
+}
+
+.post > div.sourceCode,
+multicodeblock-panel {
+  /* border: 1px solid var(--text-4); */
+  /* outline: 1px solid var(--text-4); */
+  box-shadow: 0 0 0 1px var(--text-4);
+  border-radius: var(--border-size-3);
+}
+
+div.sourceCode,
+multicodeblock-panel {
+  overflow-y: auto;
 }
 
 multicodeblock-tab:first-of-type {
@@ -49,6 +68,12 @@ multicodeblock-tab[selected] {
   color: var(--text-1);
   border-color: var(--text-4);
   border-bottom-color: var(--surface-1);
+}
+multicodeblock-tab[selected]::after {
+  content: "";
+  background: tomato;
+  height: 3px;
+  width: 100%;
 }
 
 /**

@@ -25,7 +25,7 @@ html {
   --text-3-light: hsl(var(--primary-hue) var(--text-saturation) 60%);
   --surface-1-light: hsl(var(--primary-hue) 25% 99%);
   --surface-2-light: hsl(var(--primary-hue) 20% 96%);
-  --surface-blush-light: hsl(300 85% 94%);
+  --surface-blush-light: hsl(328 66% 95%);
 
   /* dark */
   --primary-dark: hsl(
@@ -37,12 +37,12 @@ html {
   --text-3-dark: hsl(var(--primary-hue) var(--text-saturation) 45%);
   --surface-1-dark: hsl(var(--primary-hue) 20% 5%);
   --surface-2-dark: hsl(var(--primary-hue) 15% 10%);
-  --surface-blush-dark: hsl(300 60% 20%);
+  --surface-blush-dark: hsl(328 65% 24%);
 }
 
 :root {
   color-scheme: light;
-  font-size: 17px;
+  font-size: max(17px);
 
   /* set defaults */
   --primary: var(--primary-light);
@@ -94,10 +94,11 @@ html {
 
 a {
   color: var(--text-1);
-  text-decoration-color: var(--text-1);
+  text-decoration-color: var(--text-3);
   text-decoration-thickness: 2px;
 }
 a:hover,
 a:focus {
-  text-decoration-color: var(--text-2);
+  /* Hover should always increase contrast */
+  text-decoration-color: var(--text-1);
 }

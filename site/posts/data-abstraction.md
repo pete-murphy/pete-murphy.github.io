@@ -10,6 +10,8 @@ description: My first blog post using slick
 
 **Advent of Code spoilers herein**
 
+Let's look at some `for` loops, shall we?!
+
 Day five of this year's Advent of Code this year provides a nice occasion for doing some stateful computation. We were given:
 
 - an initial state of some stacks of crates
@@ -44,36 +46,6 @@ import
 
 ```rust
 
-```
-
-```{=html}
-  </multicodeblock-panel>
-  <multicodeblock-tab role="heading" slot="tab">OCaml</multicodeblock-tab>
-  <multicodeblock-panel role="region" slot="panel">
-```
-
-```ocaml
-(* interface, abstract type: A module type *)
-module type Example_intf = sig
-  type t
-
-  val create : string -> t
-  val read : t -> string
-end
-```
-
-```{=html}
-  </multicodeblock-panel>
-  <multicodeblock-tab role="heading" slot="tab">Rust</multicodeblock-tab>
-  <multicodeblock-panel role="region" slot="panel">
-```
-
-```rust
-// interface, abstract type: A trait
-trait ExampleTrait {
-  fn create(s: &'static str) -> Self
-  fn read(&self) -> &'static str
-}
 ```
 
 ```{=html}
@@ -156,44 +128,6 @@ class Example implements ExampleInterface {
 ```{=html}
   </multicodeblock-panel>
   <multicodeblock-tab role="heading" slot="tab">OCaml</multicodeblock-tab>
-  <multicodeblock-panel role="region" slot="panel">
-```
-
-```ocaml
-(* implementation: A module *)
-module Example : Example_intf = struct
-  type t = string
-
-  let create s = s
-  let read s = s
-end
-```
-
-```{=html}
-  </multicodeblock-panel>
-  <multicodeblock-tab role="heading" slot="tab">Rust</multicodeblock-tab>
-  <multicodeblock-panel role="region" slot="panel">
-```
-
-```rust
-// implementation: A struct
-pub struct Example {
-  s: &'static str
-}
-impl ExampleTrait for Example {
-  fn create(s: &'static str) -> Example {
-    return Example{ s }
-  }
-
-  fn read(&self) -> &'static str {
-    return self.s
-  }
-}
-```
-
-```{=html}
-  </multicodeblock-panel>
-  <multicodeblock-tab role="heading" slot="tab">Haskell</multicodeblock-tab>
   <multicodeblock-panel role="region" slot="panel">
 ```
 

@@ -94,10 +94,11 @@ html {
 
 a {
   color: var(--text-1);
-  text-decoration-color: var(--text-1);
+  text-decoration-color: var(--text-3);
   text-decoration-thickness: 2px;
 }
 a:hover,
 a:focus {
-  text-decoration-color: var(--text-2);
+  /* Hover should always increase contrast */
+  text-decoration-color: var(--text-1);
 }

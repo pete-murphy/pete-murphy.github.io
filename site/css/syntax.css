@@ -4,14 +4,13 @@ pre {
   /* TODON'T */
   /* margin-inline: -2rem; */
   line-height: 1.2;
-  outline: 1px solid var(--text-4);
-  border-radius: var(--border-size-3);
 }
 
 pre > code {
   background-color: transparent;
   padding-inline: 0;
   padding-block: 0;
+  border: none;
 }
 
 pre > code > span::before {
@@ -30,12 +29,13 @@ pre > code > span {
 }
 
 code {
-  background-color: var(--surface-blush);
   color: var(--text-1);
   font-size: 0.91rem;
   padding-inline: 0.2em;
   padding-block: 0.1em;
   border-radius: var(--border-size-3);
+  border-radius: max(var(--border-size-3), 0.2em);
+  border: 1px solid var(--text-1);
 }
 
 /* KeyWordTok */

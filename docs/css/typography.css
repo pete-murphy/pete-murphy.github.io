@@ -7,6 +7,16 @@
   font-family: var(--sans-font);
 }
 
+h1 {
+  font-size: var(--font-size-fluid-3);
+}
+h2 {
+  font-size: var(--font-size-fluid-2);
+}
+h3 {
+  font-size: var(--font-size-fluid-1);
+}
+
 h1,
 h2,
 h3,
