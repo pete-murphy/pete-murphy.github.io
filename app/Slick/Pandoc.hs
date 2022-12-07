@@ -49,16 +49,17 @@ type PandocWriter = Pandoc -> PandocIO T.Text
 -- Markdown
 defaultMarkdownOptions :: ReaderOptions
 defaultMarkdownOptions =
-  def { readerExtensions = exts }
-  where
-    exts = mconcat
-     [ extensionsFromList
-       [ Ext_yaml_metadata_block
-       , Ext_fenced_code_attributes
-       , Ext_auto_identifiers
-       ]
-     , githubMarkdownExtensions
-     ]
+  def { readerExtensions = pandocExtensions }
+  -- where
+  --   exts = mconcat
+  --    [ extensionsFromList
+  --      [ Ext_yaml_metadata_block
+  --      , Ext_fenced_code_attributes
+  --      , Ext_auto_identifiers
+  --      , Ext_markdown_in_html_blocks
+  --      ]
+  --    , githubMarkdownExtensions
+  --    ]
 
 -- | Reasonable options for rendering to HTML. Includes default code highlighting rules
 defaultHtml5Options :: WriterOptions

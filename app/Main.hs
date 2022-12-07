@@ -1,3 +1,4 @@
+{-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DuplicateRecordFields #-}
@@ -6,21 +7,28 @@
 module Main where
 
 import Control.Lens
-import Control.Monad
+import qualified Control.Monad as Monad
 import Data.Aeson (FromJSON, ToJSON, Value (..))
 import qualified Data.Aeson as Aeson
-import qualified Data.Aeson.KeyMap as KM
+import qualified Data.Aeson.KeyMap as KeyMap
 import Data.Aeson.Lens (_Object)
 import Data.Text (Text)
 import qualified Data.Text as Text
 import Data.Time (UTCTime)
 import qualified Data.Time as Time
 import Development.Shake
-import Development.Shake.Classes
-import Development.Shake.FilePath
-import Development.Shake.Forward
+  ( Action,
+    ShakeOptions (..),
+    Verbosity (..),
+  )
+import qualified Development.Shake as Shake
+import Development.Shake.Classes (Binary)
+import Development.Shake.FilePath ((-<.>), (</>))
+import qualified Development.Shake.FilePath as Shake.FilePath
+import qualified Development.Shake.Forward as Shake.Forward
 import GHC.Generics (Generic)
 import qualified Slick
+import qualified Slick.Pandoc as Slick
 
 ---Config-----------------------------------------------------------------------
 
@@ -28,7 +36,7 @@ siteMeta :: SiteMeta
 siteMeta =
   SiteMeta
     { siteAuthor = "Me",
-      baseUrl = "https://example.com",
+      baseURL = "https://example.com",
       siteTitle = "My Slick Site",
       twitterHandle = Just "myslickhandle",
       githubUser = Just "myslickgithubuser"
@@ -40,14 +48,14 @@ outputFolder = "docs/"
 -- Data models-------------------------------------------------------------------
 
 withSiteMeta :: Value -> Value
-withSiteMeta (Object obj) = Object $ KM.union obj siteMetaObj
+withSiteMeta (Object obj) = Object (KeyMap.union obj siteMetaObj)
   where
     Object siteMetaObj = Aeson.toJSON siteMeta
 withSiteMeta _ = error "only add site meta to objects"
 
 data SiteMeta = SiteMeta
   { siteAuthor :: String,
-    baseUrl :: String, -- e.g. https://example.ca
+    baseURL :: String, -- e.g. https://example.ca
     siteTitle :: String,
     twitterHandle :: Maybe String, -- Without @
     githubUser :: Maybe String
@@ -91,36 +99,37 @@ buildIndex posts' = do
   indexT <- Slick.compileTemplate' "site/templates/index.html"
   let indexInfo = IndexInfo {posts = posts'}
       indexHTML = Text.unpack (Slick.substitute indexT (withSiteMeta (Aeson.toJSON indexInfo)))
-  writeFile' (outputFolder </> "index.html") indexHTML
+  Shake.writeFile' (outputFolder </> "index.html") indexHTML
 
 -- | Find and build all posts
 buildPosts :: Action [Post]
 buildPosts = do
-  pPaths <- getDirectoryFiles "." ["site/posts//*.md"]
-  forP pPaths buildPost
+  pPaths <- Shake.getDirectoryFiles "." ["site/posts//*.md"]
+  Shake.forP pPaths buildPost
 
 -- | Load a post, process metadata, write it to output, then return the post object
 -- Detects changes to either post content or template
 buildPost :: FilePath -> Action Post
-buildPost srcPath = cacheAction ("build" :: Text, srcPath) $ do
-  liftIO . putStrLn $ "Rebuilding post: " <> srcPath
-  postContent <- readFile' srcPath
+buildPost srcPath = Shake.Forward.cacheAction ("build" :: Text, srcPath) do
+  Shake.liftIO (putStrLn ("Rebuilding post: " <> srcPath))
+  postContent <- Shake.readFile' srcPath
   -- load post content and metadata as JSON blob
-  postData <- Slick.markdownToHTML . Text.pack $ postContent
-  let postUrl = Text.pack . dropDirectory1 $ srcPath -<.> "html"
+  postData <- Slick.markdownToHTML (Text.pack postContent)
+  let postUrl = Text.pack (Shake.FilePath.dropDirectory1 (srcPath -<.> "html"))
       withPostUrl = _Object . at "url" ?~ String postUrl
   -- Add additional metadata we've been able to compute
-  let fullPostData = withSiteMeta . withPostUrl $ postData
+  let fullPostData = withSiteMeta (withPostUrl postData)
   template <- Slick.compileTemplate' "site/templates/post.html"
-  writeFile' (outputFolder </> Text.unpack postUrl) (Text.unpack (Slick.substitute template fullPostData))
+  Shake.writeFile' (outputFolder </> Text.unpack postUrl) (Text.unpack (Slick.substitute template fullPostData))
   Slick.convert fullPostData
 
 -- | Copy all static files from the listed folders to their destination
 copyStaticFiles :: Action ()
 copyStaticFiles = do
-  filepaths <- getDirectoryFiles "./site/" ["images//*", "css//*", "js//*"]
-  void $ forP filepaths $ \filepath ->
-    copyFileChanged ("site" </> filepath) (outputFolder </> filepath)
+  filepaths <- Shake.getDirectoryFiles "./site/" ["images//*", "css//*", "js//*"]
+  Monad.void do
+    Shake.forP filepaths \filepath ->
+      Shake.copyFileChanged ("site" </> filepath) (outputFolder </> filepath)
 
 formatDate :: String -> String
 formatDate humanDate = toIsoDate parsedTime
@@ -140,21 +149,21 @@ toIsoDate = Time.formatTime Time.defaultTimeLocale (Time.iso8601DateFormat rfc33
 
 buildFeed :: [Post] -> Action ()
 buildFeed posts = do
-  now <- liftIO Time.getCurrentTime
+  now <- Shake.liftIO Time.getCurrentTime
   let atomData =
         AtomData
           { title = siteTitle siteMeta,
-            domain = baseUrl siteMeta,
+            domain = baseURL siteMeta,
             author = siteAuthor siteMeta,
             posts = mkAtomPost <$> posts,
             currentTime = toIsoDate now,
             atomUrl = "/atom.xml"
           }
   atomTempl <- Slick.compileTemplate' "site/templates/atom.xml"
-  writeFile' (outputFolder </> "atom.xml") (Text.unpack (Slick.substitute atomTempl (Aeson.toJSON atomData)))
+  Shake.writeFile' (outputFolder </> "atom.xml") (Text.unpack (Slick.substitute atomTempl (Aeson.toJSON atomData)))
   where
     mkAtomPost :: Post -> Post
-    mkAtomPost p = p {date = formatDate $ date p}
+    mkAtomPost p = p {date = formatDate (date p)}
 
 -- | Specific build rules for the Shake system
 --   defines workflow to build the website
@@ -167,5 +176,5 @@ buildRules = do
 
 main :: IO ()
 main = do
-  let shOpts = shakeOptions {shakeVerbosity = Chatty, shakeLintInside = ["\\"]}
-  shakeArgsForward shOpts buildRules
+  let shOpts = Shake.shakeOptions {shakeVerbosity = Verbose, shakeLintInside = ["\\"]}
+  Shake.Forward.shakeArgsForward shOpts buildRules
