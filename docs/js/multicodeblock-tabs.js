@@ -28,7 +28,7 @@
 
   // To avoid invoking the parser with `.innerHTML` for every new instance, a
   // template for the contents of the shadow DOM is shared by all
-  // `<howto-tabs>` instances.
+  // `<multicodeblock-tabs>` instances.
   const template = document.createElement("template");
   template.innerHTML = `
     <style>
@@ -36,7 +36,7 @@
         display: flex;
         flex-wrap: wrap;
       }
-      ::slotted(howto-panel) {
+      ::slotted(multicodeblock-panel) {
         flex-basis: 100%;
       }
     </style>
@@ -47,8 +47,8 @@
   /**
    * `HowtoTabs` is a container element for tabs and panels.
    *
-   * All children of `<howto-tabs>` should be either `<howto-tab>` or
-   * `<howto-tabpanel>`. This element is stateless, meaning that no values are
+   * All children of `<multicodeblock-tabs>` should be either `<multicodeblock-tab>` or
+   * `<multicodeblock-tabpanel>`. This element is stateless, meaning that no values are
    * cached and therefore, changes during runtime work.
    */
   class HowtoTabs extends HTMLElement {
@@ -95,8 +95,8 @@
       // handler manually. Once the new behavior lands in all browsers, the code
       // below can be removed.
       Promise.all([
-        customElements.whenDefined("howto-tab"),
-        customElements.whenDefined("howto-panel"),
+        customElements.whenDefined("multicodeblock-tab"),
+        customElements.whenDefined("multicodeblock-panel"),
       ]).then((_) => this._linkPanels());
     }
 
@@ -132,9 +132,9 @@
       // that controls it.
       tabs.forEach((tab) => {
         const panel = tab.nextElementSibling;
-        if (panel.tagName.toLowerCase() !== "howto-panel") {
+        if (panel.tagName.toLowerCase() !== "multicodeblock-panel") {
           console.error(
-            `Tab #${tab.id} is not a` + `sibling of a <howto-panel>`
+            `Tab #${tab.id} is not a` + `sibling of a <multicodeblock-panel>`
           );
           return;
         }
@@ -162,14 +162,14 @@
      * cheap to read.
      */
     _allPanels() {
-      return Array.from(this.querySelectorAll("howto-panel"));
+      return Array.from(this.querySelectorAll("multicodeblock-panel"));
     }
 
     /**
      * `_allTabs()` returns all the tabs in the tab panel.
      */
     _allTabs() {
-      return Array.from(this.querySelectorAll("howto-tab"));
+      return Array.from(this.querySelectorAll("multicodeblock-tab"));
     }
 
     /**
@@ -304,20 +304,20 @@
       this._selectTab(event.target);
     }
   }
-  customElements.define("howto-tabs", HowtoTabs);
+  customElements.define("multicodeblock-tabs", HowtoTabs);
 
-  // `howtoTabCounter` counts the number of `<howto-tab>` instances created. The
+  // `howtoTabCounter` counts the number of `<multicodeblock-tab>` instances created. The
   // number is used to generated new, unique IDs.
   let howtoTabCounter = 0;
   /**
-   * `HowtoTabsTab` is a tab for a `<howto-tabs>` tab panel. `<howto-tab>`
+   * `HowtoTabsTab` is a tab for a `<multicodeblock-tabs>` tab panel. `<multicodeblock-tab>`
    * should always be used with `role=heading` in the markup so that the
    * semantics remain useable when JavaScript is failing.
    *
-   * A `<howto-tab>` declares which `<howto-panel>` it belongs to by
+   * A `<multicodeblock-tab>` declares which `<multicodeblock-panel>` it belongs to by
    * using that panel’s ID as the value for the `aria-controls` attribute.
    *
-   * A `<howto-tab>` will automatically generate a unique ID if none
+   * A `<multicodeblock-tab>` will automatically generate a unique ID if none
    * is specified.
    */
   class HowtoTab extends HTMLElement {
@@ -333,7 +333,8 @@
       // If this is executed, JavaScript is working and the element
       // changes its role to `tab`.
       this.setAttribute("role", "tab");
-      if (!this.id) this.id = `howto-tab-generated-${howtoTabCounter++}`;
+      if (!this.id)
+        this.id = `multicodeblock-tab-generated-${howtoTabCounter++}`;
 
       // Set a well-defined initial state.
       this.setAttribute("aria-selected", "false");
@@ -388,11 +389,11 @@
       return this.hasAttribute("selected");
     }
   }
-  customElements.define("howto-tab", HowtoTab);
+  customElements.define("multicodeblock-tab", HowtoTab);
 
   let howtoPanelCounter = 0;
   /**
-   * `HowtoPanel` is a panel for a `<howto-tabs>` tab panel.
+   * `HowtoPanel` is a panel for a `<multicodeblock-tabs>` tab panel.
    */
   class HowtoPanel extends HTMLElement {
     constructor() {
@@ -401,8 +402,9 @@
 
     connectedCallback() {
       this.setAttribute("role", "tabpanel");
-      if (!this.id) this.id = `howto-panel-generated-${howtoPanelCounter++}`;
+      if (!this.id)
+        this.id = `multicodeblock-panel-generated-${howtoPanelCounter++}`;
     }
   }
-  customElements.define("howto-panel", HowtoPanel);
+  customElements.define("multicodeblock-panel", HowtoPanel);
 })();

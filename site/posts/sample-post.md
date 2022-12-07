@@ -32,9 +32,9 @@ main = do
 ```
 
 ```{=html}
-<howto-tabs>
-  <howto-tab role="heading" slot="tab">Haskell</howto-tab>
-  <howto-panel role="region" slot="panel">
+<multicodeblock-tabs>
+  <multicodeblock-tab role="heading" slot="tab">Haskell</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```haskell
@@ -44,9 +44,9 @@ main = do
 ```
 
 ```{=html}
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">TypeScript</howto-tab>
-  <howto-panel role="region" slot="panel">
+  </multicodeblock-panel>
+  <multicodeblock-tab role="heading" slot="tab">TypeScript</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```typescript
@@ -56,6 +56,6 @@ const main = () => {
 ```
 
 ```{=html}
-  </howto-panel>
-</howto-tabs>
+  </multicodeblock-panel>
+</multicodeblock-tabs>
 ```

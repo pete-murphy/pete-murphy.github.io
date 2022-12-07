@@ -20,9 +20,9 @@ Day five of this year's Advent of Code this year provides a nice example of stat
 - iterating through a list of instructions for moving crates around
 
 ```{=html}
-<howto-tabs>
-  <howto-tab role="heading" slot="tab">Swift</howto-tab>
-  <howto-panel role="region" slot="panel">
+<multicodeblock-tabs>
+  <multicodeblock-tab role="heading" slot="tab">Swift</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```swift
@@ -34,9 +34,9 @@ protocol ExampleProtocol {
 ```
 
 ```{=html}
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">TypeScript</howto-tab>
-  <howto-panel role="region" slot="panel">
+  </multicodeblock-panel>
+  <multicodeblock-tab role="heading" slot="tab">TypeScript</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```typescript
@@ -54,9 +54,9 @@ interface ExampleInterface {
 ```
 
 ```{=html}
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">OCaml</howto-tab>
-  <howto-panel role="region" slot="panel">
+  </multicodeblock-panel>
+  <multicodeblock-tab role="heading" slot="tab">OCaml</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```ocaml
@@ -70,9 +70,9 @@ end
 ```
 
 ```{=html}
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">Rust</howto-tab>
-  <howto-panel role="region" slot="panel">
+  </multicodeblock-panel>
+  <multicodeblock-tab role="heading" slot="tab">Rust</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```rust
@@ -84,9 +84,9 @@ trait ExampleTrait {
 ```
 
 ```{=html}
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">Haskell</howto-tab>
-  <howto-panel role="region" slot="panel">
+  </multicodeblock-panel>
+  <multicodeblock-tab role="heading" slot="tab">Haskell</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```haskell
@@ -97,9 +97,9 @@ class ExampleClass a where
 ```
 
 ```{=html}
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">F#</howto-tab>
-  <howto-panel role="region" slot="panel">
+  </multicodeblock-panel>
+  <multicodeblock-tab role="heading" slot="tab">F#</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```fsharp
@@ -109,16 +109,16 @@ type ExampleInterface<'a> =
 ```
 
 ```{=html}
-  </howto-panel>
-</howto-tabs>
+  </multicodeblock-panel>
+</multicodeblock-tabs>
 ```
 
 ### Implementation
 
 ```{=html}
-<howto-tabs>
-  <howto-tab role="heading" slot="tab">Swift</howto-tab>
-  <howto-panel role="region" slot="panel">
+<multicodeblock-tabs>
+  <multicodeblock-tab role="heading" slot="tab">Swift</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```swift
@@ -137,9 +137,9 @@ public struct Example {
 ```
 
 ```{=html}
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">TypeScript</howto-tab>
-  <howto-panel role="region" slot="panel">
+  </multicodeblock-panel>
+  <multicodeblock-tab role="heading" slot="tab">TypeScript</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```typescript
@@ -161,9 +161,9 @@ class Example implements ExampleInterface {
 ```
 
 ```{=html}
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">OCaml</howto-tab>
-  <howto-panel role="region" slot="panel">
+  </multicodeblock-panel>
+  <multicodeblock-tab role="heading" slot="tab">OCaml</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```ocaml
@@ -177,9 +177,9 @@ end
 ```
 
 ```{=html}
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">Rust</howto-tab>
-  <howto-panel role="region" slot="panel">
+  </multicodeblock-panel>
+  <multicodeblock-tab role="heading" slot="tab">Rust</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```rust
@@ -199,9 +199,9 @@ impl ExampleTrait for Example {
 ```
 
 ```{=html}
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">Haskell</howto-tab>
-  <howto-panel role="region" slot="panel">
+  </multicodeblock-panel>
+  <multicodeblock-tab role="heading" slot="tab">Haskell</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```haskell
@@ -212,9 +212,9 @@ instance ExampleClass String where
 ```
 
 ```{=html}
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">F#</howto-tab>
-  <howto-panel role="region" slot="panel">
+  </multicodeblock-panel>
+  <multicodeblock-tab role="heading" slot="tab">F#</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```fsharp
@@ -225,16 +225,16 @@ type Example () =
 ```
 
 ```{=html}
-  </howto-panel>
-</howto-tabs>
+  </multicodeblock-panel>
+</multicodeblock-tabs>
 ```
 
 ### Client
 
 ```{=html}
-<howto-tabs>
-  <howto-tab role="heading" slot="tab">Swift</howto-tab>
-  <howto-panel role="region" slot="panel">
+<multicodeblock-tabs>
+  <multicodeblock-tab role="heading" slot="tab">Swift</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```swift
@@ -245,9 +245,9 @@ func client<E: ExampleInterface>() {
 ```
 
 ```{=html}
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">TypeScript</howto-tab>
-  <howto-panel role="region" slot="panel">
+  </multicodeblock-panel>
+  <multicodeblock-tab role="heading" slot="tab">TypeScript</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```typescript
@@ -260,9 +260,9 @@ console.log(ex.read());
 ```
 
 ```{=html}
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">OCaml</howto-tab>
-  <howto-panel role="region" slot="panel">
+  </multicodeblock-panel>
+  <multicodeblock-tab role="heading" slot="tab">OCaml</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```ocaml
@@ -279,9 +279,9 @@ let client (module E: Example_intf) =
 ```
 
 ```{=html}
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">Rust</howto-tab>
-  <howto-panel role="region" slot="panel">
+  </multicodeblock-panel>
+  <multicodeblock-tab role="heading" slot="tab">Rust</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```rust
@@ -292,9 +292,9 @@ fn client<E: Example>() {
 ```
 
 ```{=html}
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">Haskell</howto-tab>
-  <howto-panel role="region" slot="panel">
+  </multicodeblock-panel>
+  <multicodeblock-tab role="heading" slot="tab">Haskell</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```haskell
@@ -305,9 +305,9 @@ client = do
 ```
 
 ```{=html}
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">F#</howto-tab>
-  <howto-panel role="region" slot="panel">
+  </multicodeblock-panel>
+  <multicodeblock-tab role="heading" slot="tab">F#</multicodeblock-tab>
+  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```fsharp
@@ -317,8 +317,8 @@ E.read ex |> printf "%s\n"
 ```
 
 ```{=html}
-  </howto-panel>
-</howto-tabs>
+  </multicodeblock-panel>
+</multicodeblock-tabs>
 ```
 
 The surface syntax differs among programming languages, but through them all, you can identify a _client_ interacting with an _implementation_ through an _interface_. The extent to which they achieve the ideal, from a semantics perspective, is something we will study in this post. Studying the ideal equips the student with the capacity for applying these techniques across all programming languages rather than relearning what is truly the same each time a new language is presented.

@@ -1,15 +1,21 @@
 pre {
   counter-reset: line;
-  background-color: var(--surface2);
   padding: 1rem;
-  margin-inline: -2rem;
+  /* TODON'T */
+  /* margin-inline: -2rem; */
   line-height: 1.2;
+  outline: 1px solid var(--text-4);
+  border-radius: var(--border-size-3);
+}
+
+pre > code {
+  background-color: transparent;
 }
 
 pre > code > span::before {
   counter-increment: line;
   content: counter(line);
-  color: var(--text3);
+  color: var(--text-4);
   position: absolute;
   left: 0;
   line-height: 1.4;
@@ -17,68 +23,70 @@ pre > code > span::before {
 
 pre > code > span {
   padding-inline-start: 3ch;
-  color: var(--text1-blue);
+  color: var(--text-1);
   position: relative;
 }
 
 code {
-  background-color: var(--surface2);
-  color: var(--text1);
-  color: var(--text1-blue);
-  font-size: 0.875rem;
+  background-color: var(--surface-blush);
+  color: var(--text-1);
+  font-size: 0.91rem;
+  padding-inline: 0.2em;
+  padding-block: 0.1em;
+  border-radius: var(--border-size-3);
 }
 
 /* KeyWordTok */
 .sourceCode .kw {
-  color: var(--text2-blue);
+  color: var(--blue-4);
 }
 
 /* DataTypeTok */
 .sourceCode .dt {
-  color: var(--text1-orange);
+  color: var(--orange-5);
 }
 
 /* DecValTok (decimal value), BaseNTok, FloatTok */
 .sourceCode .dv,
 .sourceCode .bn,
 .sourceCode .fl {
-  color: var(--text1-blue);
+  color: var(--blue-3);
 }
 /* CharTok */
 .sourceCode .ch {
-  color: var(--text2-green);
+  color: var(--green-5);
 }
 /* StringTok */
 .sourceCode .st {
-  color: var(--text1-green);
+  color: var(--green-5);
 }
 /* CommentTok */
 .sourceCode .co {
   font-style: italic;
-  color: var(--text3);
+  color: var(--text-4);
 }
 /* OtherTok */
 .sourceCode .ot {
-  color: var(--text1-red);
+  color: var(--red-3);
 }
 /* AlertTok */
 .sourceCode .al {
   font-weight: bold;
-  color: var(--text1-green);
+  color: var(--green-5);
 }
 /* FunctionTok */
 .sourceCode .fu {
-  color: var(--text2-red);
+  color: var(--red-5);
 }
 /* RegionMarkerTok */
 .sourceCode .re {
-  color: var(--text2-green);
+  color: var(--green-5);
 }
 /* ErrorTok */
 .sourceCode .er {
   font-weight: bold;
-  color: var(--text1-red);
+  color: var(--red-4);
 }
 .sourceCode .op {
-  color: var(--text1-purple);
+  color: var(--purple-3);
 }

@@ -1,0 +1,36 @@
+:root {
+  --mono-font: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
+    Liberation Mono, monospace;
+  --sans-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --heading-font: var(--sans-font);
+  font-family: var(--sans-font);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--heading-font);
+  margin-top: 0.4em;
+}
+
+pre,
+code {
+  font-family: var(--mono-font);
+}
+
+h1 > code,
+h2 > code,
+h3 > code,
+h4 > code,
+h5 > code,
+h6 > code {
+  font-size: 0.9em;
+}
+
+.post sup {
+  line-height: 1;
+}
