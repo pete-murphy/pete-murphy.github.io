@@ -22,19 +22,20 @@ body {
   width: calc(100% - 1rem);
 
   margin-inline: auto;
-  grid-template-columns: [gutter-start] 3ch [main-start content-start] 60ch [content-end] 1fr [main-end gutter-end];
+  grid-template-columns: [gutter-start] 3rem [main-start content-start] 60ch [content-end] 1fr [main-end gutter-end];
 }
 
 .post > * {
   grid-column: content;
 }
 
-.post > multicodeblock-tabs {
+.post > multicodeblock-tabs,
+.post > div.sourceCode {
   grid-column: gutter;
 }
 
 multicodeblock-tab:first-of-type {
-  margin-inline-start: 3ch;
+  margin-inline-start: 2rem;
 }
 multicodeblock-tab {
   color: var(--text-4);

@@ -10,6 +10,8 @@ pre {
 
 pre > code {
   background-color: transparent;
+  padding-inline: 0;
+  padding-block: 0;
 }
 
 pre > code > span::before {
@@ -22,7 +24,7 @@ pre > code > span::before {
 }
 
 pre > code > span {
-  padding-inline-start: 3ch;
+  padding-inline-start: 2rem;
   color: var(--text-1);
   position: relative;
 }

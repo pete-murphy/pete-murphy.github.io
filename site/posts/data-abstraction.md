@@ -10,47 +10,40 @@ description: My first blog post using slick
 
 **Advent of Code spoilers herein**
 
-Day five of this year's Advent of Code this year provides a nice example of stateful computation. We were given:
+Day five of this year's Advent of Code this year provides a nice occasion for doing some stateful computation. We were given:
 
 - an initial state of some stacks of crates
 - a list of instructions for moving crates from one stack to another
 
-- some stacks of crates
--
-- iterating through a list of instructions for moving crates around
+In Haskell I ended up using the `State` ~~monad~~ applicative functor, and I am compelled to write down why, because it was not that long ago that `State` was completely baffling to me.
+
+```haskell
+newtype State s a = State { runState :: s -> (a, s) }
+```
+
+How does this really model "state"?—how can we use this the same way that we use a global mutable reference in imperative-style programming.
+Let's get some imports out of the way first.
 
 ```{=html}
 <multicodeblock-tabs>
-  <multicodeblock-tab role="heading" slot="tab">Swift</multicodeblock-tab>
+  <multicodeblock-tab role="heading" slot="tab">Haskell</multicodeblock-tab>
   <multicodeblock-panel role="region" slot="panel">
 ```
 
-```swift
-// interface, abstract type: A protocol
-protocol ExampleProtocol {
-  static func create(_ s: String) -> Self
-  func read() -> String
-}
+```haskell
+import Control.Monad.State (modify)
+import Data.Foldable (for_)
+import
 ```
 
 ```{=html}
   </multicodeblock-panel>
-  <multicodeblock-tab role="heading" slot="tab">TypeScript</multicodeblock-tab>
+  <multicodeblock-tab role="heading" slot="tab">Rust</multicodeblock-tab>
   <multicodeblock-panel role="region" slot="panel">
 ```
 
-```typescript
-// interface, abstract type: An interface
-//
-// In TypeScript, we have to have separate interfaces for the static and
-// instance sides of a class
+```rust
 
-interface ExampleConstructor {
-  new (s: string): ExampleInterface;
-}
-interface ExampleInterface {
-  read(): string;
-}
 ```
 
 ```{=html}

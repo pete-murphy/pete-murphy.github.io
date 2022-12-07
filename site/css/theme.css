@@ -11,7 +11,7 @@
 
 html {
   /* primary foundation */
-  --primary-hue: 320;
+  --primary-hue: 240;
   --primary-saturation: 60%;
   --primary-lightness: 50%;
   --text-saturation: 9%;
@@ -25,7 +25,7 @@ html {
   --text-3-light: hsl(var(--primary-hue) var(--text-saturation) 60%);
   --surface-1-light: hsl(var(--primary-hue) 25% 99%);
   --surface-2-light: hsl(var(--primary-hue) 20% 96%);
-  --surface-blush-light: hsl(var(--primary-hue) 85% 90%);
+  --surface-blush-light: hsl(328 66% 95%);
 
   /* dark */
   --primary-dark: hsl(
@@ -37,7 +37,7 @@ html {
   --text-3-dark: hsl(var(--primary-hue) var(--text-saturation) 45%);
   --surface-1-dark: hsl(var(--primary-hue) 20% 5%);
   --surface-2-dark: hsl(var(--primary-hue) 15% 10%);
-  --surface-blush-dark: hsl(var(--primary-hue) 60% 30%);
+  --surface-blush-dark: hsl(328 65% 24%);
 }
 
 :root {
