@@ -23,8 +23,10 @@ body {
 
   margin-inline: auto;
   grid-template-columns:
-    [gutter-start] 3rem [main-start content-start] 3fr
-    [content-end] 1fr [main-end gutter-end];
+    [gutter-start] 3rem
+    [main-start content-start] minmax(auto, 60ch)
+    [content-end] minmax(2rem, 1fr)
+    [main-end gutter-end];
 }
 
 .post > * {

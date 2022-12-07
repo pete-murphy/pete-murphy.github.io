@@ -1,14 +1,5 @@
 @import "https://unpkg.com/open-props";
 
-:root {
-  --red-hue: 345;
-  --purple-hue: 275;
-  --blue-hue: 215;
-  --green-hue: 135;
-  --yellow-hue: 50;
-  --orange-hue: 15;
-}
-
 html {
   /* primary foundation */
   --primary-hue: 240;
@@ -25,7 +16,6 @@ html {
   --text-3-light: hsl(var(--primary-hue) var(--text-saturation) 60%);
   --surface-1-light: hsl(var(--primary-hue) 25% 99%);
   --surface-2-light: hsl(var(--primary-hue) 20% 96%);
-  --surface-blush-light: hsl(328 66% 95%);
 
   /* dark */
   --primary-dark: hsl(
@@ -37,12 +27,11 @@ html {
   --text-3-dark: hsl(var(--primary-hue) var(--text-saturation) 45%);
   --surface-1-dark: hsl(var(--primary-hue) 20% 5%);
   --surface-2-dark: hsl(var(--primary-hue) 15% 10%);
-  --surface-blush-dark: hsl(328 65% 24%);
 }
 
 :root {
   color-scheme: light;
-  font-size: max(17px);
+  font-size: 17px;
 
   /* set defaults */
   --primary: var(--primary-light);
@@ -51,7 +40,6 @@ html {
   --text-4: var(--text-3-light);
   --surface-1: var(--surface-1-light);
   --surface-2: var(--surface-2-light);
-  --surface-blush: var(--surface-blush-light);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -64,7 +52,6 @@ html {
     --text-4: var(--text-3-dark);
     --surface-1: var(--surface-1-dark);
     --surface-2: var(--surface-2-dark);
-    --surface-blush: var(--surface-blush-dark);
   }
 }
 
@@ -77,7 +64,6 @@ html {
   --text-4: var(--text-3-light);
   --surface-1: var(--surface-1-light);
   --surface-2: var(--surface-2-light);
-  --surface-blush: var(--surface-blush-light);
 }
 
 [color-scheme="dark"] {
@@ -89,7 +75,6 @@ html {
   --text-4: var(--text-3-dark);
   --surface-1: var(--surface-1-dark);
   --surface-2: var(--surface-2-dark);
-  --surface-blush: var(--surface-blush-dark);
 }
 
 a {
