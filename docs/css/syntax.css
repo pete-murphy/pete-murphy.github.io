@@ -1,32 +1,84 @@
 pre {
-    background-color: #F5FCFF;
+  counter-reset: line;
+  background-color: var(--surface2);
+  padding: 1rem;
+  margin-inline: -2rem;
+  line-height: 1.2;
+}
+
+pre > code > span::before {
+  counter-increment: line;
+  content: counter(line);
+  color: var(--text3);
+  position: absolute;
+  left: 0;
+  line-height: 1.4;
+}
+
+pre > code > span {
+  padding-inline-start: 3ch;
+  color: var(--text1-blue);
+  position: relative;
 }
 
 code {
-    background-color: #F5FCFF;
-    color: #268BD2;
+  background-color: var(--surface2);
+  color: var(--text1);
+  color: var(--text1-blue);
+  font-size: 0.875rem;
 }
 
 /* KeyWordTok */
-.sourceCode .kw { color: #600095; }
+.sourceCode .kw {
+  color: var(--text2-blue);
+}
+
 /* DataTypeTok */
-.sourceCode .dt { color: #268BD2; }
+.sourceCode .dt {
+  color: var(--text1-orange);
+}
 
 /* DecValTok (decimal value), BaseNTok, FloatTok */
-.sourceCode .dv, .sourceCode .bn, .sourceCode .fl { color: #AE81FF; }
+.sourceCode .dv,
+.sourceCode .bn,
+.sourceCode .fl {
+  color: var(--text1-blue);
+}
 /* CharTok */
-.sourceCode .ch { color: #37ad2d; }
+.sourceCode .ch {
+  color: var(--text2-green);
+}
 /* StringTok */
-.sourceCode .st { color: #37ad2d; }
+.sourceCode .st {
+  color: var(--text1-green);
+}
 /* CommentTok */
-.sourceCode .co { color: #7E8E91; }
+.sourceCode .co {
+  font-style: italic;
+  color: var(--text3);
+}
 /* OtherTok */
-.sourceCode .ot { color: #EB005B; }
+.sourceCode .ot {
+  color: var(--text1-red);
+}
 /* AlertTok */
-.sourceCode .al { color: #A6E22E; font-weight: bold; }
+.sourceCode .al {
+  font-weight: bold;
+  color: var(--text1-green);
+}
 /* FunctionTok */
-.sourceCode .fu { color: #333; }
+.sourceCode .fu {
+  color: var(--text2-red);
+}
 /* RegionMarkerTok */
-.sourceCode .re { }
+.sourceCode .re {
+  color: var(--text2-green);
+}
 /* ErrorTok */
-.sourceCode .er { color: #E6DB74; font-weight: bold; }
+.sourceCode .er {
+  font-weight: bold;
+  color: var(--text1-red);
+}
+.sourceCode .op {
+  color: var(--text1-purple);
+}

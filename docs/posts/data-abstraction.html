@@ -1,25 +1,64 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
-    <title>My Slick Site</title>
-    <link href="https://example.com/atom.xml" rel="self" type="application/rss+xml" />
-  <updated>2022-12-07T01:05:SZ</updated>
-  <author>
-      <name>Me</name>
-  </author>
-  <id>https://example.com/</id>
+<!DOCTYPE html>
+<html lang="en">
+  <head profile="http://www.w3.org/2005/10/profile">
+    <meta charset="UTF-8" />
+    <meta name="description" content="My Slick Site" />
+    <meta name="author" content="Me" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@myslickhandle">
+<meta name="twitter:creator" content="@myslickhandle">
+<meta name="twitter:title" content="Data Abstraction: Theory And Practice">
+    <meta name="twitter:description" content="My first blog post using slick">
+        <title>Data Abstraction: Theory And Practice</title>
+    <link rel="stylesheet" href="/css/theme.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/syntax.css" />
+    <style></style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a id="beacon" href="/">
+          <div id="home-text">HOME</div>
+        </a>
+      </nav>
+    
+      <!-- <div class="right-sidebar">
+            <a class="ext-link" href="https://github.com/myslickgithubuser">
+            <img src="/images/github-logo.png" alt="Github Profile"/>
+        </a>
 
-  <entry>
-      <title>Data Abstraction: Theory And Practice</title>
-      <link href="https://example.composts/data-abstraction.html"/>
-      <id>https://example.composts/data-abstraction.html</id>
-      <updated>2019-01-01T00:00:SZ</updated>
-      <category term="slick"/>
-      <category term="site"/>
-      <category term="data abstraction"/>
-      <category term="haskell"/>
-      <category term="typescript"/>
-      <summary>My first blog post using slick</summary>
-      <content type="html"><![CDATA[<p>One of the greatest tools to tame complexity in a growing codebase,
+            <a class="ext-link" href="https://twitter.com/myslickhandle">
+            <img src="/images/twitter-logo.png" alt="Twitter Profile"/>
+        </a>
+    <div id="theme-button">DAY</div>
+        </div> -->
+    </header>
+
+    <div id="page">
+      <div class="wrapper">
+        <div class="masthead">
+          <span class="title"> Data Abstraction: Theory And Practice </span>
+          <br />
+
+          <br />
+          <span class="byline">by Me</span>
+          <br />
+          <span class="date">Jan 1, 2019</span>
+          <br />
+          <div class="metadata"></div>
+          <div class="tags">
+            <span class="tag slick">slick</span>
+            <span class="tag site">site</span>
+            <span class="tag data abstraction">data abstraction</span>
+            <span class="tag haskell">haskell</span>
+            <span class="tag typescript">typescript</span>
+          </div>
+        </div>
+      </div>
+      <article class="post">
+        <p>One of the greatest tools to tame complexity in a growing codebase,
 growing either via lines of code or via people, is through strategic
 information hiding — you may know this as encapsulation, modularization,
 or data abstraction. In this post, we’ll explore data abstraction’s
@@ -527,47 +566,75 @@ first-class packed implementations, but I needed a transition to the
 material later, so please let me tease it here.<a href="#fnref7"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
-</section>]]></content>
-  </entry>
-  <entry>
-      <title>Great Post</title>
-      <link href="https://example.composts/sample-post.html"/>
-      <id>https://example.composts/sample-post.html</id>
-      <updated>2019-01-01T00:00:SZ</updated>
-      <category term="slick"/>
-      <category term="site"/>
-      <summary>My first blog post using slick</summary>
-      <content type="html"><![CDATA[<p>It’s nice.</p>
-<p>
-This should be a paragraph
-</p>
-<p><span>This is a span</span></p>
-<h3>
-What happens here?
-</h3>
-  <custom-element>
-    <another-el>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;does this work?&quot;</span></span></code></pre></div>
-    </another-el>
-  </custom-element>
-<howto-tabs>
-  <howto-tab role="heading" slot="tab">Haskell</howto-tab>
-  <howto-panel role="region" slot="panel">
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;So doppppppeeee1!!!!&quot;</span></span></code></pre></div>
-  </howto-panel>
-  <howto-tab role="heading" slot="tab">TypeScript</howto-tab>
-  <howto-panel role="region" slot="panel">
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> main <span class="op">=</span> () <span class="kw">=&gt;</span> {</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Soo dooopppppe!!!!&quot;</span>)<span class="op">;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
-  </howto-panel>
-</howto-tabs>]]></content>
-  </entry>
-</feed>
+</section>
+
+        <br />
+        <br />
+
+        <!--Share buttons-->
+        <div class="social-buttons">
+          <a
+            href="https://twitter.com/share"
+            class="twitter-share-button"
+            data-url="https://example.com"
+            data-text="Check out: Data Abstraction: Theory And Practice - "
+            data-via="myslickhandle"
+            >Tweet</a
+          >
+          <script>
+            !(function (d, s, id) {
+              var js,
+                fjs = d.getElementsByTagName(s)[0],
+                p = /^http:/.test(d.location) ? "http" : "https";
+              if (!d.getElementById(id)) {
+                js = d.createElement(s);
+                js.id = id;
+                js.src = p + "://platform.twitter.com/widgets.js";
+                fjs.parentNode.insertBefore(js, fjs);
+              }
+            })(document, "script", "twitter-wjs");
+          </script>
+          <a
+            href="https://twitter.com/myslickhandle"
+            class="twitter-follow-button"
+            data-show-count="false"
+            data-dnt="true"
+            >Follow @myslickhandle</a
+          >
+          <script>
+            !(function (d, s, id) {
+              var js,
+                fjs = d.getElementsByTagName(s)[0],
+                p = /^http:/.test(d.location) ? "http" : "https";
+              if (!d.getElementById(id)) {
+                js = d.createElement(s);
+                js.id = id;
+                js.src = p + "://platform.twitter.com/widgets.js";
+                fjs.parentNode.insertBefore(js, fjs);
+              }
+            })(document, "script", "twitter-wjs");
+          </script>
+          <div
+            class="fb-like"
+            data-href=""
+            data-layout="button"
+            data-action="like"
+            data-show-faces="true"
+            data-share="true"
+          ></div>
+        </div>
+      </article>
+    </div>
+
+    <footer>
+        Built with Haskell using <a href="https://github.com/ChrisPenner/slick">slick</a> ❤️
+    </footer>
+    
+    <link href='https://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+    <script src="/js/main.js"></script>
+    <script src="/js/howto-tabs.js"></script>
+    </body>
+    </html>
+  </body>
+</html>
