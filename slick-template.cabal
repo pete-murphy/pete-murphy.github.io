@@ -44,12 +44,14 @@ executable build-site
     , base >=4.7 && <5
     , bytestring
     , containers
+    , deriving-aeson
     , directory
     , extra
     , lens
     , lens-aeson
     , mustache
     , pandoc
+    , pandoc-sidenote
     , shake
     , text
     , time

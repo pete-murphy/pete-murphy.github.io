@@ -39,6 +39,7 @@ import Text.Pandoc.Highlighting
 import Slick.Utils
 
 import qualified Data.Text                  as T
+import qualified Text.Pandoc.SideNote as Pandoc
 
 --------------------------------------------------------------------------------
 
@@ -231,7 +232,8 @@ loadUsingMeta :: PandocReader textType -- ^ The reader used to load the document
           -> textType
           -> Action Value
 loadUsingMeta reader writer metaWriter text = do
-  (pdoc, meta) <- makePandocReaderWithMetaWriter reader metaWriter text
+  (_pdoc, meta) <- makePandocReaderWithMetaWriter reader metaWriter text
+  let pdoc = Pandoc.usingSideNotes _pdoc
   outText      <- unPandocM $ writer pdoc
   withContent <- case meta of
       Object m -> return . Object $ KM.insert "content" (String outText) m
