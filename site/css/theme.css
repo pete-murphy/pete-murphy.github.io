@@ -31,7 +31,6 @@ html {
 
 :root {
   color-scheme: light;
-  font-size: 17px;
 
   /* set defaults */
   --primary: var(--primary-light);

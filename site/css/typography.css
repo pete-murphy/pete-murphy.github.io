@@ -1,4 +1,5 @@
 :root {
+  font-size: 106.25%;
   --mono-font: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
     Liberation Mono, monospace;
   --sans-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",

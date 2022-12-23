@@ -1,21 +1,36 @@
 {-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Main where
 
-import Control.Lens
+import Control.Lens (At (..), (?~), (^.), (^..), (^?))
 import qualified Control.Monad as Monad
-import Data.Aeson (FromJSON, ToJSON, Value (..))
+import Data.Aeson (FromJSON, ToJSON, Value (..), (.=))
 import qualified Data.Aeson as Aeson
 import qualified Data.Aeson.KeyMap as KeyMap
-import Data.Aeson.Lens (_Object)
+import Data.Aeson.Lens (_Object, _String)
+import qualified Data.Aeson.Lens as Aeson
+import qualified Data.List as List
+import Data.Map (Map)
+import qualified Data.Map as Map
+import Data.Ord (Down (Down))
+import Data.Set (Set)
+import qualified Data.Set as Set
 import Data.Text (Text)
 import qualified Data.Text as Text
+import qualified Data.Text.Lens as Text
 import Data.Time (UTCTime)
 import qualified Data.Time as Time
+import qualified Data.Time.Format.ISO8601 as ISO8601
+import Deriving.Aeson (FieldLabelModifier, StripPrefix)
+import Deriving.Aeson.Stock (CustomJSON (..))
 import Development.Shake
   ( Action,
     ShakeOptions (..),
@@ -28,18 +43,17 @@ import qualified Development.Shake.FilePath as Shake.FilePath
 import qualified Development.Shake.Forward as Shake.Forward
 import GHC.Generics (Generic)
 import qualified Slick
-import qualified Slick.Pandoc as Slick
 
 ---Config-----------------------------------------------------------------------
 
 siteMeta :: SiteMeta
 siteMeta =
   SiteMeta
-    { siteAuthor = "Me",
-      baseURL = "https://example.com",
-      siteTitle = "My Slick Site",
-      twitterHandle = Just "myslickhandle",
-      githubUser = Just "myslickgithubuser"
+    { siteAuthor = "Pete",
+      baseURL = "https://ptrfrncsmrph.github.io",
+      siteTitle = "TIL",
+      twitterHandle = Nothing,
+      githubUser = Just "ptrfrncsmrph"
     }
 
 outputFolder :: FilePath
@@ -64,40 +78,96 @@ data SiteMeta = SiteMeta
 
 -- | Data for the index page
 data IndexInfo = IndexInfo
-  { posts :: [Post]
+  { indexPosts :: [Post],
+    indexTags :: [Tag]
   }
-  deriving (Generic, Show, FromJSON, ToJSON)
+  deriving stock (Generic, Show)
+  deriving
+    (FromJSON, ToJSON)
+    via CustomJSON '[FieldLabelModifier '[StripPrefix "index"]] IndexInfo
 
-type Tag = String
+data Tag = Tag
+  { tagName :: String,
+    tagPosts :: [Post],
+    tagURL :: String
+  }
+  deriving stock (Generic, Show, Eq)
+  deriving anyclass (Binary)
+  deriving
+    (FromJSON, ToJSON)
+    via CustomJSON '[FieldLabelModifier '[StripPrefix "tag"]] Tag
 
 -- | Data for a blog post
 data Post = Post
-  { title :: String,
-    author :: String,
-    content :: String,
-    url :: String,
-    date :: String,
-    tags :: [Tag],
-    description :: String,
-    image :: Maybe String
+  { postTitle :: String,
+    postAuthor :: String,
+    postContent :: String,
+    postURL :: String,
+    postImage :: Maybe String,
+    postTags :: [String],
+    postNextPostURL :: Maybe String,
+    postPrevPostURL :: Maybe String,
+    postISODate :: String,
+    postDate :: String,
+    postSrcPath :: String,
+    postDescription :: String,
+    postSlug :: String
   }
-  deriving (Generic, Eq, Ord, Show, FromJSON, ToJSON, Binary)
+  deriving (Generic, Eq, Ord, Show, Binary)
+
+instance FromJSON Post where
+  parseJSON value = do
+    let postTitle = value ^. Aeson.key "title" . _String . Text.unpacked
+        postAuthor = value ^. Aeson.key "author" . _String . Text.unpacked
+        postDate = value ^. Aeson.key "date" . _String . Text.unpacked
+        postISODate = formatDate postDate
+        postContent = value ^. Aeson.key "content" . _String . Text.unpacked
+        postURL = value ^. Aeson.key "url" . _String . Text.unpacked
+        postTags = value ^.. Aeson.key "tags" . Aeson.values . _String . Text.unpacked
+        postNextPostURL = Nothing
+        postPrevPostURL = Nothing
+        postSrcPath = value ^. Aeson.key "srcPath" . _String . Text.unpacked
+        postImage = value ^? Aeson.key "image" . _String . Text.unpacked
+        postDescription = value ^. Aeson.key "description" . _String . Text.unpacked
+        postSlug = value ^. Aeson.key "slug" . _String . Text.unpacked
+    pure Post {..}
+
+instance ToJSON Post where
+  toJSON Post {..} =
+    Aeson.object
+      [ "title" .= postTitle,
+        "author" .= postAuthor,
+        "content" .= postContent,
+        "url" .= postURL,
+        "image" .= postImage,
+        "tags" .= postTags,
+        "nextPostURL" .= postNextPostURL,
+        "prevPostURL" .= postPrevPostURL,
+        "isoDate" .= postISODate,
+        "date" .= postDate,
+        "srcPath" .= postSrcPath,
+        "description" .= postDescription,
+        "slug" .= postSlug
+      ]
 
 data AtomData = AtomData
-  { title :: String,
-    domain :: String,
-    author :: String,
-    posts :: [Post],
-    currentTime :: String,
-    atomUrl :: String
+  { atomTitle :: String,
+    atomDomain :: String,
+    atomAuthor :: String,
+    atomPosts :: [Post],
+    atomCurrentTime :: String,
+    atomAtomURL :: String
   }
-  deriving (Generic, ToJSON, Eq, Ord, Show)
+  deriving (Generic, Eq, Show)
+  deriving
+    (FromJSON, ToJSON)
+    via CustomJSON '[FieldLabelModifier '[StripPrefix "atom"]] AtomData
 
 -- | given a list of posts this will build a table of contents
-buildIndex :: [Post] -> Action ()
-buildIndex posts' = do
+buildIndex :: [Post] -> [Tag] -> Action ()
+buildIndex allPosts allTags = do
   indexT <- Slick.compileTemplate' "site/templates/index.html"
-  let indexInfo = IndexInfo {posts = posts'}
+  let indexInfo = IndexInfo {indexPosts = allPosts, indexTags = allTags}
       indexHTML = Text.unpack (Slick.substitute indexT (withSiteMeta (Aeson.toJSON indexInfo)))
   Shake.writeFile' (outputFolder </> "index.html") indexHTML
 
@@ -115,13 +185,41 @@ buildPost srcPath = Shake.Forward.cacheAction ("build" :: Text, srcPath) do
   postContent <- Shake.readFile' srcPath
   -- load post content and metadata as JSON blob
   postData <- Slick.markdownToHTML (Text.pack postContent)
-  let postUrl = Text.pack (Shake.FilePath.dropDirectory1 (srcPath -<.> "html"))
-      withPostUrl = _Object . at "url" ?~ String postUrl
+  let postURL = Text.pack (Shake.FilePath.dropDirectory1 (srcPath -<.> "html"))
+      withPostURL = _Object . at "url" ?~ String postURL
   -- Add additional metadata we've been able to compute
-  let fullPostData = withSiteMeta (withPostUrl postData)
+  let fullPostData = withSiteMeta (withPostURL postData)
   template <- Slick.compileTemplate' "site/templates/post.html"
-  Shake.writeFile' (outputFolder </> Text.unpack postUrl) (Text.unpack (Slick.substitute template fullPostData))
+  Shake.writeFile' (outputFolder </> Text.unpack postURL) (Text.unpack (Slick.substitute template fullPostData))
   Slick.convert fullPostData
+
+buildTags :: [Tag] -> Action ()
+buildTags tags =
+  Monad.void do
+    Shake.forP tags writeTag
+
+writeTag :: Tag -> Action ()
+writeTag t@Tag {tagURL} = do
+  tagTempl <- Slick.compileTemplate' "site/templates/tag.html"
+  Shake.writeFile' (outputFolder <> tagURL -<.> "html") (Text.unpack (Slick.substitute tagTempl (Aeson.toJSON t)))
+
+getTags :: [Post] -> Action [Tag]
+getTags posts = do
+  let tagToPostsSet = Map.unionsWith mappend (toMap <$> posts)
+      tagToPostsList = fmap Set.toList tagToPostsSet
+      tagObjects =
+        Map.foldMapWithKey
+          (\tagName ps -> [Tag {tagName, tagPosts = sortByDate ps, tagURL = "/tag/" <> tagName}])
+          tagToPostsList
+  return tagObjects
+  where
+    toMap :: Post -> Map String (Set Post)
+    toMap p@Post {postTags} = Map.unionsWith mappend (embed p <$> postTags)
+    embed :: Post -> String -> Map String (Set Post)
+    embed post tag = Map.singleton tag (Set.singleton post)
+
+sortByDate :: [Post] -> [Post]
+sortByDate = List.sortOn (Down . postISODate)
 
 -- | Copy all static files from the listed folders to their destination
 copyStaticFiles :: Action ()
@@ -132,45 +230,40 @@ copyStaticFiles = do
       Shake.copyFileChanged ("site" </> filepath) (outputFolder </> filepath)
 
 formatDate :: String -> String
-formatDate humanDate = toIsoDate parsedTime
+formatDate humanDate = toISODate parsedTime
   where
     parsedTime =
       Time.parseTimeOrError True Time.defaultTimeLocale "%b %e, %Y" humanDate :: UTCTime
 
-rfc3339 :: Maybe String
-rfc3339 = Just "%H:%M:SZ"
-
--- format' :: Format TimeOfDay
--- format' = ISO8601.hourMinuteFormat ExtendedFormat
--- toIsoDate = Time.formatTime Time.defaultTimeLocale _ -- (ISO8601.formatShow format')
-
-toIsoDate :: UTCTime -> String
-toIsoDate = Time.formatTime Time.defaultTimeLocale (Time.iso8601DateFormat rfc3339)
+toISODate :: UTCTime -> String
+toISODate = ISO8601.formatShow ISO8601.iso8601Format
 
 buildFeed :: [Post] -> Action ()
 buildFeed posts = do
   now <- Shake.liftIO Time.getCurrentTime
   let atomData =
         AtomData
-          { title = siteTitle siteMeta,
-            domain = baseURL siteMeta,
-            author = siteAuthor siteMeta,
-            posts = mkAtomPost <$> posts,
-            currentTime = toIsoDate now,
-            atomUrl = "/atom.xml"
+          { atomTitle = siteTitle siteMeta,
+            atomDomain = baseURL siteMeta,
+            atomAuthor = siteAuthor siteMeta,
+            atomPosts = mkAtomPost <$> posts,
+            atomCurrentTime = toISODate now,
+            atomAtomURL = "/atom.xml"
           }
   atomTempl <- Slick.compileTemplate' "site/templates/atom.xml"
   Shake.writeFile' (outputFolder </> "atom.xml") (Text.unpack (Slick.substitute atomTempl (Aeson.toJSON atomData)))
   where
     mkAtomPost :: Post -> Post
-    mkAtomPost p = p {date = formatDate (date p)}
+    mkAtomPost p = p {postDate = formatDate (postDate p)}
 
 -- | Specific build rules for the Shake system
 --   defines workflow to build the website
 buildRules :: Action ()
 buildRules = do
   allPosts <- buildPosts
-  buildIndex allPosts
+  allTags <- getTags allPosts
+  buildTags allTags
+  buildIndex allPosts allTags
   buildFeed allPosts
   copyStaticFiles
 

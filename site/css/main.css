@@ -1,3 +1,7 @@
+@import url("theme.css");
+@import url("syntax.css");
+@import url("typography.css");
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -79,9 +83,9 @@ multicodeblock-tab[selected]::after {
 }
 
 /**
-  * If JavaScript does not run, the element will not match `:defined`.
-  * In that case this style adds spacing between tabs and previous panel.
-  */
+ * If JavaScript does not run, the element will not match `:defined`.
+ * In that case this style adds spacing between tabs and previous panel.
+ */
 multicodeblock-tabs:not(:defined),
 multicodeblock-tab:not(:defined),
 multicodeblock-panel:not(:defined) {
