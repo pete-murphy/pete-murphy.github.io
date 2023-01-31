@@ -50,7 +50,7 @@ body {
 multicodeblock-panel {
   /* border: 1px solid var(--text-4); */
   /* outline: 1px solid var(--text-4); */
-  box-shadow: 0 0 0 1px var(--text-4);
+  box-shadow: 0 0 0 1px var(--code-outline);
   border-radius: var(--border-size-3);
 }
 
@@ -72,7 +72,7 @@ multicodeblock-tab {
 multicodeblock-tab[selected] {
   z-index: 1;
   color: var(--text-1);
-  border-color: var(--text-4);
+  border-color: var(--code-outline);
   border-bottom-color: var(--surface-1);
 }
 multicodeblock-tab[selected]::after {

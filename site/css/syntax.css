@@ -12,6 +12,8 @@ html {
   --code-error-light: var(--red-8);
   --code-operator-light: var(--purple-9);
 
+  --code-outline-light: var(--blue-1);
+
   /* dark */
   --code-keyword-dark: var(--blue-4);
   --code-datatype-dark: var(--orange-5);
@@ -24,6 +26,8 @@ html {
   --code-region-dark: var(--green-5);
   --code-error-dark: var(--red-4);
   --code-operator-dark: var(--purple-3);
+
+  --code-outline-dark: var(--blue-12);
 }
 
 :root {
@@ -39,6 +43,8 @@ html {
   --code-region: var(--code-region-light);
   --code-error: var(--code-error-light);
   --code-operator: var(--code-operator-light);
+
+  --code-outline: var(--code-outline-light);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -56,6 +62,8 @@ html {
     --code-region: var(--code-region-dark);
     --code-error: var(--code-error-dark);
     --code-operator: var(--code-operator-dark);
+
+    --code-outline: var(--code-outline-dark);
   }
 }
 
@@ -73,6 +81,8 @@ html {
   --code-region: var(--code-region-light);
   --code-error: var(--code-error-light);
   --code-operator: var(--code-operator-light);
+
+  --code-outline: var(--code-outline-light);
 }
 
 [color-scheme="dark"] {
@@ -89,6 +99,8 @@ html {
   --code-region: var(--code-region-dark);
   --code-error: var(--code-error-dark);
   --code-operator: var(--code-operator-dark);
+
+  --code-outline: var(--code-outline-dark);
 }
 
 pre {
@@ -128,7 +140,7 @@ code {
   padding-block: 0.1em;
   border-radius: var(--border-size-3);
   border-radius: max(var(--border-size-3), 0.2em);
-  border: 1px solid var(--text-4);
+  border: 1px solid var(--code-outline);
 }
 
 /* KeyWordTok */
