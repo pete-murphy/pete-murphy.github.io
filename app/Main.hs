@@ -29,8 +29,7 @@ import qualified Data.Text.Lens as Text
 import Data.Time (UTCTime)
 import qualified Data.Time as Time
 import qualified Data.Time.Format.ISO8601 as ISO8601
-import Deriving.Aeson (FieldLabelModifier, StripPrefix)
-import Deriving.Aeson.Stock (CustomJSON (..))
+import Deriving.Aeson.Stock (CustomJSON (..), PrefixedSnake)
 import Development.Shake
   ( Action,
     ShakeOptions (..),
@@ -57,7 +56,7 @@ siteMeta =
     }
 
 outputFolder :: FilePath
-outputFolder = "docs/"
+outputFolder = "output/"
 
 -- Data models-------------------------------------------------------------------
 
@@ -84,7 +83,7 @@ data IndexInfo = IndexInfo
   deriving stock (Generic, Show)
   deriving
     (FromJSON, ToJSON)
-    via CustomJSON '[FieldLabelModifier '[StripPrefix "index"]] IndexInfo
+    via PrefixedSnake "index" IndexInfo
 
 data Tag = Tag
   { tagName :: String,
@@ -95,7 +94,7 @@ data Tag = Tag
   deriving anyclass (Binary)
   deriving
     (FromJSON, ToJSON)
-    via CustomJSON '[FieldLabelModifier '[StripPrefix "tag"]] Tag
+    via PrefixedSnake "tag" Tag
 
 -- | Data for a blog post
 data Post = Post
@@ -161,7 +160,7 @@ data AtomData = AtomData
   deriving (Generic, Eq, Show)
   deriving
     (FromJSON, ToJSON)
-    via CustomJSON '[FieldLabelModifier '[StripPrefix "atom"]] AtomData
+    via PrefixedSnake "atom" AtomData
 
 -- | given a list of posts this will build a table of contents
 buildIndex :: [Post] -> [Tag] -> Action ()
