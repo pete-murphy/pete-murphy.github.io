@@ -44,9 +44,9 @@
 // var button = document.getElementById("theme-button");
 // button.addEventListener('click', switchTheme);
 
-const switcher = document.querySelector("#theme-switcher");
-const doc = document.firstElementChild;
+// const switcher = document.querySelector("#theme-switcher");
+// const doc = document.firstElementChild;
 
-switcher.addEventListener("input", (e) => setTheme(e.target.value));
+// switcher.addEventListener("input", (e) => setTheme(e.target.value));
 
-const setTheme = (theme) => doc.setAttribute("color-scheme", theme);
+// const setTheme = (theme) => doc.setAttribute("color-scheme", theme);

@@ -326,7 +326,7 @@ newtype Component w m v = Component (w (UI (m ()) v))
 
 Think of a component as a space of all possible future instantaneous UIs with a pointer at the current one. You can avoid thinking about the `w` in too much detail; just know that the `w` defines the space of possible futures. `m` defines a way to transition between the states.
 
-![diagram showing the space of states normal, green, blank and a pointer to normal](/static/posts/data-abstraction/basic1.pdf.png)
+<!-- ![diagram showing the space of states normal, green, blank and a pointer to normal](/static/posts/data-abstraction/basic1.pdf.png) -->
 
 Notice that the `UI` doesn't depend directly on `Component` but does so indirectly through a rank2 type. When these types are driven by the runtime, the quantified `component` is replaced by the `Component` that the `UI` was originally a part of. It is a corecursive process that goes on forever &mdash; this is what we want as we don't want our UI to ever stop responding to actions.
 
