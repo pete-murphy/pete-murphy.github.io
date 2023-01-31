@@ -97,7 +97,7 @@
       Promise.all([
         customElements.whenDefined("multicodeblock-tab"),
         customElements.whenDefined("multicodeblock-panel"),
-      ]).then((_) => this._linkPanels());
+      ]).then((_) => this._linkPanels(true));
     }
 
     /**
@@ -126,7 +126,7 @@
      * only handling the new elements instead of iterating over all of the
      * element’s children.
      */
-    _linkPanels() {
+    _linkPanels(firstTime = false) {
       const tabs = this._allTabs();
       // Give each panel a `aria-labelledby` attribute that refers to the tab
       // that controls it.
@@ -145,11 +145,13 @@
 
       // The element checks if any of the tabs have been marked as selected.
       // If not, the first tab is now selected.
-      const selectedTab = tabs.find((tab) => tab.selected) || tabs[0];
+      const selectedTab = tabs.find((tab) => tab.selected);
+
+      const focus = selectedTab != undefined && !firstTime;
 
       // Next, switch to the selected tab. `selectTab()` takes care of
       // marking all other tabs as deselected and hiding all other panels.
-      this._selectTab(selectedTab);
+      this._selectTab(selectedTab ?? tabs[0], focus);
     }
 
     /**
@@ -236,7 +238,8 @@
      * `_selectTab()` marks the given tab as selected.
      * Additionally, it unhides the panel corresponding to the given tab.
      */
-    _selectTab(newTab) {
+    _selectTab(newTab, focus = true) {
+      console.log({ newTab, focus });
       // Deselect all tabs and hide all panels.
       this.reset();
 
@@ -246,7 +249,7 @@
       if (!newPanel) throw new Error(`No panel with id ${newPanelId}`);
       newTab.selected = true;
       newPanel.hidden = false;
-      newTab.focus();
+      focus && newTab.focus();
     }
 
     /**
