@@ -45,13 +45,13 @@
   `;
 
   /**
-   * `HowtoTabs` is a container element for tabs and panels.
+   * `MulticodeblockTabs` is a container element for tabs and panels.
    *
    * All children of `<multicodeblock-tabs>` should be either `<multicodeblock-tab>` or
    * `<multicodeblock-tabpanel>`. This element is stateless, meaning that no values are
    * cached and therefore, changes during runtime work.
    */
-  class HowtoTabs extends HTMLElement {
+  class MulticodeblockTabs extends HTMLElement {
     constructor() {
       super();
 
@@ -94,10 +94,10 @@
       // upgraded by the parser. For this reason, the element invokes the
       // handler manually. Once the new behavior lands in all browsers, the code
       // below can be removed.
-      Promise.all([
-        customElements.whenDefined("multicodeblock-tab"),
-        customElements.whenDefined("multicodeblock-panel"),
-      ]).then((_) => this._linkPanels(true));
+      // Promise.all([
+      //   customElements.whenDefined("multicodeblock-tab"),
+      //   customElements.whenDefined("multicodeblock-panel"),
+      // ]).then((_) => this._linkPanels());
     }
 
     /**
@@ -114,7 +114,7 @@
      * one of the shadow DOM slots.
      */
     _onSlotChange() {
-      this._linkPanels();
+      this._linkPanels(false);
     }
 
     /**
@@ -126,7 +126,7 @@
      * only handling the new elements instead of iterating over all of the
      * element’s children.
      */
-    _linkPanels(firstTime = false) {
+    _linkPanels(focus = true) {
       const tabs = this._allTabs();
       // Give each panel a `aria-labelledby` attribute that refers to the tab
       // that controls it.
@@ -145,13 +145,11 @@
 
       // The element checks if any of the tabs have been marked as selected.
       // If not, the first tab is now selected.
-      const selectedTab = tabs.find((tab) => tab.selected);
-
-      const focus = selectedTab != undefined && !firstTime;
+      const selectedTab = tabs.find((tab) => tab.selected) ?? tabs[0];
 
       // Next, switch to the selected tab. `selectTab()` takes care of
       // marking all other tabs as deselected and hiding all other panels.
-      this._selectTab(selectedTab ?? tabs[0], focus);
+      this._selectTab(selectedTab, focus);
     }
 
     /**
@@ -238,8 +236,7 @@
      * `_selectTab()` marks the given tab as selected.
      * Additionally, it unhides the panel corresponding to the given tab.
      */
-    _selectTab(newTab, focus = true) {
-      console.log({ newTab, focus });
+    _selectTab(newTab, focus) {
       // Deselect all tabs and hide all panels.
       this.reset();
 
@@ -293,7 +290,7 @@
       // browser from taking any actions.
       event.preventDefault();
       // Select the new tab, that has been determined in the switch-case.
-      this._selectTab(newTab);
+      this._selectTab(newTab, true);
     }
 
     /**
@@ -304,16 +301,16 @@
       // it was a click inside the a panel or on empty space. Nothing to do.
       if (event.target.getAttribute("role") !== "tab") return;
       // If it was on a tab element, though, select that tab.
-      this._selectTab(event.target);
+      this._selectTab(event.target, true);
     }
   }
-  customElements.define("multicodeblock-tabs", HowtoTabs);
+  customElements.define("multicodeblock-tabs", MulticodeblockTabs);
 
-  // `howtoTabCounter` counts the number of `<multicodeblock-tab>` instances created. The
+  // `multicodeblockTabCounter` counts the number of `<multicodeblock-tab>` instances created. The
   // number is used to generated new, unique IDs.
-  let howtoTabCounter = 0;
+  let multicodeblockTabCounter = 0;
   /**
-   * `HowtoTabsTab` is a tab for a `<multicodeblock-tabs>` tab panel. `<multicodeblock-tab>`
+   * `MulticodeblockTab` is a tab for a `<multicodeblock-tabs>` tab panel. `<multicodeblock-tab>`
    * should always be used with `role=heading` in the markup so that the
    * semantics remain useable when JavaScript is failing.
    *
@@ -323,7 +320,7 @@
    * A `<multicodeblock-tab>` will automatically generate a unique ID if none
    * is specified.
    */
-  class HowtoTab extends HTMLElement {
+  class MulticodeblockTab extends HTMLElement {
     static get observedAttributes() {
       return ["selected"];
     }
@@ -337,7 +334,7 @@
       // changes its role to `tab`.
       this.setAttribute("role", "tab");
       if (!this.id)
-        this.id = `multicodeblock-tab-generated-${howtoTabCounter++}`;
+        this.id = `multicodeblock-tab-generated-${multicodeblockTabCounter++}`;
 
       // Set a well-defined initial state.
       this.setAttribute("aria-selected", "false");
@@ -392,13 +389,13 @@
       return this.hasAttribute("selected");
     }
   }
-  customElements.define("multicodeblock-tab", HowtoTab);
+  customElements.define("multicodeblock-tab", MulticodeblockTab);
 
-  let howtoPanelCounter = 0;
+  let multicodeblockPanelCounter = 0;
   /**
-   * `HowtoPanel` is a panel for a `<multicodeblock-tabs>` tab panel.
+   * `multicodeblockPanel` is a panel for a `<multicodeblock-tabs>` tab panel.
    */
-  class HowtoPanel extends HTMLElement {
+  class MulticodeblockPanel extends HTMLElement {
     constructor() {
       super();
     }
@@ -406,8 +403,8 @@
     connectedCallback() {
       this.setAttribute("role", "tabpanel");
       if (!this.id)
-        this.id = `multicodeblock-panel-generated-${howtoPanelCounter++}`;
+        this.id = `multicodeblock-panel-generated-${multicodeblockPanelCounter++}`;
     }
   }
-  customElements.define("multicodeblock-panel", HowtoPanel);
+  customElements.define("multicodeblock-panel", MulticodeblockPanel);
 })();
