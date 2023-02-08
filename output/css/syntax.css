@@ -12,7 +12,7 @@ html {
   --code-error-light: var(--red-8);
   --code-operator-light: var(--purple-9);
 
-  --code-outline-light: var(--blue-1);
+  --code-outline-light: var(--green-1);
 
   /* dark */
   --code-keyword-dark: var(--blue-4);
@@ -27,7 +27,7 @@ html {
   --code-error-dark: var(--red-4);
   --code-operator-dark: var(--purple-3);
 
-  --code-outline-dark: var(--blue-12);
+  --code-outline-dark: var(--green-12);
 }
 
 :root {

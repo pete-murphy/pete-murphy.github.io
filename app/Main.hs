@@ -41,6 +41,7 @@ import Development.Shake.FilePath ((-<.>), (</>))
 import qualified Development.Shake.FilePath as Shake.FilePath
 import qualified Development.Shake.Forward as Shake.Forward
 import GHC.Generics (Generic)
+import qualified Multicodeblock
 import qualified Slick
 
 ---Config-----------------------------------------------------------------------
@@ -182,9 +183,9 @@ buildPost :: FilePath -> Action Post
 buildPost srcPath = Shake.Forward.cacheAction ("build" :: Text, srcPath) do
   Shake.liftIO (putStrLn ("Rebuilding post: " <> srcPath))
   postContent <- Shake.readFile' srcPath
-  -- let postContentWithCodeBlocks = parseCodeBlocks
+  let postContentWithCodeBlocks = Multicodeblock.runParser postContent
   -- load post content and metadata as JSON blob
-  postData <- Slick.markdownToHTML (Text.pack postContent)
+  postData <- Slick.markdownToHTML (Text.pack postContentWithCodeBlocks)
   let postURL = Text.pack (Shake.FilePath.dropDirectory1 (srcPath -<.> "html"))
       withPostURL = _Object . at "url" ?~ String postURL
   -- Add additional metadata we've been able to compute

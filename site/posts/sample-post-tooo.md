@@ -1,5 +1,5 @@
 ---
-title: "Stateful for loops in Rust & Haskell"
+title: "HELEEOOOSDF"
 author: Me
 date: Jan 1, 2019
 tags: [slick, site, data abstraction, haskell, typescript]
@@ -32,10 +32,6 @@ Let's get some imports out of the way first.
 import Control.Monad.State (modify)
 import Data.Foldable (for_)
 import
-```
-
-```rust
-
 ```
 
 ```haskell
