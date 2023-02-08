@@ -30,6 +30,7 @@ source-repository head
 executable build-site
   main-is: Main.hs
   other-modules:
+      Multicodeblock
       Slick
       Slick.Caching
       Slick.Mustache
@@ -49,6 +50,7 @@ executable build-site
     , extra
     , lens
     , lens-aeson
+    , megaparsec
     , mustache
     , pandoc
     , pandoc-sidenote

@@ -182,6 +182,7 @@ buildPost :: FilePath -> Action Post
 buildPost srcPath = Shake.Forward.cacheAction ("build" :: Text, srcPath) do
   Shake.liftIO (putStrLn ("Rebuilding post: " <> srcPath))
   postContent <- Shake.readFile' srcPath
+  -- let postContentWithCodeBlocks = parseCodeBlocks
   -- load post content and metadata as JSON blob
   postData <- Slick.markdownToHTML (Text.pack postContent)
   let postURL = Text.pack (Shake.FilePath.dropDirectory1 (srcPath -<.> "html"))
