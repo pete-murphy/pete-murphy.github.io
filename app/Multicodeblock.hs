@@ -2,14 +2,13 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Multicodeblock (runParser) where
+module Multicodeblock (parse) where
 
 import Control.Applicative ((<|>))
 import Data.Functor ((<&>))
 import Data.Void (Void)
-import Text.Megaparsec (Parsec, anySingle, anySingleBut, many, manyTill)
-import qualified Text.Megaparsec as Megaparsec
-import Text.Megaparsec.Error
+import Text.Megaparsec (Parsec, anySingle, anySingleBut, many, manyTill, runParser)
+import Text.Megaparsec.Error (errorBundlePretty)
 
 type Parser = Parsec Void String
 
@@ -25,8 +24,8 @@ multicodeblock = do
   _ <- "<Multicodeblock>" <* many "\n"
   manyTill (codeblock <* many "\n") "</Multicodeblock>" <* many "\n"
 
-parse :: Parser String
-parse =
+parser :: Parser String
+parser =
   unlines
     <$> many do
       (surroundMulticodeblock . joinCodeblocks <$> multicodeblock)
@@ -68,8 +67,8 @@ parse =
           "```"
         ]
 
-runParser :: String -> String
-runParser =
-  Megaparsec.runParser parse "" <&> \case
-    Right x -> x
-    Left err -> error (errorBundlePretty err)
+parse :: MonadFail m => String -> m String
+parse =
+  runParser parser "" <&> \case
+    Right x -> pure x
+    Left err -> fail (errorBundlePretty err)

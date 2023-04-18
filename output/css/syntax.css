@@ -12,7 +12,8 @@ html {
   --code-error-light: var(--red-8);
   --code-operator-light: var(--purple-9);
 
-  --code-outline-light: var(--green-1);
+  --code-outline-light: var(--blue-8);
+  --code-background-light: var(--blue-1);
 
   /* dark */
   --code-keyword-dark: var(--blue-4);
@@ -27,7 +28,8 @@ html {
   --code-error-dark: var(--red-4);
   --code-operator-dark: var(--purple-3);
 
-  --code-outline-dark: var(--green-12);
+  --code-outline-dark: var(--stone-11);
+  --code-background-dark: var(--stone-12);
 }
 
 :root {
@@ -45,6 +47,7 @@ html {
   --code-operator: var(--code-operator-light);
 
   --code-outline: var(--code-outline-light);
+  --code-background: var(--code-background-light);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -64,6 +67,7 @@ html {
     --code-operator: var(--code-operator-dark);
 
     --code-outline: var(--code-outline-dark);
+    --code-background: var(--code-background-dark);
   }
 }
 
@@ -83,6 +87,7 @@ html {
   --code-operator: var(--code-operator-light);
 
   --code-outline: var(--code-outline-light);
+  --code-background: var(--code-background-light);
 }
 
 [color-scheme="dark"] {
@@ -101,6 +106,7 @@ html {
   --code-operator: var(--code-operator-dark);
 
   --code-outline: var(--code-outline-dark);
+  --code-background: var(--code-background-dark);
 }
 
 pre {
@@ -141,6 +147,11 @@ code {
   border-radius: var(--border-size-3);
   border-radius: max(var(--border-size-3), 0.2em);
   border: 1px solid var(--code-outline);
+  background: var(--code-background);
+}
+
+code a {
+  padding-inline: 0;
 }
 
 /* KeyWordTok */

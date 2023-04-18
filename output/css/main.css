@@ -51,6 +51,7 @@ multicodeblock-panel {
   /* border: 1px solid var(--text-4); */
   /* outline: 1px solid var(--text-4); */
   box-shadow: 0 0 0 1px var(--code-outline);
+  background-color: var(--code-background);
   border-radius: var(--border-size-3);
 }
 
@@ -68,18 +69,18 @@ multicodeblock-tab {
   padding-block: 0.6rem;
   border: 1px solid transparent;
   border-radius: var(--border-size-3) var(--border-size-3) 0 0;
+  cursor: pointer;
+  transition: 200ms;
 }
 multicodeblock-tab[selected] {
   z-index: 1;
   color: var(--text-1);
   border-color: var(--code-outline);
-  border-bottom-color: var(--surface-1);
+  background-color: var(--code-background);
+  border-bottom-color: var(--code-background);
 }
-multicodeblock-tab[selected]::after {
-  content: "";
-  background: tomato;
-  height: 3px;
-  width: 100%;
+multicodeblock-tab:hover {
+  color: var(--text-1);
 }
 
 /**

@@ -4,6 +4,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE ImportQualifiedPost #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
@@ -11,38 +12,39 @@
 module Main where
 
 import Control.Lens (At (..), (?~), (^.), (^..), (^?))
-import qualified Control.Monad as Monad
+import Control.Monad qualified as Monad
 import Data.Aeson (FromJSON, ToJSON, Value (..), (.=))
-import qualified Data.Aeson as Aeson
-import qualified Data.Aeson.KeyMap as KeyMap
+import Data.Aeson qualified as Aeson
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Lens (_Object, _String)
-import qualified Data.Aeson.Lens as Aeson
-import qualified Data.List as List
+import Data.Aeson.Lens qualified as Aeson
+import Data.List qualified as List
 import Data.Map (Map)
-import qualified Data.Map as Map
+import Data.Map qualified as Map
 import Data.Ord (Down (Down))
 import Data.Set (Set)
-import qualified Data.Set as Set
+import Data.Set qualified as Set
 import Data.Text (Text)
-import qualified Data.Text as Text
-import qualified Data.Text.Lens as Text
+import Data.Text qualified as Text
+import Data.Text.Lens qualified as Text
 import Data.Time (UTCTime)
-import qualified Data.Time as Time
-import qualified Data.Time.Format.ISO8601 as ISO8601
+import Data.Time qualified as Time
+import Data.Time.Format.ISO8601 qualified as ISO8601
+import Debug.Trace (traceShowM)
 import Deriving.Aeson.Stock (CustomJSON (..), PrefixedSnake)
-import Development.Shake
-  ( Action,
-    ShakeOptions (..),
-    Verbosity (..),
-  )
-import qualified Development.Shake as Shake
+import Development.Shake (Action, ShakeOptions (..), Verbosity (..))
+import Development.Shake qualified as Shake
 import Development.Shake.Classes (Binary)
 import Development.Shake.FilePath ((-<.>), (</>))
-import qualified Development.Shake.FilePath as Shake.FilePath
-import qualified Development.Shake.Forward as Shake.Forward
+import Development.Shake.FilePath qualified as Shake.FilePath
+import Development.Shake.Forward qualified as Shake.Forward
 import GHC.Generics (Generic)
-import qualified Multicodeblock
-import qualified Slick
+import Multicodeblock qualified
+import Slick qualified
+import Slick.Pandoc qualified
+import Slick.Pandoc qualified as Pandoc.Options
+import Text.Pandoc.Options (ReaderOptions, WriterOptions)
+import Text.Pandoc.Options qualified as Pandoc.Options
 
 ---Config-----------------------------------------------------------------------
 
@@ -169,6 +171,9 @@ buildIndex allPosts allTags = do
   indexT <- Slick.compileTemplate' "site/templates/index.html"
   let indexInfo = IndexInfo {indexPosts = allPosts, indexTags = allTags}
       indexHTML = Text.unpack (Slick.substitute indexT (withSiteMeta (Aeson.toJSON indexInfo)))
+  Shake.liftIO do
+    flip mapM_ allPosts \post -> do
+      print post
   Shake.writeFile' (outputFolder </> "index.html") indexHTML
 
 -- | Find and build all posts
@@ -183,9 +188,10 @@ buildPost :: FilePath -> Action Post
 buildPost srcPath = Shake.Forward.cacheAction ("build" :: Text, srcPath) do
   Shake.liftIO (putStrLn ("Rebuilding post: " <> srcPath))
   postContent <- Shake.readFile' srcPath
-  let postContentWithCodeBlocks = Multicodeblock.runParser postContent
-  -- load post content and metadata as JSON blob
-  postData <- Slick.markdownToHTML (Text.pack postContentWithCodeBlocks)
+  -- pre-process markdown to replace `<Multicodeblock>` tags with
+  -- `<multicodeblock-tab>` and `<multicodeblock-panel>` custom elements
+  postContentWithCodeBlocks <- Multicodeblock.parse postContent
+  postData <- Slick.Pandoc.markdownToHTML (Text.pack postContentWithCodeBlocks)
   let postURL = Text.pack (Shake.FilePath.dropDirectory1 (srcPath -<.> "html"))
       withPostURL = _Object . at "url" ?~ String postURL
   -- Add additional metadata we've been able to compute

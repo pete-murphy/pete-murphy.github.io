@@ -15,26 +15,14 @@ It's nice.
 
 <h3>What happens here?</h3>
 
-```{=html}
-  <custom-element>
-    <another-el>
-```
+![code.jpg](../images/code.jpg)
+
+<Multicodeblock>
 
 ```haskell
 main :: IO ()
 main = do
   putStrLn "does this work?"
-```
-
-```{=html}
-    </another-el>
-  </custom-element>
-```
-
-```{=html}
-<multicodeblock-tabs>
-  <multicodeblock-tab role="heading" slot="tab">Haskell</multicodeblock-tab>
-  <multicodeblock-panel role="region" slot="panel">
 ```
 
 ```haskell
@@ -43,19 +31,10 @@ main = do
   putStrLn "So doppppppeeee1!!!!"
 ```
 
-```{=html}
-  </multicodeblock-panel>
-  <multicodeblock-tab role="heading" slot="tab">TypeScript</multicodeblock-tab>
-  <multicodeblock-panel role="region" slot="panel">
-```
-
 ```typescript
 const main = () => {
   console.log("Soo dooopppppe!!!!");
 };
 ```
 
-```{=html}
-  </multicodeblock-panel>
-</multicodeblock-tabs>
-```
+</Multicodeblock>

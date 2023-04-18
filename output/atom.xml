@@ -452,7 +452,7 @@ class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </section>]]></content>
   </entry>
   <entry>
-    <title>HELEEOOOSDF</title>
+    <title>Stateful for loops in Rust &amp;amp; Haskell</title>
     <link href="https://ptrfrncsmrph.github.ioposts/sample-post-tooo.html"/>
     <id>https://ptrfrncsmrph.github.ioposts/sample-post-tooo.html</id>
     <updated>2019-01-01T00:00:00Z</updated>
@@ -653,29 +653,33 @@ This should be a paragraph
 <h3>
 What happens here?
 </h3>
-  <custom-element>
-    <another-el>
+<figure>
+<img src="../images/code.jpg" alt="code.jpg" />
+<figcaption aria-hidden="true">code.jpg</figcaption>
+</figure>
+<multicodeblock-tabs>
+<multicodeblock-tab role="heading" slot="tab">Haskell</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;does this work?&quot;</span></span></code></pre></div>
-    </another-el>
-  </custom-element>
-<multicodeblock-tabs>
-  <multicodeblock-tab role="heading" slot="tab">Haskell</multicodeblock-tab>
-  <multicodeblock-panel role="region" slot="panel">
+</multicodeblock-panel>
+<multicodeblock-tab role="heading" slot="tab">Haskell</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">putStrLn</span> <span class="st">&quot;So doppppppeeee1!!!!&quot;</span></span></code></pre></div>
-  </multicodeblock-panel>
-  <multicodeblock-tab role="heading" slot="tab">TypeScript</multicodeblock-tab>
-  <multicodeblock-panel role="region" slot="panel">
+</multicodeblock-panel>
+<multicodeblock-tab role="heading" slot="tab">TypeScript</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> main <span class="op">=</span> () <span class="kw">=&gt;</span> {</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Soo dooopppppe!!!!&quot;</span>)<span class="op">;</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
-  </multicodeblock-panel>
+</multicodeblock-panel>
+
 </multicodeblock-tabs>]]></content>
   </entry>
 </feed>

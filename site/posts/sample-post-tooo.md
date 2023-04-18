@@ -1,6 +1,6 @@
 ---
-title: "HELEEOOOSDF"
 author: Me
+title: Stateful for loops in Rust & Haskell
 date: Jan 1, 2019
 tags: [slick, site, data abstraction, haskell, typescript]
 description: My first blog post using slick
