@@ -1,31 +1,14 @@
-cabal-version: 1.12
-
--- This file has been generated from package.yaml by hpack version 0.33.0.
---
--- see: https://github.com/sol/hpack
---
--- hash: 99608593197be2adb4aa74b31a94255716eef02a03cb55c4477261cee7cf3fc2
-
-name:           slick-template
-version:        0.1.0.0
-synopsis:       My site built with slick!
-description:    My slick Site
-category:       Slick-Site
-homepage:       https://github.com/Me/my-site#readme
-bug-reports:    https://github.com/Me/my-site/issues
-author:         Me
-maintainer:     example@example.com
-copyright:      20XX Me
-license:        BSD3
-license-file:   LICENSE
+cabal-version:  3.0
+name:           blog
+version:        0.0.0.0
+copyright:      2023
 build-type:     Simple
 extra-source-files:
     README.md
-    ChangeLog.md
 
 source-repository head
   type: git
-  location: https://github.com/Me/my-site
+  location: https://github.com/ptrfrncsmrph/ptrfrncsmrph.github.io/
 
 executable build-site
   main-is: Main.hs
@@ -37,6 +20,7 @@ executable build-site
       Slick.Pandoc
       Slick.Shake
       Slick.Utils
+      Title
   hs-source-dirs:
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall
@@ -52,8 +36,10 @@ executable build-site
     , lens-aeson
     , megaparsec
     , mustache
+    , newtype
     , pandoc
-    , pandoc-sidenote
+--  , pandoc-emphasize-code
+--  , pandoc-sidenote
     , shake
     , text
     , time
