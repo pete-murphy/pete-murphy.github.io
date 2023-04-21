@@ -1,7 +1,7 @@
-<ul>
+<ul class="posts">
   {{#posts}}
   <li>
-    <a href="{{url}}">{{title}} <span class="date">{{date}}</span> </a>
+    <a href="{{url}}">{{title}} <time datetime="{{isoDate}}">{{date}}</time></a>
   </li>
   {{/posts}}
 </ul>

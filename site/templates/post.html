@@ -8,38 +8,32 @@
     {{>site/templates/meta-data.html}}
     <title>{{title}}</title>
     <link rel="stylesheet" href="/css/main.css" />
-    <style></style>
   </head>
   <body>
     {{>site/templates/header.html}}
 
     <main>
-      <div class="wrapper">
-        <div class="masthead">
-          <h1 class="title">{{title}}</h1>
-          <br />
+      <header>
+        <h1 class="title">{{title}}</h1>
 
-          {{#image}}
-          <img class="post-image" src="/images/{{image}}" />
-          {{/image}}
-          <span class="date">{{date}}</span>
-          <div class="metadata"></div>
-          <div class="tags">
-            {{#tags}}
-            <span class="tag {{.}}">{{.}}</span>
-            {{/tags}}
-          </div>
-        </div>
-      </div>
-      <article class="post">
-        {{{content}}}
+        {{#image}}
+        <img class="post-image" src="/images/{{image}}" />
+        {{/image}}
 
-        <div class="social-buttons">
-          <!--Share buttons-->
-        </div>
-      </article>
+        <time datetime="{{isoDate}}">{{date}}</time>
+        <time datetime="2022">What</time>
+
+        <ul class="tags">
+          {{#tags}}
+          <li class="tag {{.}}">{{.}}</li>
+          {{/tags}}
+        </ul>
+      </header>
+      <article class="post">{{{content}}}</article>
     </main>
 
     {{>site/templates/footer.html}}
+
+    <script src="/js/multicodeblock-tabs.js"></script>
   </body>
 </html>
