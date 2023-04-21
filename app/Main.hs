@@ -30,7 +30,6 @@ import Data.Text.Lens qualified as Text
 import Data.Time (UTCTime)
 import Data.Time qualified as Time
 import Data.Time.Format.ISO8601 qualified as ISO8601
-import Debug.Trace (traceShowM)
 import Deriving.Aeson.Stock (CustomJSON (..), PrefixedSnake)
 import Development.Shake (Action, ShakeOptions (..), Verbosity (..))
 import Development.Shake qualified as Shake
@@ -42,9 +41,6 @@ import GHC.Generics (Generic)
 import Multicodeblock qualified
 import Slick qualified
 import Slick.Pandoc qualified
-import Slick.Pandoc qualified as Pandoc.Options
-import Text.Pandoc.Options (ReaderOptions, WriterOptions)
-import Text.Pandoc.Options qualified as Pandoc.Options
 
 ---Config-----------------------------------------------------------------------
 
@@ -171,9 +167,6 @@ buildIndex allPosts allTags = do
   indexT <- Slick.compileTemplate' "site/templates/index.html"
   let indexInfo = IndexInfo {indexPosts = allPosts, indexTags = allTags}
       indexHTML = Text.unpack (Slick.substitute indexT (withSiteMeta (Aeson.toJSON indexInfo)))
-  Shake.liftIO do
-    flip mapM_ allPosts \post -> do
-      print post
   Shake.writeFile' (outputFolder </> "index.html") indexHTML
 
 -- | Find and build all posts
