@@ -1,0 +1,150 @@
+@import url("theme.css");
+@import url("syntax.css");
+@import url("typography.css");
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  block-size: 100%;
+  background-color: var(--surface-1);
+  color: var(--text-1);
+}
+
+body {
+  min-block-size: 100%;
+  position: relative;
+}
+
+.icon {
+  width: 1rem;
+  display: inline-block;
+}
+footer {
+  padding-block: 0.5rem;
+  padding-inline: 3rem;
+  color: var(--text-2);
+}
+header.nav-header {
+  position: sticky;
+  top: 0;
+  background-color: var(--surface-1) cc;
+  z-index: 2;
+  backdrop-filter: blur(10px);
+
+  padding-block: 0.5rem;
+  padding-inline: 3rem;
+}
+
+h1 {
+  line-height: var(--font-lineheight-00);
+}
+
+main {
+  display: flex;
+  flex-flow: column;
+  gap: 2rem;
+}
+
+header.nav-header nav a {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.inline-container {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.tags {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0;
+}
+.tags li {
+  line-height: var(--font-lineheight-0);
+  display: inline-block;
+  padding-inline: var(--size-2);
+  font-size: var(--font-size-0);
+  background-color: var(--code-background);
+  border-radius: var(--border-size-5);
+  border: 1px solid var(--code-outline);
+  padding-block: var(--size-1);
+  color: var(--text-2);
+}
+
+.post {
+  display: grid;
+  flex-flow: column;
+  row-gap: var(--size-3);
+  line-height: var(--font-lineheight-3);
+  max-width: 80ch;
+  width: calc(100% - var(--size-1));
+
+  margin-inline: auto;
+  grid-template-columns:
+    [gutter-start] 3rem
+    [main-start content-start] minmax(auto, 60ch)
+    [content-end] minmax(2rem, 1fr)
+    [main-end gutter-end];
+}
+
+.post > * {
+  grid-column: content;
+}
+
+.post > multicodeblock-tabs,
+.post > div.sourceCode {
+  grid-column: gutter;
+}
+
+.post > multicodeblock-tabs {
+  max-width: 100%;
+}
+
+.post > div.sourceCode,
+multicodeblock-panel {
+  box-shadow: 0 0 0 1px var(--code-outline);
+  background-color: var(--code-background);
+  border-radius: var(--border-size-3);
+}
+
+div.sourceCode,
+multicodeblock-panel {
+  overflow-y: auto;
+}
+
+multicodeblock-tab:first-of-type {
+  margin-inline-start: 2rem;
+}
+multicodeblock-tab {
+  color: var(--text-4);
+  padding-inline: 1rem;
+  padding-block: 0.6rem;
+  border: 1px solid transparent;
+  border-radius: var(--border-size-3) var(--border-size-3) 0 0;
+  cursor: pointer;
+  transition: 200ms;
+}
+multicodeblock-tab[selected] {
+  z-index: 1;
+  color: var(--text-1);
+  border-color: var(--code-outline);
+  background-color: var(--code-background);
+  border-bottom-color: var(--code-background);
+}
+multicodeblock-tab:hover {
+  color: var(--text-1);
+}
+
+/**
+ * If JavaScript does not run, the element will not match `:defined`.
+ * In that case this style adds spacing between tabs and previous panel.
+ */
+multicodeblock-tabs:not(:defined),
+multicodeblock-tab:not(:defined),
+multicodeblock-panel:not(:defined) {
+  display: block;
+}

@@ -1,0 +1,210 @@
+html {
+  /* light */
+  --code-keyword-light: var(--blue-8);
+  --code-datatype-light: var(--orange-7);
+  --code-decimal-light: var(--blue-5);
+  --code-char-light: var(--green-8);
+  --code-string-light: var(--green-8);
+  --code-other-light: var(--red-6);
+  --code-alert-light: var(--green-8);
+  --code-function-light: var(--red-6);
+  --code-region-light: var(--green-5);
+  --code-error-light: var(--red-8);
+  --code-operator-light: var(--purple-9);
+
+  --code-outline-light: var(--blue-8);
+  --code-background-light: var(--blue-1);
+
+  /* dark */
+  --code-keyword-dark: var(--blue-4);
+  --code-datatype-dark: var(--orange-5);
+  --code-decimal-dark: var(--blue-3);
+  --code-char-dark: var(--green-5);
+  --code-string-dark: var(--green-5);
+  --code-other-dark: var(--red-3);
+  --code-alert-dark: var(--green-5);
+  --code-function-dark: var(--red-5);
+  --code-region-dark: var(--green-5);
+  --code-error-dark: var(--red-4);
+  --code-operator-dark: var(--purple-3);
+
+  --code-outline-dark: var(--stone-11);
+  --code-background-dark: var(--stone-12);
+}
+
+:root {
+  /* set defaults */
+  --code-keyword: var(--code-keyword-light);
+  --code-datatype: var(--code-datatype-light);
+  --code-decimal: var(--code-decimal-light);
+  --code-char: var(--code-char-light);
+  --code-string: var(--code-string-light);
+  --code-other: var(--code-other-light);
+  --code-alert: var(--code-alert-light);
+  --code-function: var(--code-function-light);
+  --code-region: var(--code-region-light);
+  --code-error: var(--code-error-light);
+  --code-operator: var(--code-operator-light);
+
+  --code-outline: var(--code-outline-light);
+  --code-background: var(--code-background-light);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --code-keyword: var(--code-keyword-dark);
+    --code-datatype: var(--code-datatype-dark);
+    --code-decimal: var(--code-decimal-dark);
+    --code-char: var(--code-char-dark);
+    --code-string: var(--code-string-dark);
+    --code-other: var(--code-other-dark);
+    --code-alert: var(--code-alert-dark);
+    --code-function: var(--code-function-dark);
+    --code-region: var(--code-region-dark);
+    --code-error: var(--code-error-dark);
+    --code-operator: var(--code-operator-dark);
+
+    --code-outline: var(--code-outline-dark);
+    --code-background: var(--code-background-dark);
+  }
+}
+
+[color-scheme="light"] {
+  color-scheme: light;
+
+  --code-keyword: var(--code-keyword-light);
+  --code-datatype: var(--code-datatype-light);
+  --code-decimal: var(--code-decimal-light);
+  --code-char: var(--code-char-light);
+  --code-string: var(--code-string-light);
+  --code-other: var(--code-other-light);
+  --code-alert: var(--code-alert-light);
+  --code-function: var(--code-function-light);
+  --code-region: var(--code-region-light);
+  --code-error: var(--code-error-light);
+  --code-operator: var(--code-operator-light);
+
+  --code-outline: var(--code-outline-light);
+  --code-background: var(--code-background-light);
+}
+
+[color-scheme="dark"] {
+  color-scheme: dark;
+
+  --code-keyword: var(--code-keyword-dark);
+  --code-datatype: var(--code-datatype-dark);
+  --code-decimal: var(--code-decimal-dark);
+  --code-char: var(--code-char-dark);
+  --code-string: var(--code-string-dark);
+  --code-other: var(--code-other-dark);
+  --code-alert: var(--code-alert-dark);
+  --code-function: var(--code-function-dark);
+  --code-region: var(--code-region-dark);
+  --code-error: var(--code-error-dark);
+  --code-operator: var(--code-operator-dark);
+
+  --code-outline: var(--code-outline-dark);
+  --code-background: var(--code-background-dark);
+}
+
+pre {
+  counter-reset: line;
+  padding: 1rem;
+  /* TODON'T */
+  /* margin-inline: -2rem; */
+  line-height: 1.2;
+}
+
+pre > code {
+  background-color: transparent;
+  padding-inline: 0;
+  padding-block: 0;
+  border: none;
+}
+
+pre > code > span::before {
+  counter-increment: line;
+  content: counter(line);
+  color: var(--text-4);
+  position: absolute;
+  left: 0;
+  line-height: 1.4;
+}
+
+pre > code > span {
+  padding-inline-start: 2rem;
+  color: var(--text-1);
+  position: relative;
+}
+
+code {
+  color: var(--text-1);
+  font-size: 0.91rem;
+  padding-inline: 0.2em;
+  padding-block: 0.1em;
+  border-radius: var(--border-size-3);
+  border-radius: max(var(--border-size-3), 0.2em);
+  border: 1px solid var(--code-outline);
+  background: var(--code-background);
+}
+
+code a {
+  padding-inline: 0;
+}
+
+/* KeyWordTok */
+.sourceCode .kw {
+  color: var(--code-keyword);
+}
+
+/* DataTypeTok */
+.sourceCode .dt {
+  color: var(--code-datatype);
+}
+
+/* DecValTok (decimal value), BaseNTok, FloatTok */
+.sourceCode .dv,
+.sourceCode .bn,
+.sourceCode .fl {
+  color: var(--code-decimal);
+}
+/* CharTok */
+.sourceCode .ch {
+  color: var(--code-char);
+}
+/* StringTok */
+.sourceCode .st {
+  color: var(--code-string);
+}
+/* CommentTok */
+.sourceCode .co {
+  font-style: italic;
+  color: var(--text-4);
+}
+/* OtherTok */
+.sourceCode .ot {
+  color: var(--code-other);
+}
+/* AlertTok */
+.sourceCode .al {
+  font-weight: bold;
+  color: var(--code-alert);
+}
+/* FunctionTok */
+.sourceCode .fu {
+  color: var(--code-function);
+}
+/* RegionMarkerTok */
+.sourceCode .re {
+  color: var(--code-region);
+}
+/* ErrorTok */
+.sourceCode .er {
+  font-weight: bold;
+  color: var(--code-error);
+}
+.sourceCode .op {
+  color: var(--code-operator);
+}

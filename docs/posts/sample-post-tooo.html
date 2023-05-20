@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head profile="http://www.w3.org/2005/10/profile">
+    <meta charset="UTF-8" />
+    <meta name="description" content="TIL" />
+    <meta name="author" content="Me" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Stateful `for` loops in Rust &amp; Haskell">
+    <meta name="twitter:description" content="My first blog post using slick">
+        <title>Stateful for loops in Rust &amp; Haskell</title>
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="/" aria-label="Home">    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      class="icon"
+    >
+      <path
+        d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z"
+      />
+      <path
+        d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z"
+      />
+    </svg>
+ Home</a>
+      </nav>
+    
+      <!-- <div class="right-sidebar">
+            <a class="ext-link" href="https://github.com/ptrfrncsmrph">
+            <img src="/images/github-logo.png" alt="Github Profile"/>
+        </a>
+
+        <div id="theme-button">DAY</div>
+        </div> -->
+    </header>
+
+    <main>
+      <header>
+
+        <section class="post">
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="icon"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <time datetime="2019-01-01T00:00:00Z">Jan 1, 2019</time>
+          </div>
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="icon"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.25 2.25a3 3 0 00-3 3v4.318a3 3 0 00.879 2.121l9.58 9.581c.92.92 2.39 1.186 3.548.428a18.849 18.849 0 005.441-5.44c.758-1.16.492-2.629-.428-3.548l-9.58-9.581a3 3 0 00-2.122-.879H5.25zM6.375 7.5a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <ul class="tags">
+              <li class="tag slick">slick</li>
+              <li class="tag site">site</li>
+              <li class="tag data abstraction">data abstraction</li>
+              <li class="tag haskell">haskell</li>
+              <li class="tag typescript">typescript</li>
+            </ul>
+          </div>
+        </section>
+      </header>
+      <h1></h1>
+
+      <article class="post"><p><strong>Advent of Code spoilers herein</strong></p>
+<p>Let’s look at some <code>for</code> loops, shall we?!</p>
+<p>Day five of this year’s Advent of Code this year provides a nice
+occasion for doing some stateful computation. We were given:</p>
+<ul>
+<li>an initial state of some stacks of crates</li>
+<li>a list of instructions for moving crates from one stack to
+another</li>
+</ul>
+<p>In Haskell I ended up using the <code>State</code> <del>monad</del>
+applicative functor, and I am compelled to write down why, because it
+was not that long ago that <code>State</code> was completely baffling to
+me.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">newtype</span> <span class="dt">State</span> s a <span class="ot">=</span> <span class="dt">State</span> {<span class="ot"> runState ::</span> s <span class="ot">-&gt;</span> (a, s) }</span></code></pre></div>
+<p>How does this really model “state”?—how can we use this the same way
+that we use a global mutable reference in imperative-style programming.
+Let’s get some imports out of the way first.</p>
+<multicodeblock-tabs>
+<multicodeblock-tab role="heading" slot="tab">Haskell</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Control.Monad.State</span> (modify)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Foldable</span> (for_)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span></span></code></pre></div>
+</multicodeblock-panel>
+<multicodeblock-tab role="heading" slot="tab">Haskell</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- interface, abstract type: A typeclass</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">ExampleClass</span> a <span class="kw">where</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ot">  create ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> a</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ot">  read1 ::</span> a <span class="ot">-&gt;</span> <span class="dt">String</span></span></code></pre></div>
+</multicodeblock-panel>
+<multicodeblock-tab role="heading" slot="tab">Fsharp</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode fsharp"><code class="sourceCode fsharp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> ExampleInterface&lt;&#39;a&gt; =</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">abstract</span> <span class="kw">member</span> create : <span class="dt">string</span> -&gt; &#39;a</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">abstract</span> <span class="kw">member</span> read   : &#39;a -&gt; <span class="dt">string</span></span></code></pre></div>
+</multicodeblock-panel>
+
+</multicodeblock-tabs>
+<h3 id="implementation">Implementation</h3>
+<multicodeblock-tabs>
+<multicodeblock-tab role="heading" slot="tab">Swift</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode swift"><code class="sourceCode swift"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">// implementation: A struct (or a class)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">struct</span> Example <span class="op">{</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> <span class="va">s</span><span class="op">:</span> string</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">static</span> <span class="kw">func</span> <span class="fu">create</span><span class="op">(</span><span class="va">_</span> <span class="va">s</span><span class="op">:</span> <span class="dt">string</span><span class="op">)</span> -&gt; <span class="fu">Example</span> <span class="op">{</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">return</span> Example<span class="op">(</span>s<span class="op">:</span> s<span class="op">)</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">func</span> <span class="fu">read</span><span class="op">()</span> -&gt; <span class="fu">String</span> <span class="op">{</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">return</span> <span class="kw">self</span><span class="op">.</span>s</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</multicodeblock-panel>
+<multicodeblock-tab role="heading" slot="tab">TypeScript</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">// implementation: A function (for static members)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">//                 A class (for instance ones)</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">createExample</span>(ctor<span class="op">:</span> ExampleConstructor<span class="op">,</span> s<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> ExampleInterface {</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="kw">new</span> <span class="fu">ctor</span>(s)<span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Example <span class="kw">implements</span> ExampleInterface {</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  s<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">constructor</span>(s<span class="op">:</span> <span class="dt">string</span>) {</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">s</span> <span class="op">=</span> s<span class="op">;</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read</span>()<span class="op">:</span> <span class="dt">string</span> {</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="kw">this</span><span class="op">.</span><span class="at">s</span><span class="op">;</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+</multicodeblock-panel>
+<multicodeblock-tab role="heading" slot="tab">Haskell</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- implementation: A typeclass instance</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">ExampleClass</span> <span class="dt">String</span> <span class="kw">where</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  create <span class="ot">=</span> <span class="fu">id</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  read1 <span class="ot">=</span> <span class="fu">id</span></span></code></pre></div>
+</multicodeblock-panel>
+<multicodeblock-tab role="heading" slot="tab">Fsharp</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode fsharp"><code class="sourceCode fsharp"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Example <span class="op">()</span> =</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    interface ExampleInterface&lt;<span class="dt">string</span>&gt; <span class="kw">with</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        <span class="kw">member</span> _.create s = s</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">member</span> _.read s = s</span></code></pre></div>
+</multicodeblock-panel>
+
+</multicodeblock-tabs>
+<h3 id="client">Client</h3>
+<multicodeblock-tabs>
+<multicodeblock-tab role="heading" slot="tab">Swift</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode swift"><code class="sourceCode swift"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> <span class="fu">client</span><span class="op">&lt;</span><span class="dt">E</span><span class="op">:</span> <span class="dt">ExampleInterface</span><span class="op">&gt;()</span> <span class="op">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> <span class="va">ex</span> <span class="op">=</span> E<span class="op">.</span>create<span class="op">(</span><span class="st">&quot;hello&quot;</span><span class="op">);</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  println<span class="op">(</span>ex<span class="op">.</span>read<span class="op">());</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</multicodeblock-panel>
+<multicodeblock-tab role="heading" slot="tab">TypeScript</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">// client</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">// it&#39;s a bit hard to write down a generic function for this in TypeScript</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">// because there are two separate interfaces</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">// ...</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> ex <span class="op">=</span> <span class="fu">createExample</span>(Example<span class="op">,</span> <span class="st">&quot;hello&quot;</span>)<span class="op">;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(ex<span class="op">.</span><span class="fu">read</span>())<span class="op">;</span></span></code></pre></div>
+</multicodeblock-panel>
+<multicodeblock-tab role="heading" slot="tab">Ocaml</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">(* a client is a functor *)</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> Client(E: Example_intf) = <span class="kw">struct</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> ex = E.create <span class="st">&quot;hello&quot;</span> <span class="kw">in</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  printf <span class="st">&quot;%s</span><span class="ch">\n</span><span class="st">&quot;</span> (E.read ex)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">(* we can make clients first-class with first-class modules *)</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> client (<span class="kw">module</span> E: Example_intf) =</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> ex = E.create <span class="st">&quot;hello&quot;</span> <span class="kw">in</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  printf <span class="st">&quot;%s</span><span class="ch">\n</span><span class="st">&quot;</span> (E.read ex)</span></code></pre></div>
+</multicodeblock-panel>
+<multicodeblock-tab role="heading" slot="tab">Rust</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> client<span class="op">&lt;</span>E<span class="op">:</span> Example<span class="op">&gt;</span>() <span class="op">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> ex <span class="op">=</span> <span class="pp">E::</span>create()<span class="op">;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="pp">println!</span>(<span class="st">&quot;{:}&quot;</span><span class="op">,</span> ex<span class="op">.</span>read())<span class="op">;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</multicodeblock-panel>
+<multicodeblock-tab role="heading" slot="tab">Haskell</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ot">client ::</span> <span class="dt">ExampleClass</span> e <span class="ot">=&gt;</span> <span class="dt">IO</span> ()</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>client <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> ex <span class="ot">=</span> create <span class="st">&quot;hello&quot;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span> <span class="op">$</span> read1 ex</span></code></pre></div>
+</multicodeblock-panel>
+<multicodeblock-tab role="heading" slot="tab">Fsharp</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode fsharp"><code class="sourceCode fsharp"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> E = Example <span class="op">()</span> :&gt; ExampleInterface&lt;<span class="dt">string</span>&gt;</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> ex = E<span class="kw">.</span>create <span class="st">&quot;hello&quot;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>E<span class="kw">.</span>read ex |&gt; printf <span class="st">&quot;%s</span><span class="sc">\n</span><span class="st">&quot;</span></span></code></pre></div>
+</multicodeblock-panel>
+
+</multicodeblock-tabs>
+<p>The surface syntax differs among programming languages, but through
+them all, you can identify a <em>client</em> interacting with an
+<em>implementation</em> through an <em>interface</em>. The extent to
+which they achieve the ideal, from a semantics perspective, is something
+we will study in this post. Studying the ideal equips the student with
+the capacity for applying these techniques across all programming
+languages rather than relearning what is truly the same each time a new
+language is presented.</p>
+<p>To <em>really</em> understand what an interface does it must be
+equipped with laws. With sufficient laws, concrete implementations can
+be swapped without clients observing changes, or dually, clients can be
+written without implementations existing. “Sufficient laws” gives us
+both obvious property-based tests and a state known as
+<em>representation independence</em>, but this we will discuss in
+another post.</p></article>
+    </main>
+
+    <footer>
+      Built with Haskell using
+      <a href="https://github.com/ChrisPenner/slick">slick</a>️
+    </footer>
+    
+    <script src="/js/main.js"></script>
+
+    <script src="/js/multicodeblock-tabs.js"></script>
+  </body>
+</html>

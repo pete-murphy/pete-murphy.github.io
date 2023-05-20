@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head profile="http://www.w3.org/2005/10/profile">
+    <meta charset="UTF-8" />
+    <meta name="description" content="TIL" />
+    <meta name="author" content="Me" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="">
+    <meta name="twitter:description" content="">
+        <title></title>
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
+    <header class="nav-header">
+      <nav>
+        <a href="/" aria-label="Home">
+              <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      class="icon"
+    >
+      <path
+        d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z"
+      />
+      <path
+        d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z"
+      />
+    </svg>
+<span>Home</span>
+        </a>
+      </nav>
+    
+      <!-- <div class="right-sidebar">
+            <a class="ext-link" href="https://github.com/ptrfrncsmrph">
+            <img src="/images/github-logo.png" alt="Github Profile"/>
+        </a>
+
+        <div id="theme-button">DAY</div>
+        </div> -->
+    </header>
+
+    <main>
+      <header>
+
+        <section class="post">
+          <div class="inline-container">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="icon"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <time datetime="2022-01-21T00:00:00Z">Jan 21, 2022</time>
+          </div>
+          <div class="tags-container inline-container">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="icon"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.25 2.25a3 3 0 00-3 3v4.318a3 3 0 00.879 2.121l9.58 9.581c.92.92 2.39 1.186 3.548.428a18.849 18.849 0 005.441-5.44c.758-1.16.492-2.629-.428-3.548l-9.58-9.581a3 3 0 00-2.122-.879H5.25zM6.375 7.5a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <ul class="tags">
+              <li class="tag react">react</li>
+              <li class="tag context">context</li>
+              <li class="tag reader">reader</li>
+            </ul>
+          </div>
+
+          <h1>Context vs Reader</h1>
+        </section>
+      </header>
+
+      <article class="post"><p>Ryan Florence on <a
+href="https://twitter.com/ryanflorence/status/1616121628706103297?s=20&amp;t=WSCLXkcCEXobbO3wLRYghw">Twitter</a></p>
+<blockquote>
+<p>TypeScript is gonna bring back render props and kill hooks that
+access React context.</p>
+</blockquote>
+<p>Could we do something like</p>
+<multicodeblock-tabs>
+<multicodeblock-tab role="heading" slot="tab">PureScript</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode purescript"><code class="sourceCode purescript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Component</span> state props <span class="ot">=</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">ReaderT</span> (<span class="dt">Observable</span> state) <span class="dt">Effect</span> (props <span class="ot">-&gt;</span> <span class="dt">JSX</span>)</span></code></pre></div>
+</multicodeblock-panel>
+<multicodeblock-tab role="heading" slot="tab">TypeScript</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Component<span class="op">&lt;</span>State<span class="op">,</span> Props<span class="op">&gt;</span> <span class="op">=</span> ReaderIO<span class="op">&lt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  Observable<span class="op">&lt;</span>State<span class="op">&gt;,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  (props<span class="op">:</span> Props) <span class="kw">=&gt;</span> JSX</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;;</span></span></code></pre></div>
+</multicodeblock-panel>
+<multicodeblock-tab role="heading" slot="tab">TypeScript</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Component<span class="op">&lt;</span>State<span class="op">,</span> Props<span class="op">&gt;</span> <span class="op">=</span> Effect<span class="op">&lt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  Observable<span class="op">&lt;</span>State<span class="op">&gt;,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  never<span class="op">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  (props<span class="op">:</span> Props) <span class="kw">=&gt;</span> JSX</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;;</span></span></code></pre></div>
+</multicodeblock-panel>
+
+</multicodeblock-tabs></article>
+    </main>
+
+    <footer>
+      Built with Haskell using
+      <a href="https://github.com/ChrisPenner/slick">slick</a>️,
+      <a href="https://open-props.style/">open-props</a>️ &
+      <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components"
+        >web components</a
+      >
+    </footer>
+    
+    <script src="/js/main.js"></script>
+
+    <script src="/js/multicodeblock-tabs.js"></script>
+  </body>
+</html>

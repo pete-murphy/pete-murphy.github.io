@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>TIL</title>
+  <link href="https://ptrfrncsmrph.github.io" rel="self" type="application/rss+xml" />
+  <updated></updated>
+  <author>
+    <name>Pete</name>
+  </author>
+  <id>https://ptrfrncsmrph.github.io/</id>
+
+  <entry>
+    <title></title>
+    <link href="https://ptrfrncsmrph.github.ioposts/context-vs-reader.html"/>
+    <id>https://ptrfrncsmrph.github.ioposts/context-vs-reader.html</id>
+    <updated>2022-01-21T00:00:00Z</updated>
+    <category term="react"/>
+    <category term="context"/>
+    <category term="reader"/>
+    <summary></summary>
+    <content type="html"><![CDATA[<p>Ryan Florence on <a
+href="https://twitter.com/ryanflorence/status/1616121628706103297?s=20&amp;t=WSCLXkcCEXobbO3wLRYghw">Twitter</a></p>
+<blockquote>
+<p>TypeScript is gonna bring back render props and kill hooks that
+access React context.</p>
+</blockquote>
+<p>Could we do something like</p>
+<multicodeblock-tabs>
+<multicodeblock-tab role="heading" slot="tab">PureScript</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode purescript"><code class="sourceCode purescript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Component</span> state props <span class="ot">=</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">ReaderT</span> (<span class="dt">Observable</span> state) <span class="dt">Effect</span> (props <span class="ot">-&gt;</span> <span class="dt">JSX</span>)</span></code></pre></div>
+</multicodeblock-panel>
+<multicodeblock-tab role="heading" slot="tab">TypeScript</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Component<span class="op">&lt;</span>State<span class="op">,</span> Props<span class="op">&gt;</span> <span class="op">=</span> ReaderIO<span class="op">&lt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  Observable<span class="op">&lt;</span>State<span class="op">&gt;,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  (props<span class="op">:</span> Props) <span class="kw">=&gt;</span> JSX</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;;</span></span></code></pre></div>
+</multicodeblock-panel>
+<multicodeblock-tab role="heading" slot="tab">TypeScript</multicodeblock-tab>
+<multicodeblock-panel role="region" slot="panel">
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Component<span class="op">&lt;</span>State<span class="op">,</span> Props<span class="op">&gt;</span> <span class="op">=</span> Effect<span class="op">&lt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  Observable<span class="op">&lt;</span>State<span class="op">&gt;,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  never<span class="op">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  (props<span class="op">:</span> Props) <span class="kw">=&gt;</span> JSX</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;;</span></span></code></pre></div>
+</multicodeblock-panel>
+
+</multicodeblock-tabs>]]></content>
+  </entry>
+  <entry>
+    <title>Trying out the experimental View Transitions API in React</title>
+    <link href="https://ptrfrncsmrph.github.ioposts/react-router-view-transitions-api.html"/>
+    <id>https://ptrfrncsmrph.github.ioposts/react-router-view-transitions-api.html</id>
+    <updated>2023-05-17T00:00:00Z</updated>
+    <category term="react"/>
+    <category term="react-router"/>
+    <category term="view transitions"/>
+    <summary></summary>
+    <content type="html"><![CDATA[<p>Recently I wanted to implement Material UI’s <a
+href="https://m3.material.io/styles/motion/transitions/transition-patterns#b67cba74-6240-4663-a423-d537b6d21187">container
+transform pattern</a> in a side project app. From the Material 3
+docs:</p>
+<blockquote>
+<p>This pattern is used to seamlessly transform an element to show more
+detail, like a card expanding into a details page.</p>
+<p>Persistent elements are used to seamlessly connect the start and end
+state of the transition. The most common persistent element is a
+container, which is a shape used to represent an enclosed area. It can
+also be an important element, like a hero image. Of all transition
+patterns, this one creates the strongest relationship between elements.
+It’s also perceived to be the most expressive.</p>
+</blockquote>
+<p>The pattern isn’t unique to Material or Google, it’s used for example
+in iOS when opening an app from the home screen. Typically this is
+implemented using the <a
+href="https://aerotwist.com/blog/flip-your-animations/">“FLIP”
+technique</a> and there are some high-level libraries for creating this
+effect (for example, in React I think the thing to use would be <a
+href="https://www.framer.com/motion/layout-group/"><code>LayoutGroup</code></a>
+from <code>framer/motion</code>.)</p>
+<h2 id="view-transitions-api">View Transitions API</h2>
+<p>There’s a new browser API for this though in the <a
+href="https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API">View
+Transitions API</a>. This is still a <a
+href="https://drafts.csswg.org/css-view-transitions-1/">draft
+specification</a> at time of writing, but it’s landed in Chrome.</p>
+<h2 id="working-demo-using-transitions-between-routes">Working demo
+using transitions between routes</h2>
+<p>After a bit of trial-and-error I got a demo working using animated
+transitions between routes with React Router. Here’s the repo: <a
+href="https://github.com/ptrfrncsmrph/react-view-transitions-api">https://github.com/ptrfrncsmrph/react-view-transitions-api</a>.</p>
+<p>One rough bit that could be improved: I ended up using
+<code>useNavigate</code> and a button with a click handler (instead of
+<code>Link</code>) and wrapping the call to <code>navigate</code> in
+<code>flushSync</code>. This is necessary to force navigation change
+(and subsequent DOM updates) to happen within the scope of the callback
+passed to <code>startViewTransition</code>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> <span class="bu">document</span><span class="op">.</span><span class="fu">startViewTransition</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> ReactDOM<span class="op">.</span><span class="fu">flushSync</span>(() <span class="kw">=&gt;</span> <span class="fu">navigate_</span>(nextRoute))<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>Not sure of an alternative here aside from pushing the
+<code>startViewTransition</code> call into the router library code.</p>]]></content>
+  </entry>
+</feed>

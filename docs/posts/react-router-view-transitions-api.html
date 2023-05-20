@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head profile="http://www.w3.org/2005/10/profile">
+    <meta charset="UTF-8" />
+    <meta name="description" content="TIL" />
+    <meta name="author" content="Me" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Trying out the experimental View Transitions API in React">
+    <meta name="twitter:description" content="">
+        <title>Trying out the experimental View Transitions API in React</title>
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
+    <header class="nav-header">
+      <nav>
+        <a href="/" aria-label="Home">
+              <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      class="icon"
+    >
+      <path
+        d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z"
+      />
+      <path
+        d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z"
+      />
+    </svg>
+<span>Home</span>
+        </a>
+      </nav>
+    
+      <!-- <div class="right-sidebar">
+            <a class="ext-link" href="https://github.com/ptrfrncsmrph">
+            <img src="/images/github-logo.png" alt="Github Profile"/>
+        </a>
+
+        <div id="theme-button">DAY</div>
+        </div> -->
+    </header>
+
+    <main>
+      <header>
+
+        <section class="post">
+          <div class="inline-container">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="icon"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <time datetime="2023-05-17T00:00:00Z">May 17, 2023</time>
+          </div>
+          <div class="tags-container inline-container">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="icon"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.25 2.25a3 3 0 00-3 3v4.318a3 3 0 00.879 2.121l9.58 9.581c.92.92 2.39 1.186 3.548.428a18.849 18.849 0 005.441-5.44c.758-1.16.492-2.629-.428-3.548l-9.58-9.581a3 3 0 00-2.122-.879H5.25zM6.375 7.5a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <ul class="tags">
+              <li class="tag react">react</li>
+              <li class="tag react-router">react-router</li>
+              <li class="tag view transitions">view transitions</li>
+            </ul>
+          </div>
+
+          <h1>Trying out the experimental View Transitions API in React</h1>
+        </section>
+      </header>
+
+      <article class="post"><p>Recently I wanted to implement Material UI’s <a
+href="https://m3.material.io/styles/motion/transitions/transition-patterns#b67cba74-6240-4663-a423-d537b6d21187">container
+transform pattern</a> in a side project app. From the Material 3
+docs:</p>
+<blockquote>
+<p>This pattern is used to seamlessly transform an element to show more
+detail, like a card expanding into a details page.</p>
+<p>Persistent elements are used to seamlessly connect the start and end
+state of the transition. The most common persistent element is a
+container, which is a shape used to represent an enclosed area. It can
+also be an important element, like a hero image. Of all transition
+patterns, this one creates the strongest relationship between elements.
+It’s also perceived to be the most expressive.</p>
+</blockquote>
+<p>The pattern isn’t unique to Material or Google, it’s used for example
+in iOS when opening an app from the home screen. Typically this is
+implemented using the <a
+href="https://aerotwist.com/blog/flip-your-animations/">“FLIP”
+technique</a> and there are some high-level libraries for creating this
+effect (for example, in React I think the thing to use would be <a
+href="https://www.framer.com/motion/layout-group/"><code>LayoutGroup</code></a>
+from <code>framer/motion</code>.)</p>
+<h2 id="view-transitions-api">View Transitions API</h2>
+<p>There’s a new browser API for this though in the <a
+href="https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API">View
+Transitions API</a>. This is still a <a
+href="https://drafts.csswg.org/css-view-transitions-1/">draft
+specification</a> at time of writing, but it’s landed in Chrome.</p>
+<h2 id="working-demo-using-transitions-between-routes">Working demo
+using transitions between routes</h2>
+<p>After a bit of trial-and-error I got a demo working using animated
+transitions between routes with React Router. Here’s the repo: <a
+href="https://github.com/ptrfrncsmrph/react-view-transitions-api">https://github.com/ptrfrncsmrph/react-view-transitions-api</a>.</p>
+<p>One rough bit that could be improved: I ended up using
+<code>useNavigate</code> and a button with a click handler (instead of
+<code>Link</code>) and wrapping the call to <code>navigate</code> in
+<code>flushSync</code>. This is necessary to force navigation change
+(and subsequent DOM updates) to happen within the scope of the callback
+passed to <code>startViewTransition</code>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> <span class="bu">document</span><span class="op">.</span><span class="fu">startViewTransition</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> ReactDOM<span class="op">.</span><span class="fu">flushSync</span>(() <span class="kw">=&gt;</span> <span class="fu">navigate_</span>(nextRoute))<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>Not sure of an alternative here aside from pushing the
+<code>startViewTransition</code> call into the router library code.</p></article>
+    </main>
+
+    <footer>
+      Built with Haskell using
+      <a href="https://github.com/ChrisPenner/slick">slick</a>️,
+      <a href="https://open-props.style/">open-props</a>️ &
+      <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components"
+        >web components</a
+      >
+    </footer>
+    
+    <script src="/js/main.js"></script>
+
+    <script src="/js/multicodeblock-tabs.js"></script>
+  </body>
+</html>
