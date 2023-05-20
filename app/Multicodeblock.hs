@@ -5,6 +5,7 @@
 module Multicodeblock (parse) where
 
 import Control.Applicative ((<|>))
+import qualified Data.Char as Char
 import Data.Functor ((<&>))
 import Data.Void (Void)
 import Text.Megaparsec (Parsec, anySingle, anySingleBut, many, manyTill, runParser)
@@ -43,7 +44,8 @@ parser =
               "typescript" -> "TypeScript"
               "ts" -> "TypeScript"
               "rust" -> "Rust"
-              other -> other
+              (c : str) -> Char.toUpper c : str
+              "" -> ""
         unlines
           [ "<multicodeblock-tab role=\"heading\" slot=\"tab\">" <> title' <> "</multicodeblock-tab>",
             "<multicodeblock-panel role=\"region\" slot=\"panel\">",

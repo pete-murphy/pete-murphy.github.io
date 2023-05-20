@@ -8,16 +8,20 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Main where
 
-import Control.Lens (At (..), (?~), (^.), (^..), (^?))
+import Control.Arrow ((>>>))
+import Control.Lens (At (..), (<&>), (?~), (^.), (^..), (^?))
 import Control.Monad qualified as Monad
 import Data.Aeson (FromJSON, ToJSON, Value (..), (.=))
 import Data.Aeson qualified as Aeson
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Lens (_Object, _String)
 import Data.Aeson.Lens qualified as Aeson
+import Data.Foldable
+import Data.Function ((&))
 import Data.List qualified as List
 import Data.Map (Map)
 import Data.Map qualified as Map
@@ -41,6 +45,7 @@ import GHC.Generics (Generic)
 import Multicodeblock qualified
 import Slick qualified
 import Slick.Pandoc qualified
+import Title qualified
 
 ---Config-----------------------------------------------------------------------
 
@@ -98,6 +103,8 @@ data Tag = Tag
 -- | Data for a blog post
 data Post = Post
   { postTitle :: String,
+    postDisplayTitle :: String,
+    postHTMLTitle :: String,
     postAuthor :: String,
     postContent :: String,
     postURL :: String,
@@ -116,6 +123,8 @@ data Post = Post
 instance FromJSON Post where
   parseJSON value = do
     let postTitle = value ^. Aeson.key "title" . _String . Text.unpacked
+        postDisplayTitle = value ^. Aeson.key "displayTitle" . _String . Text.unpacked
+        postHTMLTitle = value ^. Aeson.key "htmlTitle" . _String . Text.unpacked
         postAuthor = value ^. Aeson.key "author" . _String . Text.unpacked
         postDate = value ^. Aeson.key "date" . _String . Text.unpacked
         postISODate = formatDate postDate
@@ -134,6 +143,8 @@ instance ToJSON Post where
   toJSON Post {..} =
     Aeson.object
       [ "title" .= postTitle,
+        "displayTitle" .= postDisplayTitle,
+        "htmlTitle" .= postHTMLTitle,
         "author" .= postAuthor,
         "content" .= postContent,
         "url" .= postURL,
@@ -183,12 +194,24 @@ buildPost srcPath = Shake.Forward.cacheAction ("build" :: Text, srcPath) do
   postContent <- Shake.readFile' srcPath
   -- pre-process markdown to replace `<Multicodeblock>` tags with
   -- `<multicodeblock-tab>` and `<multicodeblock-panel>` custom elements
-  postContentWithCodeBlocks <- Multicodeblock.parse postContent
-  postData <- Slick.Pandoc.markdownToHTML (Text.pack postContentWithCodeBlocks)
+  -- TODO: Could this be a PandocReader?
+  (title, sanitizedTitle, rest) <- Title.parse postContent
+  postContentWithCodeBlocks <- Multicodeblock.parse rest
+  -- TODO: We need the type application here so that we have access to
+  -- isoDate in the mustache template (???) not sure why though
+  postData <- Slick.Pandoc.markdownToHTML' @Post (Text.pack postContentWithCodeBlocks)
   let postURL = Text.pack (Shake.FilePath.dropDirectory1 (srcPath -<.> "html"))
       withPostURL = _Object . at "url" ?~ String postURL
+
+  let withTitle =
+        _Object . at "title" ?~ String (Text.pack title)
+          >>> _Object . at "displayTitle" ?~ String (Text.pack sanitizedTitle)
   -- Add additional metadata we've been able to compute
-  let fullPostData = withSiteMeta (withPostURL postData)
+  let fullPostData =
+        Aeson.toJSON postData
+          & withPostURL
+          & withSiteMeta
+          & withTitle
   template <- Slick.compileTemplate' "site/templates/post.html"
   Shake.writeFile' (outputFolder </> Text.unpack postURL) (Text.unpack (Slick.substitute template fullPostData))
   Slick.convert fullPostData

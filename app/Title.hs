@@ -3,22 +3,29 @@
 
 module Title where
 
+import Control.Arrow (first, second)
 import Control.Lens (worded, (%~))
+import Data.Either (partitionEithers)
 import Data.Function ((&))
 import Data.List.Extra (dropEnd)
-import Data.Maybe (mapMaybe)
 
-parse :: String -> (String, String)
+parse :: MonadFail m => String -> m (String, String, String)
 parse fullText = do
-  let title =
+  let (title, rest) =
         fullText
           & lines
-          & mapMaybe \case
-            '#' : ' ' : title' -> Just title'
-            _ -> Nothing
-          & head
+          & partitionMap \case
+            '#' : ' ' : title' -> Left title'
+            x -> Right x
+          & first \case
+            [] -> ""
+            t : _ -> t
+          & second unlines
       sanitizedTitle = title & worded %~ removeSurrounding "*_`"
-  (title, sanitizedTitle)
+  pure (title, sanitizedTitle, rest)
+  where
+    partitionMap :: (a -> Either x y) -> [a] -> ([x], [y])
+    partitionMap f = partitionEithers . map f
 
 removeSurrounding :: [Char] -> String -> String
 removeSurrounding chars str =

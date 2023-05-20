@@ -78,10 +78,11 @@ html {
   --surface-2: var(--surface-2-dark);
 }
 
-a {
-  color: var(--text-1);
-  text-decoration-color: var(--text-3);
+a:not(:hover) {
+  /* color: var(--text-1); */
+  text-decoration-color: var(--text-1);
   text-decoration-thickness: 2px;
+  text-decoration-style: solid;
 }
 a:hover,
 a:focus {

@@ -6,7 +6,7 @@
     <meta name="author" content="{{author}}" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {{>site/templates/meta-data.html}}
-    <title>{{title}}</title>
+    <title>{{displayTitle}}</title>
     <link rel="stylesheet" href="/css/main.css" />
   </head>
   <body>
@@ -14,21 +14,28 @@
 
     <main>
       <header>
-        <h1 class="title">{{title}}</h1>
-
         {{#image}}
         <img class="post-image" src="/images/{{image}}" />
         {{/image}}
 
-        <time datetime="{{isoDate}}">{{date}}</time>
-        <time datetime="2022">What</time>
+        <section class="post">
+          <div class="inline-container">
+            {{>site/templates/icons/calendar.html}}
+            <time datetime="{{isoDate}}">{{date}}</time>
+          </div>
+          <div class="tags-container inline-container">
+            {{>site/templates/icons/tag.html}}
+            <ul class="tags">
+              {{#tags}}
+              <li class="tag {{.}}">{{.}}</li>
+              {{/tags}}
+            </ul>
+          </div>
 
-        <ul class="tags">
-          {{#tags}}
-          <li class="tag {{.}}">{{.}}</li>
-          {{/tags}}
-        </ul>
+          <h1>{{htmlTitle}}</h1>
+        </section>
       </header>
+
       <article class="post">{{{content}}}</article>
     </main>
 

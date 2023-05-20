@@ -1,7 +1,9 @@
 <ul class="posts">
   {{#posts}}
   <li>
-    <a href="{{url}}">{{title}} <time datetime="{{isoDate}}">{{date}}</time></a>
+    <a href="{{url}}"
+      >{{displayTitle}} <time datetime="{{isoDate}}">{{date}}</time></a
+    >
   </li>
   {{/posts}}
 </ul>
