@@ -30,7 +30,7 @@ footer {
 header.nav-header {
   position: sticky;
   top: 0;
-  background-color: var(--surface-1) cc;
+  background-color: var(--surface-1-80);
   z-index: 2;
   backdrop-filter: blur(10px);
 

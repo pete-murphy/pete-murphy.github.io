@@ -17,6 +17,7 @@ html {
   --text-2-light: hsl(var(--primary-hue) var(--text-saturation) 30%);
   --text-3-light: hsl(var(--primary-hue) var(--text-saturation) 60%);
   --surface-1-light: hsl(var(--primary-hue) 25% 99%);
+  --surface-1-80-light: hsla(var(--primary-hue) 25% 99% / 0.8);
   --surface-2-light: hsl(var(--primary-hue) 20% 96%);
 
   /* dark */
@@ -28,6 +29,7 @@ html {
   --text-2-dark: hsl(var(--primary-hue) var(--text-saturation) 65%);
   --text-3-dark: hsl(var(--primary-hue) var(--text-saturation) 45%);
   --surface-1-dark: hsl(var(--primary-hue) 20% 5%);
+  --surface-1-80-dark: hsl(var(--primary-hue) 20% 5% / 0.8);
   --surface-2-dark: hsl(var(--primary-hue) 15% 10%);
 }
 
@@ -40,6 +42,7 @@ html {
   --text-2: var(--text-2-light);
   --text-4: var(--text-3-light);
   --surface-1: var(--surface-1-light);
+  --surface-1-80: var(--surface-1-80-light);
   --surface-2: var(--surface-2-light);
 }
 
@@ -52,6 +55,7 @@ html {
     --text-2: var(--text-2-dark);
     --text-4: var(--text-3-dark);
     --surface-1: var(--surface-1-dark);
+    --surface-1-80: var(--surface-1-80-dark);
     --surface-2: var(--surface-2-dark);
   }
 }
@@ -64,6 +68,7 @@ html {
   --text-2: var(--text-2-light);
   --text-4: var(--text-3-light);
   --surface-1: var(--surface-1-light);
+  --surface-1-80: var(--surface-1-80-light);
   --surface-2: var(--surface-2-light);
 }
 
@@ -75,6 +80,7 @@ html {
   --text-2: var(--text-2-dark);
   --text-4: var(--text-3-dark);
   --surface-1: var(--surface-1-dark);
+  --surface-1-80: var(--surface-1-80-dark);
   --surface-2: var(--surface-2-dark);
 }
 

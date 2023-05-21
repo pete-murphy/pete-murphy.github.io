@@ -30,7 +30,7 @@ footer {
 header.nav-header {
   position: sticky;
   top: 0;
-  background-color: var(--surface-1) cc;
+  background-color: var(--surface-1-80);
   z-index: 2;
   backdrop-filter: blur(10px);
 
@@ -60,6 +60,7 @@ header.nav-header nav a {
 }
 .tags {
   display: inline-flex;
+  flex-wrap: wrap;
   gap: 0.25rem;
   padding: 0;
 }

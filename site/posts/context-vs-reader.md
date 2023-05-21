@@ -1,7 +1,7 @@
 ---
 title: "Context vs Reader"
-displayTitle: Context vs Reader
 htmlTitle: Context vs Reader
+displayTitle: Context vs Reader
 author: Me
 date: Jan 21, 2022
 tags: [react, context, reader]
