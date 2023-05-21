@@ -52,7 +52,7 @@ class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb3-
 </multicodeblock-tabs>]]></content>
   </entry>
   <entry>
-    <title>Trying out the experimental View Transitions API in React</title>
+    <title></title>
     <link href="https://ptrfrncsmrph.github.ioposts/react-router-view-transitions-api.html"/>
     <id>https://ptrfrncsmrph.github.ioposts/react-router-view-transitions-api.html</id>
     <updated>2023-05-17T00:00:00Z</updated>
@@ -60,26 +60,33 @@ class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb3-
     <category term="react-router"/>
     <category term="view transitions"/>
     <summary></summary>
-    <content type="html"><![CDATA[<p>Recently I wanted to implement Material UI’s <a
+    <content type="html"><![CDATA[<p>Recently I wanted to implement something like what Material UI calls
+the <a
 href="https://m3.material.io/styles/motion/transitions/transition-patterns#b67cba74-6240-4663-a423-d537b6d21187">container
-transform pattern</a> in a side project app. From the Material 3
-docs:</p>
+transform pattern</a>. From the Material 3 docs:</p>
 <blockquote>
 <p>This pattern is used to seamlessly transform an element to show more
-detail, like a card expanding into a details page.</p>
-<p>Persistent elements are used to seamlessly connect the start and end
-state of the transition. The most common persistent element is a
-container, which is a shape used to represent an enclosed area. It can
-also be an important element, like a hero image. Of all transition
-patterns, this one creates the strongest relationship between elements.
-It’s also perceived to be the most expressive.</p>
+detail, like a card expanding into a details page. […] Persistent
+elements are used to seamlessly connect the start and end state of the
+transition.</p>
 </blockquote>
+<p>Here’s a simple example in a GIF</p>
+<p><img src="../images/2023-05-21-container-transform.gif" /></p>
 <p>The pattern isn’t unique to Material or Google, it’s used for example
-in iOS when opening an app from the home screen. Typically this is
-implemented using the <a
-href="https://aerotwist.com/blog/flip-your-animations/">“FLIP”
-technique</a> and there are some high-level libraries for creating this
-effect (for example, in React I think the thing to use would be <a
+in iOS when opening an app from the home screen. Can’t really speak on
+how easy this is to implement on mobile, but on the web the
+implementation has historically been complicated by the variety of
+layout rules that need to be taken into account (Cassie Evans has an
+excellent <a href="https://www.youtube.com/watch?v=POBxxUkvHi4">talk
+about the difficulties involved here</a>.)</p>
+<p>The solution that folks seem to have landed on for this is the <a
+href="https://aerotwist.com/blog/flip-your-animations/">FLIP
+technique</a>. It’s a magic trick that’s made a bit of sense of when you
+consider that (on the web) it’s most natural to specify the beginning
+and end states of an animation, and the start time (usually at the
+moment of some user event). There are some high-level libraries for
+creating this effect (for example, in React I think the thing to use
+would be <a
 href="https://www.framer.com/motion/layout-group/"><code>LayoutGroup</code></a>
 from <code>framer/motion</code>.)</p>
 <h2 id="view-transitions-api">View Transitions API</h2>
@@ -88,21 +95,44 @@ href="https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API">Vie
 Transitions API</a>. This is still a <a
 href="https://drafts.csswg.org/css-view-transitions-1/">draft
 specification</a> at time of writing, but it’s landed in Chrome.</p>
-<h2 id="working-demo-using-transitions-between-routes">Working demo
-using transitions between routes</h2>
+<h3 id="minimal-demo-using-transitions-between-routes">Minimal demo
+using transitions between routes</h3>
+<p><img
+src="https://github.com/ptrfrncsmrph/react-view-transitions-api/assets/26548438/ac3b1eb0-b2af-49ca-a315-79346f8cb7ab" /></p>
 <p>After a bit of trial-and-error I got a demo working using animated
 transitions between routes with React Router. Here’s the repo: <a
 href="https://github.com/ptrfrncsmrph/react-view-transitions-api">https://github.com/ptrfrncsmrph/react-view-transitions-api</a>.</p>
-<p>One rough bit that could be improved: I ended up using
-<code>useNavigate</code> and a button with a click handler (instead of
-<code>Link</code>) and wrapping the call to <code>navigate</code> in
-<code>flushSync</code>. This is necessary to force navigation change
-(and subsequent DOM updates) to happen within the scope of the callback
-passed to <code>startViewTransition</code>.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> <span class="bu">document</span><span class="op">.</span><span class="fu">startViewTransition</span>(() <span class="kw">=&gt;</span> {</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> ReactDOM<span class="op">.</span><span class="fu">flushSync</span>(() <span class="kw">=&gt;</span> <span class="fu">navigate_</span>(nextRoute))<span class="op">;</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
-<p>Not sure of an alternative here aside from pushing the
-<code>startViewTransition</code> call into the router library code.</p>]]></content>
+<p>One rough bit: I ended up using <code>useNavigate</code> and a button
+with a click handler (instead of <code>Link</code>) and wrapping the
+call to <code>navigate</code> in <code>flushSync</code>. This is
+necessary to force navigation change (and subsequent DOM updates) to
+happen within the scope of the callback passed to
+<code>startViewTransition</code>.</p>
+<p>There ends up being this nesting of “effects”</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">startViewTransition</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  ReactDOM<span class="op">.</span><span class="fu">flushSync</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">navigate_</span>(nextRoute)<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>The React docs warn that <code>flushSync</code> should be used as a
+“last resort”. Not sure of an alternative here, at the least maybe the
+<code>startViewTransition</code> call could be abstracted away into the
+router library code.</p>
+<p>Another awkward bit</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">event</span><span class="op">.</span><span class="at">currentTarget</span><span class="op">.</span><span class="at">firstElementChild</span><span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">viewTransitionName</span> <span class="op">=</span> <span class="st">&quot;image-test&quot;</span><span class="op">;</span></span></code></pre></div>
+<p>The more “idiomatic” thing in React would be to move each of the
+movie list items into a component that can call <code>useRef</code> to
+do that assignment, but really the underlying issue is that there needs
+to be exactly one element with the <code>"image-test"</code> transition
+name at any given time, so <a
+href="https://developer.chrome.com/docs/web-platform/view-transitions/#transitioning-elements-dont-need-to-be-the-same-dom-element">the
+solution</a> seems to be <em>assign the tag name on user interaction
+(click)</em>. I wanted to give unique names to each element (like</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>viewTransitionName<span class="op">:</span> <span class="vs">`image-test-</span><span class="sc">${</span>movie<span class="op">.</span><span class="at">id</span><span class="sc">}</span><span class="vs">`</span><span class="op">;</span></span></code></pre></div>
+<p>), but that would have required creating just as many rules in the
+style sheet as there are elements (at the time there doesn’t seem to be
+a way of selecting <code>::view-transition-group(image-test-*)</code> or
+similar, though that would be ideal.)</p>]]></content>
   </entry>
 </feed>

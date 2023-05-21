@@ -60,6 +60,7 @@ header.nav-header nav a {
 }
 .tags {
   display: inline-flex;
+  flex-wrap: wrap;
   gap: 0.25rem;
   padding: 0;
 }

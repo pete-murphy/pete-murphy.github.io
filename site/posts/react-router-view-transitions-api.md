@@ -19,6 +19,7 @@ Here's a simple example in a GIF
 
 The pattern isn't unique to Material or Google, it's used for example in iOS when opening an app from the home screen.
 Can't really speak on how easy this is to implement on mobile, but on the web the implementation has historically been complicated by the variety of layout rules that need to be taken into account (Cassie Evans has an excellent [talk about the difficulties involved here](https://www.youtube.com/watch?v=POBxxUkvHi4).)
+
 The solution that folks seem to have landed on for this is the [FLIP technique](https://aerotwist.com/blog/flip-your-animations/).
 It's a magic trick that's made a bit of sense of when you consider that (on the web) it's most natural to specify the beginning and end states of an animation, and the start time (usually at the moment of some user event).
 There are some high-level libraries for creating this effect (for example, in React I think the thing to use would be [`LayoutGroup`](https://www.framer.com/motion/layout-group/) from `framer/motion`.)
@@ -58,7 +59,7 @@ event.currentTarget.firstElementChild.style.viewTransitionName = "image-test";
 The more "idiomatic" thing in React would be to move each of the movie list items into a component that can call `useRef` to do that assignment, but really the underlying issue is that there needs to be exactly one element with the `"image-test"` transition name at any given time, so [the solution](https://developer.chrome.com/docs/web-platform/view-transitions/#transitioning-elements-dont-need-to-be-the-same-dom-element) seems to be _assign the tag name on user interaction (click)_.
 I wanted to give unique names to each element (like
 
-```tsx
+```typescript
 viewTransitionName: `image-test-${movie.id}`;
 ```
 
