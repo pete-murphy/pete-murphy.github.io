@@ -1,11 +1,10 @@
 ---
-title: Experimenting with View Transitions API in React
-htmlTitle: Experimenting with View Transitions API in React
-displayTitle: Experimenting with View Transitions API in React
 author: Me
 date: May 17, 2023
 tags: [react, react-router, view transitions]
 ---
+
+# Experimenting with View Transitions API in React
 
 Recently I wanted to implement something like what Material UI calls the [container transform pattern](https://m3.material.io/styles/motion/transitions/transition-patterns#b67cba74-6240-4663-a423-d537b6d21187). From the Material 3 docs:
 
@@ -21,46 +20,56 @@ The pattern isn't unique to Material or Google, it's used for example in iOS whe
 Can't really speak on how easy this is to implement on mobile, but on the web the implementation has historically been complicated by the variety of layout rules that need to be taken into account (Cassie Evans has an excellent [talk about the difficulties involved here](https://www.youtube.com/watch?v=POBxxUkvHi4).)
 
 The solution that folks seem to have landed on for this is the [FLIP technique](https://aerotwist.com/blog/flip-your-animations/).
-It's a magic trick that's made a bit of sense of when you consider that (on the web) it's most natural to specify the beginning and end states of an animation, and the start time (usually at the moment of some user event).
-There are some high-level libraries for creating this effect (for example, in React I think the thing to use would be [`LayoutGroup`](https://www.framer.com/motion/layout-group/) from `framer/motion`.)
+It's a bit of a magic trick summarized by Paul Lewis here
+
+> instead of animating "straight ahead" and potentially doing expensive calculations on every single frame we precalculate the animation dynamically and let it play out cheaply.
+
+There are some libraries for implementing this technique, like [GSAP](https://greensock.com/docs/v3/Plugins/Flip/) or [Flipping.js](https://github.com/davidkpiano/flipping).
+In React, `framer/motion` provides a high-level API for using this to achieve "shared layout animations" with its [`LayoutGroup`](https://www.framer.com/motion/layout-group/) component.
 
 ## View Transitions API
 
-There's a new browser API for this though in the [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API).
+But there's also a new high-level API for this technique coming to the browser, in the [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API).
 This is still a [draft specification](https://drafts.csswg.org/css-view-transitions-1/) at time of writing, but it's landed in Chrome.
 
-### Minimal demo using transitions between routes
+<!-- <image-loader
+placeholder="../images/2023-05-21-demo/small.gif"
+full-image="../images/2023-05-21-demo/large.gif"
+/> -->
 
-![](https://github.com/ptrfrncsmrph/react-view-transitions-api/assets/26548438/ac3b1eb0-b2af-49ca-a315-79346f8cb7ab)
+![A simple demo using React Router](../images/2023-05-21-demo/large.gif)
 
 After a bit of trial-and-error I got a demo working using animated transitions between routes with React Router. Here's the repo: [https://github.com/ptrfrncsmrph/react-view-transitions-api](https://github.com/ptrfrncsmrph/react-view-transitions-api).
 
-One rough bit: I ended up using `useNavigate` and a button with a click handler (instead of `Link`) and wrapping the call to `navigate` in `flushSync`. This is necessary to force navigation change (and subsequent DOM updates) to happen within the scope of the callback passed to `startViewTransition`.
+## Some rough edges
 
-There ends up being this nesting of "effects"
+`startViewTransition` takes a callback that _synchronously_ updates the DOM.
+The only way I could figure to do so was using React Router's `useNavigate` and a button with a click handler instead of `Link` (which feels bad).
+We then need to wrap the call to `navigate` in `flushSync` to force the synchronous update.
+So there ends up being this nesting of "effects" in order to schedule everything correctly
 
 ```ts
 document.startViewTransition(() => {
   ReactDOM.flushSync(() => {
-    navigate_(nextRoute);
+    navigate(nextRoute);
   });
 });
 ```
 
-The React docs warn that `flushSync` should be used as a "last resort".
-Not sure of an alternative here, at the least maybe the `startViewTransition` call could be abstracted away into the router library code.
+The React docs warn that `flushSync` should be used as a "last resort", and this API does seem to be at odds with the React mental model that doesn't normally care about _when_ DOM updates happen.
 
-Another awkward bit
+Another awkward bit is the need to toggle the `viewTransitionName`s for transitioning elements.
 
 ```ts
-event.currentTarget.firstElementChild.style.viewTransitionName = "image-test";
+if (ref.current) {
+  ref.current.style.viewTransitionName = "movie-image";
+}
 ```
 
-The more "idiomatic" thing in React would be to move each of the movie list items into a component that can call `useRef` to do that assignment, but really the underlying issue is that there needs to be exactly one element with the `"image-test"` transition name at any given time, so [the solution](https://developer.chrome.com/docs/web-platform/view-transitions/#transitioning-elements-dont-need-to-be-the-same-dom-element) seems to be _assign the tag name on user interaction (click)_.
-I wanted to give unique names to each element (like
+There needs to be exactly one element with the `"movie-image"` transition name at any given time, so [the recommendation](https://developer.chrome.com/docs/web-platform/view-transitions/#transitioning-elements-dont-need-to-be-the-same-dom-element) seems to be to _assign the tag name in the event handler_.
 
-```typescript
-viewTransitionName: `image-test-${movie.id}`;
-```
+A nicer alternative might be to give unique names to each element, like `movie-image-${movie.id}` and then select pairs with `::view-transition-group(movie-image-*)` but that syntax doesn't exist and as far as I can tell the only way of achieving this currently would require creating just as many rules in the style sheet as there are pairs of elements you'd want to target.
+I started [going down that road](https://github.com/ptrfrncsmrph/react-view-transitions-api/compare/main...dynamic-style-sheet-rules) but couldn't get it to work (the transitions _did_ apply but looked janky for reasons I couldn't understand).
 
-), but that would have required creating just as many rules in the style sheet as there are elements (at the time there doesn't seem to be a way of selecting `::view-transition-group(image-test-*)` or similar, though that would be ideal.)
+This constraint makes "back navigation" transitions (from detail to list view) rather [messy](https://github.com/ptrfrncsmrph/react-view-transitions-api/commit/9c2a2775a34a2ea8e3a7e1ff90881cb4c8cf4e53#diff-26ad4b834941d9b19ebf9db8082bd202aaf72ea0ddea85f5a8a0cb3c729cc6f2).
+The event handler doesn't have direct access to what we want to target as the `view-transition-new` element, so we need to find it in the DOM, assign the transition name, wait for the transition to complete, and finally remove the name (so it can be reassigned to the next item that gets clicked.)

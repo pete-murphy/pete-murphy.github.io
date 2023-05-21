@@ -6,7 +6,7 @@
     <meta name="author" content="{{author}}" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {{>site/templates/meta-data.html}}
-    <title>{{displayTitle}}</title>
+    <title>{{title}} | {{siteTitle}}</title>
     <link rel="stylesheet" href="/css/main.css" />
   </head>
   <body>
@@ -32,7 +32,7 @@
             </ul>
           </div>
 
-          <h1>{{htmlTitle}}</h1>
+          <h1>{{displayTitle}}</h1>
         </section>
       </header>
 
@@ -42,5 +42,6 @@
     {{>site/templates/footer.html}}
 
     <script src="/js/multicodeblock-tabs.js"></script>
+    <script src="/js/image-loader.js"></script>
   </body>
 </html>

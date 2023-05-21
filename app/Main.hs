@@ -54,7 +54,7 @@ siteMeta =
   SiteMeta
     { siteAuthor = "Pete",
       baseURL = "https://ptrfrncsmrph.github.io",
-      siteTitle = "TIL",
+      siteTitle = "WIP",
       twitterHandle = Nothing,
       githubUser = Just "ptrfrncsmrph"
     }
@@ -103,8 +103,8 @@ data Tag = Tag
 -- | Data for a blog post
 data Post = Post
   { postTitle :: String,
-    postDisplayTitle :: String,
-    postHTMLTitle :: String,
+    -- postDisplayTitle :: String,
+    -- postHTMLTitle :: String,
     postAuthor :: String,
     postContent :: String,
     postURL :: String,
@@ -123,8 +123,6 @@ data Post = Post
 instance FromJSON Post where
   parseJSON value = do
     let postTitle = value ^. Aeson.key "title" . _String . Text.unpacked
-        postDisplayTitle = value ^. Aeson.key "displayTitle" . _String . Text.unpacked
-        postHTMLTitle = value ^. Aeson.key "htmlTitle" . _String . Text.unpacked
         postAuthor = value ^. Aeson.key "author" . _String . Text.unpacked
         postDate = value ^. Aeson.key "date" . _String . Text.unpacked
         postISODate = formatDate postDate
@@ -143,8 +141,6 @@ instance ToJSON Post where
   toJSON Post {..} =
     Aeson.object
       [ "title" .= postTitle,
-        "displayTitle" .= postDisplayTitle,
-        "htmlTitle" .= postHTMLTitle,
         "author" .= postAuthor,
         "content" .= postContent,
         "url" .= postURL,

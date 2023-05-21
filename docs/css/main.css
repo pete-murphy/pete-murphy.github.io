@@ -16,6 +16,8 @@ html {
 body {
   min-block-size: 100%;
   position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 }
 
 .icon {
@@ -23,9 +25,11 @@ body {
   display: inline-block;
 }
 footer {
-  padding-block: 0.5rem;
+  padding-block: 1rem;
+  padding-block-start: 2rem;
   padding-inline: 3rem;
   color: var(--text-2);
+  /* align-self: end; */
 }
 header.nav-header {
   position: sticky;
@@ -76,7 +80,8 @@ header.nav-header nav a {
   color: var(--text-2);
 }
 
-.post {
+.post,
+.table-of-contents {
   display: grid;
   flex-flow: column;
   row-gap: var(--size-3);
@@ -92,8 +97,15 @@ header.nav-header nav a {
     [main-end gutter-end];
 }
 
-.post > * {
+.post > *,
+.table-of-contents > * {
   grid-column: content;
+}
+
+.table-of-contents > div {
+  display: inline-grid;
+  gap: 1rem;
+  height: max-content;
 }
 
 .post > multicodeblock-tabs,
@@ -103,6 +115,14 @@ header.nav-header nav a {
 
 .post > multicodeblock-tabs {
   max-width: 100%;
+}
+
+figure.image-container {
+  width: 100%;
+  margin: 0;
+}
+figure.image-container > img {
+  width: 100%;
 }
 
 .post > div.sourceCode,

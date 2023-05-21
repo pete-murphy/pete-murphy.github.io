@@ -1,11 +1,10 @@
 ---
-title: "Context vs Reader"
-htmlTitle: Context vs Reader
-displayTitle: Context vs Reader
 author: Me
 date: Jan 21, 2022
 tags: [react, context, reader]
 ---
+
+# Context vs Reader
 
 Ryan Florence on [Twitter](https://twitter.com/ryanflorence/status/1616121628706103297?s=20&t=WSCLXkcCEXobbO3wLRYghw)
 

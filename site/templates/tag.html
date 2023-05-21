@@ -13,12 +13,12 @@
   <body>
     {{>site/templates/header.html}}
 
-    <div id="page">
-      <section class="table-of-contents">
+    <section class="table-of-contents">
+      <div>
         <h1>{{tag}}</h1>
         {{>site/templates/post-list.html}}
-      </section>
-    </div>
+      </div>
+    </section>
 
     {{>site/templates/footer.html}}
   </body>
