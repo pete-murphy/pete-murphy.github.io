@@ -30,6 +30,8 @@ This is still a [draft specification](https://drafts.csswg.org/css-view-transiti
 
 ### Minimal demo using transitions between routes
 
+![](https://github.com/ptrfrncsmrph/react-view-transitions-api/assets/26548438/ac3b1eb0-b2af-49ca-a315-79346f8cb7ab)
+
 After a bit of trial-and-error I got a demo working using animated transitions between routes with React Router. Here's the repo: [https://github.com/ptrfrncsmrph/react-view-transitions-api](https://github.com/ptrfrncsmrph/react-view-transitions-api).
 
 One rough bit: I ended up using `useNavigate` and a button with a click handler (instead of `Link`) and wrapping the call to `navigate` in `flushSync`. This is necessary to force navigation change (and subsequent DOM updates) to happen within the scope of the callback passed to `startViewTransition`.
