@@ -12,8 +12,8 @@ html {
   --code-error-light: var(--red-8);
   --code-operator-light: var(--purple-9);
 
-  --code-outline-light: var(--blue-8);
-  --code-background-light: var(--blue-1);
+  --code-outline-light: var(--stone-1);
+  --code-background-light: var(--stone-0);
 
   /* dark */
   --code-keyword-dark: var(--blue-4);
