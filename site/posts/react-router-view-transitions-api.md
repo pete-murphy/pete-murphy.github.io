@@ -17,7 +17,7 @@ Here's a simple example in a GIF
 ![](../images/2023-05-21-container-transform.gif)
 
 The pattern isn't unique to Material or Google, it's used for example in iOS when opening an app from the home screen.
-Can't really speak on how easy this is to implement on mobile, but on the web the implementation has historically been complicated by the variety of layout rules that need to be taken into account (Cassie Evans has an excellent [talk about the difficulties involved here](https://www.youtube.com/watch?v=POBxxUkvHi4).)
+Can't really speak on how easy this is to implement on mobile, but on the web the implementation has historically been complicated by the variety of layout rules that need to be taken into account (Cassie Evans has an excellent [talk about the difficulties involved here](https://www.youtube.com/watch?v=POBxxUkvHi4)).
 
 The solution that folks seem to have landed on for this is the [FLIP technique](https://aerotwist.com/blog/flip-your-animations/).
 It's a bit of a magic trick summarized by Paul Lewis here
@@ -72,4 +72,4 @@ A nicer alternative might be to give unique names to each element, like `movie-i
 I started [going down that road](https://github.com/ptrfrncsmrph/react-view-transitions-api/compare/main...dynamic-style-sheet-rules) but couldn't get it to work (the transitions _did_ apply but looked janky for reasons I couldn't understand).
 
 This unique name constraint makes "back navigation" transitions (from detail to list view) rather [messy](https://github.com/ptrfrncsmrph/react-view-transitions-api/commit/9c2a2775a34a2ea8e3a7e1ff90881cb4c8cf4e53#diff-26ad4b834941d9b19ebf9db8082bd202aaf72ea0ddea85f5a8a0cb3c729cc6f2).
-The event handler doesn't have direct access to what we want to target as the `view-transition-new` element, so we need to find it in the DOM, assign the transition name, wait for the transition to complete, and finally remove the name (so it can be reassigned to the next item that gets clicked.)
+The event handler doesn't have direct access to what we want to target as the `view-transition-new` element, so we need to find it in the DOM, assign the transition name, wait for the transition to complete, and finally remove the name (so it can be reassigned to the next item that gets clicked).
