@@ -154,6 +154,14 @@ code a {
   padding-inline: 0;
 }
 
+code:not(.sourceCode) {
+  white-space: pre-wrap;
+}
+
+.sourceCode {
+  word-break: keep-all;
+}
+
 /* KeyWordTok */
 .sourceCode .kw {
   color: var(--code-keyword);

@@ -36,7 +36,7 @@ footer {
 header.nav-header {
   position: sticky;
   top: 0;
-  background-color: var(--surface-1-80);
+  background-color: var(--surface-1-50);
   z-index: 2;
   backdrop-filter: blur(10px);
   padding: 0.5rem 3rem;
@@ -59,6 +59,7 @@ header.nav-header nav a {
   grid-auto-flow: column;
   gap: 0.5rem;
   align-items: center;
+  padding: 0;
 }
 
 .inline-container {
@@ -90,13 +91,13 @@ header.nav-header nav a {
   flex-flow: column;
   row-gap: var(--size-3);
   line-height: var(--font-lineheight-3);
-  max-width: 80ch;
+  max-width: var(--size-lg);
   width: calc(100% - var(--size-1));
 
   margin-inline: auto;
   grid-template-columns:
     [gutter-start] 3rem
-    [main-start content-start] minmax(auto, 60ch)
+    [main-start content-start] minmax(auto, var(--size-content-3))
     [content-end] minmax(2rem, 1fr)
     [main-end gutter-end];
 }
@@ -104,12 +105,26 @@ header.nav-header nav a {
 .post > *,
 .table-of-contents > * {
   grid-column: content;
+  word-break: break-word;
 }
 
 .table-of-contents > div {
   display: inline-grid;
   gap: 1rem;
   height: max-content;
+}
+
+ul.posts {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+ul.posts li a {
+  padding: 0;
+}
+ul.posts li > div:last-of-type {
+  font-size: var(--font-size-0);
 }
 
 .post > multicodeblock-tabs,

@@ -9,49 +9,6 @@
   <id>https://ptrfrncsmrph.github.io/</id>
 
   <entry>
-    <title>Context vs Reader</title>
-    <link href="https://ptrfrncsmrph.github.ioposts/context-vs-reader.html"/>
-    <id>https://ptrfrncsmrph.github.ioposts/context-vs-reader.html</id>
-    <updated>2022-01-21T00:00:00Z</updated>
-    <category term="react"/>
-    <category term="context"/>
-    <category term="reader"/>
-    <summary></summary>
-    <content type="html"><![CDATA[<p>Ryan Florence on <a
-href="https://twitter.com/ryanflorence/status/1616121628706103297?s=20&amp;t=WSCLXkcCEXobbO3wLRYghw">Twitter</a></p>
-<blockquote>
-<p>TypeScript is gonna bring back render props and kill hooks that
-access React context.</p>
-</blockquote>
-<p>Could we do something like</p>
-<multicodeblock-tabs>
-<multicodeblock-tab role="heading" slot="tab">PureScript</multicodeblock-tab>
-<multicodeblock-panel role="region" slot="panel">
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode purescript"><code class="sourceCode purescript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Component</span> state props <span class="ot">=</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">ReaderT</span> (<span class="dt">Observable</span> state) <span class="dt">Effect</span> (props <span class="ot">-&gt;</span> <span class="dt">JSX</span>)</span></code></pre></div>
-</multicodeblock-panel>
-<multicodeblock-tab role="heading" slot="tab">TypeScript</multicodeblock-tab>
-<multicodeblock-panel role="region" slot="panel">
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Component<span class="op">&lt;</span>State<span class="op">,</span> Props<span class="op">&gt;</span> <span class="op">=</span> ReaderIO<span class="op">&lt;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  Observable<span class="op">&lt;</span>State<span class="op">&gt;,</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  (props<span class="op">:</span> Props) <span class="kw">=&gt;</span> JSX</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;;</span></span></code></pre></div>
-</multicodeblock-panel>
-<multicodeblock-tab role="heading" slot="tab">TypeScript</multicodeblock-tab>
-<multicodeblock-panel role="region" slot="panel">
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Component<span class="op">&lt;</span>State<span class="op">,</span> Props<span class="op">&gt;</span> <span class="op">=</span> Effect<span class="op">&lt;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  Observable<span class="op">&lt;</span>State<span class="op">&gt;,</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  never<span class="op">,</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  (props<span class="op">:</span> Props) <span class="kw">=&gt;</span> JSX</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;;</span></span></code></pre></div>
-</multicodeblock-panel>
-
-</multicodeblock-tabs>]]></content>
-  </entry>
-  <entry>
     <title>Experimenting with View Transitions API in React</title>
     <link href="https://ptrfrncsmrph.github.ioposts/react-router-view-transitions-api.html"/>
     <id>https://ptrfrncsmrph.github.ioposts/react-router-view-transitions-api.html</id>
@@ -153,8 +110,8 @@ href="https://github.com/ptrfrncsmrph/react-view-transitions-api/compare/main...
 down that road</a> but couldn’t get it to work (the transitions
 <em>did</em> apply but looked janky for reasons I couldn’t
 understand).</p>
-<p>This constraint makes “back navigation” transitions (from detail to
-list view) rather <a
+<p>This unique name constraint makes “back navigation” transitions (from
+detail to list view) rather <a
 href="https://github.com/ptrfrncsmrph/react-view-transitions-api/commit/9c2a2775a34a2ea8e3a7e1ff90881cb4c8cf4e53#diff-26ad4b834941d9b19ebf9db8082bd202aaf72ea0ddea85f5a8a0cb3c729cc6f2">messy</a>.
 The event handler doesn’t have direct access to what we want to target
 as the <code>view-transition-new</code> element, so we need to find it
