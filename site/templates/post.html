@@ -14,11 +14,13 @@
 
     <main>
       <header>
-        {{#image}}
-        <img class="post-image" src="/images/{{image}}" />
-        {{/image}}
-
         <section class="post">
+          {{#image}}
+          <img class="post-image" src="/images/{{image}}" />
+          {{/image}}
+
+          <h1>{{displayTitle}}</h1>
+
           <div class="inline-container">
             {{>site/templates/icons/calendar.html}}
             <time datetime="{{isoDate}}">{{date}}</time>
@@ -31,8 +33,6 @@
               {{/tags}}
             </ul>
           </div>
-
-          <h1>{{displayTitle}}</h1>
         </section>
       </header>
 
