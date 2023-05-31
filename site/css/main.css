@@ -55,7 +55,7 @@ main {
   gap: 2rem;
 }
 
-main > header {
+header:has(h1) {
   margin-block-start: 3rem;
   margin-block-end: 2rem;
 }
@@ -70,6 +70,15 @@ header.nav-header nav a {
   gap: 0.5rem;
   align-items: center;
   padding: 0;
+}
+header .subheader {
+  display: flex;
+  flex-flow: column;
+  gap: 0.5rem;
+}
+
+.secondary {
+  color: var(--text-2);
 }
 
 .inline-container {
@@ -123,6 +132,10 @@ header.nav-header nav a {
   word-break: break-word;
 }
 
+.post > figure {
+  grid-column: content;
+}
+
 .table-of-contents > div {
   display: inline-grid;
   gap: 1rem;
@@ -133,8 +146,14 @@ ul.posts {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-flow: column;
+  gap: 1rem;
 }
 
+ul.posts li {
+  padding: 0;
+}
 ul.posts li a {
   padding: 0;
 }

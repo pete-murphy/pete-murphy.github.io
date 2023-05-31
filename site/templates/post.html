@@ -14,26 +14,28 @@
 
     <main>
       <header>
-        <section class="post">
+        <div class="post">
           {{#image}}
           <img class="post-image" src="/images/{{image}}" />
           {{/image}}
 
           <h1>{{displayTitle}}</h1>
 
-          <div class="inline-container">
-            {{>site/templates/icons/calendar.html}}
-            <time datetime="{{isoDate}}">{{date}}</time>
+          <div class="subheader">
+            <div class="inline-container">
+              {{>site/templates/icons/calendar.html}}
+              <time datetime="{{isoDate}}">{{date}}</time>
+            </div>
+            <div class="tags-container inline-container">
+              {{>site/templates/icons/tag.html}}
+              <ul class="tags">
+                {{#tags}}
+                <li class="tag {{.}}">{{.}}</li>
+                {{/tags}}
+              </ul>
+            </div>
           </div>
-          <div class="tags-container inline-container">
-            {{>site/templates/icons/tag.html}}
-            <ul class="tags">
-              {{#tags}}
-              <li class="tag {{.}}">{{.}}</li>
-              {{/tags}}
-            </ul>
-          </div>
-        </section>
+        </div>
       </header>
 
       <article class="post">{{{content}}}</article>

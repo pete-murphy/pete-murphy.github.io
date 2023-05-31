@@ -2,7 +2,10 @@
   {{#posts}}
   <li>
     <div><a href="{{url}}">{{title}}</a></div>
-    <div><time datetime="{{isoDate}}">{{date}}</time></div>
+    <div class="inline-container secondary">
+      {{>site/templates/icons/calendar.html}}
+      <time datetime="{{isoDate}}">{{date}}</time>
+    </div>
   </li>
   {{/posts}}
 </ul>
