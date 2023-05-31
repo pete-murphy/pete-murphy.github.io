@@ -43,7 +43,7 @@ instance Applicative (Cont r) where
 instance Bind (Cont r) where
   bind ma amb =
     Cont \pure' ->
-      runCont ma \a ->
+      ma >>- \a ->
         amb a >>- \b ->
           pure' b
 ```

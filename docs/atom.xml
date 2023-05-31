@@ -58,7 +58,7 @@ class="sourceCode purescript"><code class="sourceCode purescript"><span id="cb1-
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Bind</span> (<span class="dt">Cont</span> r) <span class="kw">where</span></span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  bind ma amb <span class="ot">=</span></span>
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Cont</span> \pure&#39; <span class="ot">-&gt;</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>      runCont ma \a <span class="ot">-&gt;</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>      ma <span class="op">&gt;&gt;-</span> \a <span class="ot">-&gt;</span></span>
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>        amb a <span class="op">&gt;&gt;-</span> \b <span class="ot">-&gt;</span></span>
 <span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>          pure&#39; b</span></code></pre></div>
 </multicodeblock-panel>
