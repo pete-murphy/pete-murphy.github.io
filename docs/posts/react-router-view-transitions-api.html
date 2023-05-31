@@ -8,7 +8,11 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="React Router and View Transitions">
     <meta name="twitter:description" content="">
-        <title>React Router and View Transitions | WIP</title>
+        <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚧</text></svg>"
+    />
+    <title>React Router and View Transitions | WIP</title>
     <link rel="stylesheet" href="/css/main.css" />
   </head>
   <body>
@@ -108,12 +112,11 @@ difficulties involved here</a>).</p>
 href="https://aerotwist.com/blog/flip-your-animations/">FLIP
 technique</a>. It’s a bit of a magic trick that involves moving the
 element to its final state and then applying a <code>transform</code> so
-that we can efficiently animate <em>from</em> the initial state, so
-that</p>
+that we can efficiently animate <em>from</em> the initial state.</p>
 <blockquote>
-<p>instead of animating “straight ahead” and potentially doing expensive
-calculations on every single frame we precalculate the animation
-dynamically and let it play out cheaply.</p>
+<p>… [I]nstead of animating “straight ahead” and potentially doing
+expensive calculations on every single frame we precalculate the
+animation dynamically and let it play out cheaply.</p>
 </blockquote>
 <p>There are some libraries for implementing this, like <a
 href="https://greensock.com/docs/v3/Plugins/Flip/">GSAP</a> or <a

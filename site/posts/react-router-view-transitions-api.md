@@ -24,9 +24,9 @@ I can't speak on how this is implemented on mobile, but on the web the implement
 ## FLIP
 
 The solution that folks seem to have landed on for this is the [FLIP technique](https://aerotwist.com/blog/flip-your-animations/).
-It's a bit of a magic trick that involves moving the element to its final state and then applying a `transform` so that we can efficiently animate _from_ the initial state, so that
+It's a bit of a magic trick that involves moving the element to its final state and then applying a `transform` so that we can efficiently animate _from_ the initial state.
 
-> instead of animating "straight ahead" and potentially doing expensive calculations on every single frame we precalculate the animation dynamically and let it play out cheaply.
+> ... [I]nstead of animating "straight ahead" and potentially doing expensive calculations on every single frame we precalculate the animation dynamically and let it play out cheaply.
 
 There are some libraries for implementing this, like [GSAP](https://greensock.com/docs/v3/Plugins/Flip/) or [Flipping.js](https://github.com/davidkpiano/flipping).
 In React, `framer/motion` provides a high-level API for using this technique to achieve "shared layout animations" with its [`LayoutGroup`](https://www.framer.com/motion/layout-group/) component.
