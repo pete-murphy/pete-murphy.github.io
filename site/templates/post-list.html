@@ -3,8 +3,16 @@
   <li>
     <div><a href="{{url}}">{{title}}</a></div>
     <div class="inline-container secondary">
-      {{>site/templates/icons/calendar.html}}
-      <time datetime="{{isoDate}}">{{date}}</time>
+      <ul class="post-meta">
+        <li>
+          {{>site/templates/icons/calendar.html}}
+          <time datetime="{{isoDate}}">{{date}}</time>
+        </li>
+        <li>
+          {{>site/templates/icons/clock.html}}
+          <time datetime="PT{{readingTime}}M">{{readingTime}} min</time>
+        </li>
+      </ul>
     </div>
   </li>
   {{/posts}}

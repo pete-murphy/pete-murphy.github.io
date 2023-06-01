@@ -8,23 +8,22 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TypeApplications #-}
 
 module Main where
 
 import Control.Arrow ((>>>))
-import Control.Lens (At (..), (<&>), (?~), (^.), (^..), (^?))
+import Control.Lens (At (..), (?~), (^.), (^..), (^?), _Unwrapped')
 import Control.Monad qualified as Monad
 import Data.Aeson (FromJSON, ToJSON, Value (..), (.=))
 import Data.Aeson qualified as Aeson
 import Data.Aeson.KeyMap qualified as KeyMap
-import Data.Aeson.Lens (_Object, _String)
+import Data.Aeson.Lens (_Integer, _Object, _String)
 import Data.Aeson.Lens qualified as Aeson
-import Data.Foldable
 import Data.Function ((&))
 import Data.List qualified as List
 import Data.Map (Map)
 import Data.Map qualified as Map
+import Data.Monoid (Sum (..))
 import Data.Ord (Down (Down))
 import Data.Set (Set)
 import Data.Set qualified as Set
@@ -116,6 +115,7 @@ data Post = Post
     postDate :: String,
     postSrcPath :: String,
     postDescription :: String,
+    postReadingTime :: Integer,
     postSlug :: String
   }
   deriving (Generic, Eq, Ord, Show, Binary)
@@ -135,6 +135,11 @@ instance FromJSON Post where
         postImage = value ^? Aeson.key "image" . _String . Text.unpacked
         postDescription = value ^. Aeson.key "description" . _String . Text.unpacked
         postSlug = value ^. Aeson.key "slug" . _String . Text.unpacked
+        -- TODO: The above are all implicitly failing with `mempty` if the key
+        -- is missing. Doing the same here for now (so wrapping in `Sum`) but
+        -- should probably handle parse errors.
+        postReadingTime = getSum (value ^. Aeson.key "readingTime" . _Integer . _Unwrapped')
+
     pure Post {..}
 
 instance ToJSON Post where
@@ -152,6 +157,7 @@ instance ToJSON Post where
         "date" .= postDate,
         "srcPath" .= postSrcPath,
         "description" .= postDescription,
+        "readingTime" .= postReadingTime,
         "slug" .= postSlug
       ]
 
@@ -193,21 +199,28 @@ buildPost srcPath = Shake.Forward.cacheAction ("build" :: Text, srcPath) do
   -- TODO: Could this be a PandocReader?
   (title, sanitizedTitle, rest) <- Title.parse postContent
   postContentWithCodeBlocks <- Multicodeblock.parse rest
-  -- TODO: We need the type application here so that we have access to
-  -- isoDate in the mustache template (???) not sure why though
-  postData <- Slick.Pandoc.markdownToHTML' @Post (Text.pack postContentWithCodeBlocks)
-  let postURL = Text.pack (Shake.FilePath.dropDirectory1 (srcPath -<.> "html"))
-      withPostURL = _Object . at "url" ?~ String postURL
+  let wordCount = length (words rest)
+      readingTime = wordCount `div` 200
+      withReadingTime = _Object . at "readingTime" ?~ Number (fromIntegral readingTime)
 
+  -- TODO: Allow HTML title vs text title
   let withTitle =
         _Object . at "title" ?~ String (Text.pack title)
           >>> _Object . at "displayTitle" ?~ String (Text.pack sanitizedTitle)
+
+  let postURL = Text.pack (Shake.FilePath.dropDirectory1 (srcPath -<.> "html"))
+      withPostURL = _Object . at "url" ?~ String postURL
+
+  postData <- Slick.Pandoc.markdownToHTML (Text.pack postContentWithCodeBlocks)
+
   -- Add additional metadata we've been able to compute
   let fullPostData =
         Aeson.toJSON postData
           & withPostURL
           & withSiteMeta
           & withTitle
+          & withReadingTime
+
   template <- Slick.compileTemplate' "site/templates/post.html"
   Shake.writeFile' (outputFolder </> Text.unpack postURL) (Text.unpack (Slick.substitute template fullPostData))
   Slick.convert fullPostData
@@ -218,9 +231,9 @@ buildTags tags =
     Shake.forP tags writeTag
 
 writeTag :: Tag -> Action ()
-writeTag t@Tag {tagURL} = do
+writeTag tag@Tag {tagURL} = do
   tagTempl <- Slick.compileTemplate' "site/templates/tag.html"
-  Shake.writeFile' (outputFolder <> tagURL -<.> "html") (Text.unpack (Slick.substitute tagTempl (Aeson.toJSON t)))
+  Shake.writeFile' (outputFolder <> tagURL -<.> "html") (Text.unpack (Slick.substitute tagTempl (Aeson.toJSON tag)))
 
 getTags :: [Post] -> Action [Tag]
 getTags posts = do
@@ -230,7 +243,7 @@ getTags posts = do
         Map.foldMapWithKey
           (\tagName ps -> [Tag {tagName, tagPosts = sortByDate ps, tagURL = "/tag/" <> tagName}])
           tagToPostsList
-  return tagObjects
+  pure tagObjects
   where
     toMap :: Post -> Map String (Set Post)
     toMap p@Post {postTags} = Map.unionsWith mappend (embed p <$> postTags)
