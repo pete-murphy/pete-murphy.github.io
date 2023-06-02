@@ -77,9 +77,9 @@ header .subheader {
   gap: 0.75rem;
 }
 
-.secondary {
+/* .secondary {
   color: var(--text-2);
-}
+} */
 
 .inline-container {
   max-width: max-content;
@@ -168,6 +168,10 @@ ul.post-meta {
 ul.post-meta > li {
   display: flex;
   gap: 0.5rem;
+  align-items: center;
+}
+ul.post-meta > li .icon {
+  color: var(--text-2);
 }
 
 .post > multicodeblock-tabs,
@@ -203,7 +207,7 @@ multicodeblock-tab:first-of-type {
   margin-inline-start: 2rem;
 }
 multicodeblock-tab {
-  color: var(--text-4);
+  color: var(--text-3);
   padding-inline: 1rem;
   padding-block: 0.6rem;
   border: 1px solid transparent;

@@ -127,7 +127,7 @@ pre > code {
 pre > code > span::before {
   counter-increment: line;
   content: counter(line);
-  color: var(--text-4);
+  color: var(--text-3);
   position: absolute;
   left: 0;
   line-height: 1.4;
@@ -189,7 +189,7 @@ code:not(.sourceCode) {
 /* CommentTok */
 .sourceCode .co {
   font-style: italic;
-  color: var(--text-4);
+  color: var(--text-3);
 }
 /* OtherTok */
 .sourceCode .ot {
