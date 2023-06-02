@@ -55,7 +55,8 @@ main {
   gap: 2rem;
 }
 
-header:has(h1) {
+/* header:has(h1) { */
+header.title {
   margin-block-start: 3rem;
   margin-block-end: 2rem;
 }
