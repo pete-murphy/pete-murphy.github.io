@@ -17,13 +17,13 @@ import Control.Monad qualified as Monad
 import Data.Aeson (FromJSON, ToJSON, Value (..), (.=))
 import Data.Aeson qualified as Aeson
 import Data.Aeson.KeyMap qualified as KeyMap
-import Data.Aeson.Lens (_Integer, _Object, _String)
+import Data.Aeson.Lens (_Bool, _Integer, _Object, _String)
 import Data.Aeson.Lens qualified as Aeson
 import Data.Function ((&))
 import Data.List qualified as List
 import Data.Map (Map)
 import Data.Map qualified as Map
-import Data.Monoid (Sum (..))
+import Data.Monoid (Any (..), Sum (..))
 import Data.Ord (Down (Down))
 import Data.Set (Set)
 import Data.Set qualified as Set
@@ -116,6 +116,7 @@ data Post = Post
     postSrcPath :: String,
     postDescription :: String,
     postReadingTime :: Integer,
+    postIsDraft :: Bool,
     postSlug :: String
   }
   deriving (Generic, Eq, Ord, Show, Binary)
@@ -139,6 +140,7 @@ instance FromJSON Post where
         -- is missing. Doing the same here for now (so wrapping in `Sum`) but
         -- should probably handle parse errors.
         postReadingTime = getSum (value ^. Aeson.key "readingTime" . _Integer . _Unwrapped')
+        postIsDraft = getAny (value ^. Aeson.key "isDraft" . _Bool . _Unwrapped')
 
     pure Post {..}
 
@@ -158,6 +160,7 @@ instance ToJSON Post where
         "srcPath" .= postSrcPath,
         "description" .= postDescription,
         "readingTime" .= postReadingTime,
+        "isDraft" .= postIsDraft,
         "slug" .= postSlug
       ]
 

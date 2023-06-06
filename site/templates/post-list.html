@@ -12,6 +12,13 @@
           {{>site/templates/icons/clock.html}}
           <time datetime="PT{{readingTime}}M">{{readingTime}} min</time>
         </li>
+
+        {{#isDraft}}
+        <li class="draft">
+          {{>site/templates/icons/exclamation.html}}
+          <span>Draft</span>
+        </li>
+        {{/isDraft}}
       </ul>
     </div>
   </li>

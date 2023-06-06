@@ -169,6 +169,9 @@ ul.post-meta > li {
 ul.post-meta > li .icon {
   color: var(--text-2);
 }
+/* ul.post-meta > li.draft {
+  color: var(--text-1);
+} */
 
 .post > multicodeblock-tabs,
 .post > div.sourceCode {
