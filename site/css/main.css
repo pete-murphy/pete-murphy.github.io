@@ -138,6 +138,27 @@ header .subheader {
   height: max-content;
 }
 
+p:has(.wave):hover .wave {
+  animation: wave 1s ease-in-out infinite;
+}
+
+.wave {
+  display: inline-block;
+  transform-origin: 80% 80%;
+}
+
+@keyframes wave {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
 ul.posts {
   list-style: none;
   padding: 0;
@@ -173,9 +194,17 @@ ul.post-meta > li .icon {
   color: var(--text-1);
 } */
 
+.post figure:has(.full-width),
 .post > multicodeblock-tabs,
 .post > div.sourceCode {
   grid-column: gutter;
+}
+
+.post .full-width {
+  width: 100%;
+  height: 100%;
+  max-height: 50vh;
+  object-fit: cover;
 }
 
 .post > multicodeblock-tabs {
