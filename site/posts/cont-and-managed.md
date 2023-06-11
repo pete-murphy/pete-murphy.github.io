@@ -13,7 +13,7 @@ PureScript allows us to override the default `bind` implementation and re-purpos
 
 <Multicodeblock>
 
-```purescript
+```[PureScript (with infix operator)]purescript
 import Prelude
 
 newtype Cont r a = Cont ((a -> r) -> r)
@@ -49,7 +49,7 @@ instance Bind (Cont r) where
           pure' b
 ```
 
-```purescript
+```[PureScript (with do)]purescript
 import Prelude hiding (bind)
 
 newtype Cont r a = Cont ((a -> r) -> r)

@@ -25,7 +25,7 @@ accessor <code>(&gt;&gt;-)</code></a> from Gabriella Gonzalez’s
 implementation and re-purpose the <code>do</code> syntax sugar (we could
 do the same in Haskell with <code>RebindableSyntax</code> enabled).</p>
 <multicodeblock-tabs>
-<multicodeblock-tab role="heading" slot="tab">PureScript</multicodeblock-tab>
+<multicodeblock-tab role="heading" slot="tab">PureScript (with infix operator)</multicodeblock-tab>
 <multicodeblock-panel role="region" slot="panel">
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode purescript"><code class="sourceCode purescript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Prelude</span></span>
@@ -62,7 +62,7 @@ class="sourceCode purescript"><code class="sourceCode purescript"><span id="cb1-
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>        amb a <span class="op">&gt;&gt;-</span> \b <span class="ot">-&gt;</span></span>
 <span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>          pure&#39; b</span></code></pre></div>
 </multicodeblock-panel>
-<multicodeblock-tab role="heading" slot="tab">PureScript</multicodeblock-tab>
+<multicodeblock-tab role="heading" slot="tab">PureScript (with do)</multicodeblock-tab>
 <multicodeblock-panel role="region" slot="panel">
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode purescript"><code class="sourceCode purescript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Prelude</span> <span class="kw">hiding</span> (bind)</span>

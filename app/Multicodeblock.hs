@@ -4,23 +4,25 @@
 
 module Multicodeblock (parse) where
 
-import Control.Applicative ((<|>))
+import Control.Applicative (optional, (<|>))
 import qualified Data.Char as Char
 import Data.Functor ((<&>))
+import qualified Data.Maybe as Maybe
 import Data.Void (Void)
 import Text.Megaparsec (Parsec, anySingle, anySingleBut, many, manyTill, runParser)
 import Text.Megaparsec.Error (errorBundlePretty)
 
 type Parser = Parsec Void String
 
-codeblock :: Parser (String, String)
+codeblock :: Parser (String, Maybe String, String)
 codeblock = do
   _ <- "```"
-  title <- manyTill anySingle "\n"
-  code <- manyTill anySingle "```"
-  pure (title, code)
+  maybeTitle <- optional ("[" *> anySingle `manyTill` "]")
+  language <- anySingle `manyTill` "\n"
+  code <- anySingle `manyTill` "```"
+  pure (language, maybeTitle, code)
 
-multicodeblock :: Parser [(String, String)]
+multicodeblock :: Parser [(String, Maybe String, String)]
 multicodeblock = do
   _ <- "<Multicodeblock>" <* many "\n"
   manyTill (codeblock <* many "\n") "</Multicodeblock>" <* many "\n"
@@ -34,10 +36,10 @@ parser =
   where
     anyline = manyTill (anySingleBut '\n') "\n"
 
-    joinCodeblocks :: [(String, String)] -> String
+    joinCodeblocks :: [(String, Maybe String, String)] -> String
     joinCodeblocks codeblocks =
-      codeblocks >>= \(title, block) -> do
-        let title' = case title of
+      codeblocks >>= \(language, maybeTitle, block) -> do
+        let languageTitle = case language of
               "purescript" -> "PureScript"
               "haskell" -> "Haskell"
               "hs" -> "Haskell"
@@ -46,12 +48,13 @@ parser =
               "rust" -> "Rust"
               (c : str) -> Char.toUpper c : str
               "" -> ""
+        let title = Maybe.fromMaybe languageTitle maybeTitle
         unlines
-          [ "<multicodeblock-tab role=\"heading\" slot=\"tab\">" <> title' <> "</multicodeblock-tab>",
+          [ "<multicodeblock-tab role=\"heading\" slot=\"tab\">" <> title <> "</multicodeblock-tab>",
             "<multicodeblock-panel role=\"region\" slot=\"panel\">",
             "```",
             "",
-            "```" <> title,
+            "```" <> languageTitle,
             block,
             "```",
             "",

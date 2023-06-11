@@ -20,6 +20,7 @@ import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Lens (_Bool, _Integer, _Object, _String)
 import Data.Aeson.Lens qualified as Aeson
 import Data.Function ((&))
+import Data.Function qualified as Function
 import Data.List qualified as List
 import Data.Map (Map)
 import Data.Map qualified as Map
@@ -203,7 +204,7 @@ buildPost srcPath = Shake.Forward.cacheAction ("build" :: Text, srcPath) do
   (title, sanitizedTitle, rest) <- Title.parse postContent
   postContentWithCodeBlocks <- Multicodeblock.parse rest
   let wordCount = length (words rest)
-      readingTime = wordCount `div` 200
+      readingTime = round (((/) `Function.on` fromIntegral) wordCount 200)
       withReadingTime = _Object . at "readingTime" ?~ Number (fromIntegral readingTime)
 
   -- TODO: Allow HTML title vs text title
