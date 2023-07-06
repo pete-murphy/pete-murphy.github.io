@@ -166,6 +166,7 @@ ul.posts {
   display: flex;
   flex-flow: column;
   gap: 1rem;
+  margin-block-end: 2rem;
 }
 
 ul.posts li {
@@ -194,9 +195,11 @@ ul.post-meta > li .icon {
   color: var(--text-1);
 } */
 
-.post figure:has(.full-width),
 .post > multicodeblock-tabs,
 .post > div.sourceCode {
+  grid-column: gutter;
+}
+.post figure:has(.full-width) {
   grid-column: gutter;
 }
 
