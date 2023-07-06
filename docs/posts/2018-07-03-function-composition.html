@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head profile="http://www.w3.org/2005/10/profile">
+    <meta charset="UTF-8" />
+    <meta name="description" content="WIP" />
+    <meta name="author" content="Me" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Better Readability with Function Composition">
+    <meta name="twitter:description" content="">
+        <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚧</text></svg>"
+    />
+    <title>Better Readability with Function Composition | WIP</title>
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
+    <header class="nav-header">
+      <nav>
+        <a href="/" aria-label="Home"
+          >    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      class="icon"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z"
+        clip-rule="evenodd"
+      />
+    </svg>
+<span>Home</span></a
+        >
+      </nav>
+    </header>
+
+    <main>
+      <header class="title">
+        <div class="post">
+
+          <h1>Better Readability with Function Composition</h1>
+
+          <div class="subheader">
+            <div class="inline-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="icon"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <time datetime="">Jul 3, 2018</time>
+            </div>
+            <div class="tags-container inline-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="icon"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.5 3A2.5 2.5 0 003 5.5v2.879a2.5 2.5 0 00.732 1.767l6.5 6.5a2.5 2.5 0 003.536 0l2.878-2.878a2.5 2.5 0 000-3.536l-6.5-6.5A2.5 2.5 0 008.38 3H5.5zM6 7a1 1 0 100-2 1 1 0 000 2z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <ul class="tags">
+              </ul>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <article class="post"><div class="tldr">
+<p><strong>TL;DR</strong> Function composition is an early win on the FP
+learning curve, and the best presentation of this material I’ve found is
+in the <a
+href="https://mostly-adequate.gitbooks.io/mostly-adequate-guide/"><em>Prof
+Frisby</em> book</a>, so I’d point to that as a primary resource. If
+interested in jumping ahead to some composition exercises (and slightly
+easier than those in the book), check out either <a
+href="https://github.com/kyleshevlin/fp-composition-exercises">Kyle
+Shevlin’s</a> or <a href="https://gitlab.com/ccfp/intro-to-fp">my own
+repo</a> (based on his).</p>
+</div>
+<p>Last week we had our first meetup, and I thought I would sum up what
+was covered for those that couldn’t make it. The goal was to cover the
+concept of <em>function composition</em>: in short, composing small,
+simple functions into bigger, more complex ones. I hope this post is
+read as a supplement or companion piece to other more in-depth
+treatments of the subject, as I may gloss over or neglect to mention a
+lot of concepts that help contribute to a better understanding of
+function composition, namely: <em>purity</em>, <em>immutability</em>,
+<em>higher-order functions</em>, <em>currying</em> and <em>partial
+application</em>. For a quick overview of some of those concepts (in
+JavaScript), I recommend <a
+href="https://www.youtube.com/watch?v=e-5obm1G_FY">this talk</a> by
+Anjana Vakil, or <a
+href="https://www.youtube.com/watch?v=-4QNj7TJjgo">this one</a> by Kyle
+Shevlin. Khan Academy also has a helpful <a
+href="https://www.khanacademy.org/math/algebra2/manipulating-functions/function-composition/v/function-composition">section
+on composing functions</a> with diagrams and probably better, more
+in-depth explanations than you’ll find below.</p>
+<h2 id="taking-a-page-out-of-your-high-school-algebra-book">Taking a
+page out of your high school algebra book</h2>
+<p>You may remember function composition from high school math:</p>
+<p><span
+class="math display"><em>g</em>(<em>f</em>(<em>x</em>)) = (<em>g</em>∘<em>f</em>)(<em>x</em>)</span></p>
+<p>On the left hand side of the equation, we’re <em>applying</em> the
+function <span class="math inline"><em>f</em></span> to <span
+class="math inline"><em>x</em></span> (or in programming parlance,
+calling <span class="math inline"><em>f</em></span> with <span
+class="math inline"><em>x</em></span> as argument) and then applying
+<span class="math inline"><em>g</em></span> to the result. On the right
+hand side we are introducing the composition operator (little circle)
+and saying that the composed function <span
+class="math inline"><em>g</em> ∘ <em>f</em></span> applied to <span
+class="math inline"><em>x</em></span> yields the same result.</p>
+<p>It may not be obvious how that concept could be useful, but consider
+a case where the nesting of parentheses (or function calls, however you
+want to think of it) gets a bit out of hand:</p>
+<p><span
+class="math display"><em>j</em>(<em>i</em>(<em>h</em>(<em>g</em>(<em>f</em>(<em>x</em>))))) = (<em>j</em>∘<em>i</em>∘<em>h</em>∘<em>g</em>∘<em>f</em>)(<em>x</em>)</span></p>
+<p>In this case, composition allows us to think about a single composed
+function (<span
+class="math inline"><em>j</em> ∘ <em>i</em> ∘ <em>h</em> ∘ <em>g</em> ∘ <em>f</em></span>)
+that will be applied to an <span class="math inline"><em>x</em></span>.
+Contrast that with the left side where we have to first call <span
+class="math inline"><em>f</em>(<em>x</em>)</span>, and then pass the
+result to <span class="math inline"><em>g</em></span>, then pass that
+result to <span class="math inline"><em>h</em></span> and so on.</p>
+<h2 id="real-world-application">Real world application</h2>
+<p>Suppose you want to write a function that converts a roof pitch<a
+href="#fn1" class="footnote-ref" id="fnref1"
+role="doc-noteref"><sup>1</sup></a> to degrees. E.g., for the input
+<em>string</em> <code>"5:12"</code>, we want to return the
+<em>number</em> <code>22.6</code>. A first attempt might go like so:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> pitchToDegrees <span class="op">=</span> (str) <span class="kw">=&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">Math</span><span class="op">.</span><span class="fu">round</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    ((<span class="bu">Math</span><span class="op">.</span><span class="fu">atan</span>(<span class="op">+</span>str<span class="op">.</span><span class="fu">split</span>(<span class="ss">/</span><span class="sc">[:/]</span><span class="ss">/</span>)[<span class="dv">0</span>] <span class="op">/</span> <span class="op">+</span>str<span class="op">.</span><span class="fu">split</span>(<span class="ss">/</span><span class="sc">[:/]</span><span class="ss">/</span>)[<span class="dv">1</span>]) <span class="op">*</span> <span class="dv">180</span>) <span class="op">/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>      <span class="bu">Math</span><span class="op">.</span><span class="cn">PI</span>) <span class="op">*</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>      <span class="dv">10</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="op">/</span> <span class="dv">10</span><span class="op">;</span></span></code></pre></div>
+<p>Which works alright, but it’s not so easy to follow how that initial
+string <em>flows</em> through each step of the function to produce the
+final result. You could try to make it more explicit by assigning each
+step to a variable:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> pitchToDegrees <span class="op">=</span> (str) <span class="kw">=&gt;</span> {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> splitStr <span class="op">=</span> str<span class="op">.</span><span class="fu">split</span>(<span class="ss">/</span><span class="sc">[:/]</span><span class="ss">/</span>)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> splitNums <span class="op">=</span> splitStr<span class="op">.</span><span class="fu">map</span>(<span class="bu">Number</span>)<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> radians <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">atan</span>(splitNums[<span class="dv">0</span>] <span class="op">/</span> splitNums[<span class="dv">1</span>])<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> degrees <span class="op">=</span> (radians <span class="op">*</span> <span class="dv">180</span>) <span class="op">/</span> <span class="bu">Math</span><span class="op">.</span><span class="cn">PI</span><span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> rounded <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">round</span>(degrees <span class="op">*</span> <span class="dv">10</span>) <span class="op">/</span> <span class="dv">10</span><span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> rounded<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>But that gets pretty verbose, and since you’re just passing each
+result into the next expression, it might be more natural to read this
+as a composed function:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> pitchToDegree <span class="op">=</span> <span class="fu">compose</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">roundTo</span>(<span class="dv">1</span>)<span class="op">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  radiansToDegrees<span class="op">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  ([rise<span class="op">,</span> run]) <span class="kw">=&gt;</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">atan</span>(rise <span class="op">/</span> run)<span class="op">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(parseFloat)<span class="op">,</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">split</span>(<span class="ss">/</span><span class="sc">[:/]</span><span class="ss">/</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span></code></pre></div>
+<p>I think this strikes a balance between terseness and easy readability
+(once you get used to reading composed functions from right-to-left,
+bottom-to-top). It’s also <a
+href="https://www.youtube.com/watch?v=SfWR3dKnFIo">been pointed out</a>
+that this style of programming lends to more reliable, safer code, as it
+is harder to hack (in the sense of throwing things together in an
+undisciplined or naive manner). Every returned value has to necessarily
+flow into the next function; you really have to go out of your way to do
+any side effect-y things.<a href="#fn2" class="footnote-ref" id="fnref2"
+role="doc-noteref"><sup>2</sup></a></p>
+<p>It does require a little bit of setup beforehand with some helper
+functions:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> map <span class="op">=</span> (fn) <span class="kw">=&gt;</span> (arr) <span class="kw">=&gt;</span> arr<span class="op">.</span><span class="fu">map</span>(fn)<span class="op">;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> split <span class="op">=</span> (regEx) <span class="kw">=&gt;</span> (str) <span class="kw">=&gt;</span> str<span class="op">.</span><span class="fu">split</span>(regEx)<span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> roundTo <span class="op">=</span> (digits) <span class="kw">=&gt;</span> (num) <span class="kw">=&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="bu">Math</span><span class="op">.</span><span class="fu">round</span>(num <span class="op">*</span> <span class="dv">10</span> <span class="op">**</span> digits) <span class="op">/</span> <span class="dv">10</span> <span class="op">**</span> digits<span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> radiansToDegrees <span class="op">=</span> (rads) <span class="kw">=&gt;</span> (rads <span class="op">*</span> <span class="dv">180</span>) <span class="op">/</span> <span class="bu">Math</span><span class="op">.</span><span class="cn">PI</span><span class="op">;</span></span></code></pre></div>
+<p>That might seem like a lot of work defining all these small, super
+simple functions, but that’s kind of the name of the game with
+functional programming, and the idea is that it pays off because all
+these little functions are easy to test and are usually very re-usable<a
+href="#fn3" class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a>. If you don’t feel like rolling your
+own tiny functions by hand, it’s easy enough to pull them in from a
+handy library like <a href="https://ramdajs.com">ramda</a> or <a
+href="https://github.com/lodash/lodash/wiki/FP-Guide">lodash/fp</a>,
+which will have most of what you would need and more. We haven’t covered
+the one function that makes it possible to glue all the little functions
+together, a simple definition for which might look like:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> compose <span class="op">=</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  (<span class="op">...</span>fns) <span class="kw">=&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  (x) <span class="kw">=&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    fns<span class="op">.</span><span class="fu">reduceRight</span>((acc<span class="op">,</span> fn) <span class="kw">=&gt;</span> <span class="fu">fn</span>(acc)<span class="op">,</span> x)<span class="op">;</span></span></code></pre></div>
+<p>This definition can look pretty gnarly if you’re not used to looking
+at the array <code>reduce</code> method and the function that it takes
+as an argument, or the rest parameters syntax in JavaScript—but I
+wouldn’t worry if it looks alien. If it helps, you can think of it as
+the more generalized version of what we’re doing here:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> compose2 <span class="op">=</span> (g<span class="op">,</span> f) <span class="kw">=&gt;</span> x <span class="kw">=&gt;</span> <span class="fu">g</span>(<span class="fu">f</span>(x))</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> compose3 <span class="op">=</span> (h<span class="op">,</span> g<span class="op">,</span> f) <span class="kw">=&gt;</span> x <span class="kw">=&gt;</span> <span class="fu">h</span>(<span class="fu">g</span>(<span class="fu">f</span>(x)))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> compose4 <span class="op">=</span> (i<span class="op">,</span> h<span class="op">,</span> g<span class="op">,</span> f) <span class="kw">=&gt;</span> x <span class="kw">=&gt;</span> <span class="fu">i</span>(<span class="fu">h</span>(<span class="fu">g</span>(<span class="fu">f</span>(x))))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span></code></pre></div>
+<p>Or you can just start using it and worry about the details behind how
+it’s implemented later, which tends to be how I learn. If you’re
+interested in learning more, this material is covered in the first five
+chapters of <a
+href="https://mostly-adequate.gitbooks.io/mostly-adequate-guide/"><em>Professor
+Frisby Mostly Adequate Guide</em></a>, or if you want to fast forward to
+trying out some composition exercises I have a <a
+href="https://gitlab.com/ccfp/intro-to-fp">repo of some here</a>.</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> trace <span class="op">=</span> (msg) <span class="kw">=&gt;</span> (x) <span class="kw">=&gt;</span> {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(msg<span class="op">,</span> x)<span class="op">;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> x<span class="op">;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>Just drop it in in the middle of a composed function and you can have
+a peek at what’s being passed through at that point.</p>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>The steepness of the roof of a house is often expressed
+(at least in the US) in terms of common <em>pitches</em> such as 5:12,
+6:12, 8:12, 10:12, where the first number is the rise in inches over a
+12 inch span (so, 5:12 is read as “5 over 12”, or just a “5 pitch”).
+Roofers and architects alike think of the angle of a roof in these
+terms.<a href="#fnref1" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Speaking of which, a handy (and impure) function that I
+often rely on to debug when writing functions in this way is<a
+href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Okay, maybe <code>radiansToDegrees</code> isn’t super
+re-usable.<a href="#fnref3" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></article>
+    </main>
+
+    <footer>
+      Built with Haskell using
+      <a href="https://github.com/ChrisPenner/slick">slick</a> (&
+      <a href="https://open-props.style/">open-props</a> & web components)
+    </footer>
+    
+    <script src="/js/main.js"></script>
+
+    <script src="/js/multicodeblock-tabs.js"></script>
+    <script src="/js/image-loader.js"></script>
+  </body>
+</html>

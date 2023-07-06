@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head profile="http://www.w3.org/2005/10/profile">
+    <meta charset="UTF-8" />
+    <meta name="description" content="WIP" />
+    <meta name="author" content="Me" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="React Router and View Transitions">
+    <meta name="twitter:description" content="">
+        <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚧</text></svg>"
+    />
+    <title>React Router and View Transitions | WIP</title>
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
+    <header class="nav-header">
+      <nav>
+        <a href="/" aria-label="Home"
+          >    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      class="icon"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z"
+        clip-rule="evenodd"
+      />
+    </svg>
+<span>Home</span></a
+        >
+      </nav>
+    </header>
+
+    <main>
+      <header class="title">
+        <div class="post">
+
+          <h1>React Router and View Transitions</h1>
+
+          <div class="subheader">
+            <div class="inline-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="icon"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <time datetime="">May 17, 2023</time>
+            </div>
+            <div class="tags-container inline-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="icon"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.5 3A2.5 2.5 0 003 5.5v2.879a2.5 2.5 0 00.732 1.767l6.5 6.5a2.5 2.5 0 003.536 0l2.878-2.878a2.5 2.5 0 000-3.536l-6.5-6.5A2.5 2.5 0 008.38 3H5.5zM6 7a1 1 0 100-2 1 1 0 000 2z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <ul class="tags">
+                <li class="tag react">react</li>
+                <li class="tag react-router">react-router</li>
+                <li class="tag view transitions">view transitions</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <article class="post"><h2 id="container-transform">Container transform</h2>
+<p>Recently I wanted to implement something like what Material UI calls
+the <a
+href="https://m3.material.io/styles/motion/transitions/transition-patterns#b67cba74-6240-4663-a423-d537b6d21187">container
+transform pattern</a>. From the Material 3 docs:</p>
+<blockquote>
+<p>This pattern is used to seamlessly transform an element to show more
+detail, like a card expanding into a details page. […] Persistent
+elements are used to seamlessly connect the start and end state of the
+transition.</p>
+</blockquote>
+<p>Here’s a simple example in a GIF</p>
+<figure>
+<img src="../images/2023-05-21-container-transform.gif"
+alt="An example from the Material UI documentation" />
+<figcaption aria-hidden="true">An example from the Material UI
+documentation</figcaption>
+</figure>
+<p>The pattern isn’t unique to Material or Google, it’s used for example
+in iOS when opening an app from the home screen. I can’t speak on how
+this is implemented on mobile, but on the web the implementation has
+historically been complicated by the variety of layout rules that need
+to be taken into account (Cassie Evans has an excellent <a
+href="https://www.youtube.com/watch?v=POBxxUkvHi4">talk about the
+difficulties involved here</a>).</p>
+<h2 id="flip">FLIP</h2>
+<p>The solution that folks seem to have landed on for this is the <a
+href="https://aerotwist.com/blog/flip-your-animations/">FLIP
+technique</a>. It’s a bit of a magic trick that involves moving the
+element to its final state and then applying a <code>transform</code> so
+that we can efficiently animate <em>from</em> the initial state.</p>
+<blockquote>
+<p>… [I]nstead of animating “straight ahead” and potentially doing
+expensive calculations on every single frame we precalculate the
+animation dynamically and let it play out cheaply.</p>
+</blockquote>
+<p>There are some libraries for implementing this, like <a
+href="https://greensock.com/docs/v3/Plugins/Flip/">GSAP</a> or <a
+href="https://github.com/davidkpiano/flipping">Flipping.js</a>. In
+React, <code>framer/motion</code> provides a high-level API for using
+this technique to achieve “shared layout animations” with its <a
+href="https://www.framer.com/motion/layout-group/"><code>LayoutGroup</code></a>
+component.</p>
+<h2 id="view-transitions-api">View Transitions API</h2>
+<p>But there’s also a new high-level API coming to the browser, in the
+<a
+href="https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API">View
+Transitions API</a>. This is still a <a
+href="https://drafts.csswg.org/css-view-transitions-1/">draft
+specification</a> at time of writing, but it’s landed in Chrome. There’s
+a nice <a
+href="https://developer.chrome.com/docs/web-platform/view-transitions/">write-up
+by the Chrome team</a> that serves as a tutorial for using in a
+framework-less SPA. Getting this to work in a React app where we don’t
+normally manage DOM updates (especially for route transitions) is a bit
+trickier.</p>
+<!-- <image-loader
+placeholder="../images/2023-05-21-demo/small.gif"
+full-image="../images/2023-05-21-demo/large.gif"
+/> -->
+<figure>
+<img src="../images/2023-05-21-demo/large.gif"
+alt="A simple demo using React Router" />
+<figcaption aria-hidden="true">A simple demo using React
+Router</figcaption>
+</figure>
+<p>After a bit of trial-and-error I got a demo working using animated
+transitions between routes with React Router. Here’s the repo: <a
+href="https://github.com/ptrfrncsmrph/react-view-transitions-api">https://github.com/ptrfrncsmrph/react-view-transitions-api</a>.</p>
+<h2 id="some-rough-edges">Some rough edges</h2>
+<p><code>startViewTransition</code> takes a callback that
+<em>synchronously</em> updates the DOM. The only way I could figure to
+do so was using React Router’s <code>useNavigate</code> and a button
+with a click handler instead of <code>Link</code> 😔. We then need to
+wrap the call to <code>navigate</code> in <code>flushSync</code> to
+force the synchronous update.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">startViewTransition</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  ReactDOM<span class="op">.</span><span class="fu">flushSync</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">navigate</span>(nextRoute)<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>The React docs warn that <code>flushSync</code> should be used as a
+“last resort”, and this API does seem to be at odds with the React
+mental model that doesn’t normally care about <em>when</em> DOM updates
+happen.</p>
+<p>Another awkward bit is the need to toggle the
+<code>viewTransitionName</code>s for transitioning elements.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (ref<span class="op">.</span><span class="at">current</span>) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  ref<span class="op">.</span><span class="at">current</span><span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">viewTransitionName</span> <span class="op">=</span> <span class="st">&quot;movie-image&quot;</span><span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>There needs to be exactly one element with the
+<code>"movie-image"</code> transition name at any given time, so <a
+href="https://developer.chrome.com/docs/web-platform/view-transitions/#transitioning-elements-dont-need-to-be-the-same-dom-element">the
+recommendation</a> seems to be to <em>assign the tag name in the event
+handler</em>.</p>
+<p>A nicer alternative might be to give unique names to each element,
+like <code>movie-image-${movie.id}</code> and then select pairs with
+<code>::view-transition-group(movie-image-*)</code> but that syntax
+doesn’t exist and as far as I can tell the only way of achieving this
+currently would require creating just as many rules in the style sheet
+as there are pairs of elements you’d want to target. I started <a
+href="https://github.com/ptrfrncsmrph/react-view-transitions-api/compare/main...dynamic-style-sheet-rules">going
+down that road</a> but couldn’t get it to work (the transitions
+<em>did</em> apply but looked janky for reasons I couldn’t understand).
+<em>(I think this is also the approach one of the authors of the spec
+tried in this repo but seems like it had complications: <a
+href="https://github.com/jakearchibald/wordle-analyzer/pull/19">https://github.com/jakearchibald/wordle-analyzer/pull/19</a>)</em></p>
+<p>This unique name constraint makes “back navigation” transitions (from
+detail to list view) <a
+href="https://github.com/ptrfrncsmrph/react-view-transitions-api/commit/9c2a2775a34a2ea8e3a7e1ff90881cb4c8cf4e53#diff-26ad4b834941d9b19ebf9db8082bd202aaf72ea0ddea85f5a8a0cb3c729cc6f2">messy</a>.
+The event handler doesn’t have direct access to what we want to target
+as the <code>view-transition-new</code> element, so we need to find it
+in the DOM, assign the transition name, wait for the transition to
+complete, and finally remove the name (so it can be reassigned to the
+next item that gets clicked).</p></article>
+    </main>
+
+    <footer>
+      Built with Haskell using
+      <a href="https://github.com/ChrisPenner/slick">slick</a> (&
+      <a href="https://open-props.style/">open-props</a> & web components)
+    </footer>
+    
+    <script src="/js/main.js"></script>
+
+    <script src="/js/multicodeblock-tabs.js"></script>
+    <script src="/js/image-loader.js"></script>
+  </body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head profile="http://www.w3.org/2005/10/profile">
+    <meta charset="UTF-8" />
+    <meta name="description" content="WIP" />
+    <meta name="author" content="Me" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Resources for Learning FP">
+    <meta name="twitter:description" content="">
+        <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚧</text></svg>"
+    />
+    <title>Resources for Learning FP | WIP</title>
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
+    <header class="nav-header">
+      <nav>
+        <a href="/" aria-label="Home"
+          >    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      class="icon"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z"
+        clip-rule="evenodd"
+      />
+    </svg>
+<span>Home</span></a
+        >
+      </nav>
+    </header>
+
+    <main>
+      <header class="title">
+        <div class="post">
+
+          <h1>Resources for Learning FP</h1>
+
+          <div class="subheader">
+            <div class="inline-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="icon"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <time datetime="">Jun 8, 2018</time>
+            </div>
+            <div class="tags-container inline-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="icon"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.5 3A2.5 2.5 0 003 5.5v2.879a2.5 2.5 0 00.732 1.767l6.5 6.5a2.5 2.5 0 003.536 0l2.878-2.878a2.5 2.5 0 000-3.536l-6.5-6.5A2.5 2.5 0 008.38 3H5.5zM6 7a1 1 0 100-2 1 1 0 000 2z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <ul class="tags">
+                <li class="tag fp">fp</li>
+                <li class="tag learning">learning</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <article class="post"><p>There are many paths to Functional Programming Land, and an
+embarrassment of riches when it comes to learning materials. I’ve tried
+my best to hand-pick out some of the better ones I’ve come across and
+categorize them according to a given starting point or “use case”. I’ve
+also tried to sort each section by how easy or accessible they are to
+beginners. I’m by no means an expert on any of this stuff—I’m still
+early on on the learning curve myself—but I’ve at least attempted most
+of the tutorials listed and what I lack in expertise I’ll try my best to
+make up for in empathy. So if you find you could use some guidance or
+help getting through any of the material, I’m happy to help.</p>
+<h2 id="what-is-functional-programming">What is Functional
+Programming?</h2>
+<p>Before assuming that you want to learn FP, it may help to get an
+inkling as to what it is:</p>
+<blockquote>
+<p>FP is just programming with functions. Functions are:</p>
+<ol type="1">
+<li>Total: They return an output for every input.</li>
+<li>Deterministic: They return the same output for the same input.</li>
+<li>Pure: Their only effect is computing the output.</li>
+</ol>
+<p>The rest is just composition you can learn over time.</p>
+<div style="text-align:right;">
+– <em>John De Goes</em>
+</div>
+</blockquote>
+<p>While that’s true enough, it might not be quite enough to get you
+started. Here are a few bird’s-eye overview talks/presentations that I
+think are helpful or that I’ve heard recommended:</p>
+<ol type="1">
+<li><a href="https://www.youtube.com/watch?v=e-5obm1G_FY">Learning
+Functional Programming with JavaScript</a> by Anjana Vakil. A quick,
+informal presentation of some functional concepts in JS such as
+functional purity, array methods, immutability and persistent data
+structures, from a beginner’s perspective.</li>
+<li><a href="https://soundcloud.com/lambda-cast">LambdaCast</a> “The
+podcast about learning functional programming from the perspective of a
+working developer.” Hosted by David Koontz and a handful of guests with
+varying degrees of functional programming knowledge—I found it very
+helpful to have a complete beginner’s perspective represented in the
+discussion. I’d recommend the first episode or two to start, but the
+series as a whole serves as a good companion to learning these
+concepts.</li>
+<li><a
+href="https://www.functionalgeekery.com/episode-61-susan-potter/">Susan
+Potter on <em>Functional Geekery</em></a> (Jump to about the 5:15 mark
+to skip the sponsor plugs.) About Susan’s transition from “smug OOP”
+systems programmer in Java/C++ to embracing Erlang and Haskell and the
+benefits of the abstractions that functional programming has afforded
+her. Some of it is over my head but maybe useful for those coming from
+similar background to hers.</li>
+<li><a href="https://fsharpforfunandprofit.com/fppatterns/">Functional
+Design Patterns</a> by Scott Wlaschin. Covers much of the same material,
+but if you’re anything like me you’ll benefit from hearing/reading these
+things explained more than one way.</li>
+</ol>
+<h2 id="learning-functional-programming-in-javascript">Learning
+Functional Programming in JavaScript</h2>
+<p>So you’re sold on FP as a worthwhile paradigm and you know a bit of
+JavaScript, how do you get started with functional JS?</p>
+<ol type="1">
+<li><a href="https://www.youtube.com/watch?v=HB1ZC7czKRs">JavaScript30:
+Array Cardio</a> with Wes Bos. This whole course is a good JavaScript
+tutorial series, and Wes is good at being entertaining and engaging. I’d
+recommend this tutorial in particular as a solid introduction to “the
+gateway drug(s) to functional programming”: the array methods of map,
+filter, sort, reduce. Plus he has exercises to work through which is
+key.</li>
+<li><a
+href="https://www.youtube.com/watch?v=BMUiFMZr7vk&amp;list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84">FunFunFunction:
+FP in JS</a> (another YouTube series) with MPJ. Stick with the first
+four episodes for a more in-depth exploration of JS array methods.</li>
+<li><a
+href="https://learn.freecodecamp.org/javascript-algorithms-and-data-structures/functional-programming">FreeCodeCamp</a>
+has a whole section on functional JS if you want to test your knowledge.
+The instant gratification that comes with completing a passing test is
+👌. A good challenge to set for yourself is to try to get through as
+much of the <a
+href="https://learn.freecodecamp.org/javascript-algorithms-and-data-structures/intermediate-algorithm-scripting">algorithms</a>
+problem set as you can without using a <code>for</code>-loop.</li>
+<li><a
+href="https://mostly-adequate.gitbooks.io/mostly-adequate-guide/"><em>Professor
+Frisby’s Mostly Adequate Guide to Functional Programming</em></a> by
+Brian Lonsdorf (aka Dr Boolean). I <strong><em>strongly</em></strong>
+recommend this one, above and beyond all functional JS guides, once
+you’re comfortable enough with the language. Manipulating arrays is
+great and all, and sometimes very useful, but if you want to get deeper
+into implementing some functional patterns this is your ticket.</li>
+<li><a
+href="https://egghead.io/courses/professor-frisby-introduces-composable-functional-javascript"><em>Professor
+Frisby Introduces Composable Functional JavaScript</em></a> from same
+author. This is a stop-motion video series featuring woodland creatures
+in a classroom setting, all while managing to be very educational. It
+does start a bit in the deep end, but coding along and re-watching a few
+times are rewarded.</li>
+<li><a href="http://www.tomharding.me/fantasy-land/">Fantas, Eel, and
+Specification</a> by Tom Harding. A series of blog posts that have
+proved quite popular though I haven’t (<em>yet</em>) worked my way
+through all of them. In the author’s words, it’s a series “in vanilla
+JS, going through everything you’d need to know to be a Haskell
+programmer.”</li>
+</ol>
+<h2 id="learning-a-functional-programming-language">Learning a
+Functional Programming Language</h2>
+<p>If you really want to go all-in 🏊🏼‍♀️ and make the deep dive into a
+purely-functional, statically-typed language, then I welcome you to come
+along with me!</p>
+<ol type="1">
+<li><a href="http://haskellbook.com"><em>Haskell Programming from First
+Principles</em></a> (or <em>Haskell Book</em> for short) by Chris Allen
+and Julie Moronuki. This is a <em>very</em> long book (I’m currently
+only 2/3 of the way through after over two months), but it starts from
+absolute beginner-level and follows a very principled and
+well-researched approach to learning the language.</li>
+<li><a
+href="http://www.seas.upenn.edu/%7Ecis194/spring13/lectures.html">Brent
+Yorgey’s CIS 194 course</a> Recommended as the best <em>free</em>
+resource for learning Haskell (if you don’t want to buy <em>Haskell
+Book</em>).</li>
+<li><a href="https://leanpub.com/purescript/read"><em>PureScript by
+Example</em></a> by Phil Freeman, the author of the PureScript language.
+Very much Haskell-inspired, so I’ve heard it recommended to get familiar
+with the concepts and syntax of Haskell first, since there are more
+resources for learning the latter.</li>
+</ol>
+<h2 id="learning-the-lambda-calculus">Learning the Lambda Calculus</h2>
+<p>All functional programming languages have at their root the lambda
+calculus invented (or <a
+href="https://www.youtube.com/watch?v=IOiZatlZtGU&amp;t=1345s"><em>discovered?</em></a>)
+by Alonzo Church in the 1930s. This is a subject worthy of study in its
+own right, but starting to think in terms of the abstractions involved
+in combinatory logic can be a very powerful exercise. I think the best
+introduction I’ve found was in the first chapter of <em>Haskell
+Book</em>, but since that is not freely available, I’ve tried to find
+some alternative resources. A lot of these tutorials cover the same
+material in different media and with different approaches; I’ve found
+that it usually takes a repeated exposure to the concepts presented in a
+variety of ways before I finally start to develop an intuition.</p>
+<h3 id="videos">Videos</h3>
+<ol type="1">
+<li><a
+href="https://www.youtube.com/watch?v=eis11j_iGMs&amp;t=23s">Lambda
+Calculus (Computerphile video)</a> with Prof Graham Hutton. A perhaps
+too-quick run-through of the fundamentals, but he offers a good beginner
+challenge: implement the logical <code>AND</code> operator
+(<code>&amp;&amp;</code> in JavaScript) and the logical <code>OR</code>
+operator (<code>||</code>) in terms of the lambda calculus.</li>
+<li><a href="https://youtu.be/3VQ382QG-y4">Fundamentals of Lambda
+Calculus</a> by Gabriel Lebec. A couple hour-long presentations on the
+subject, with LC syntax presented alongside JavaScript.</li>
+</ol>
+<h3 id="reading-online">Reading (online)</h3>
+<ol type="1">
+<li><a
+href="https://medium.com/@ahlechandre/lambda-calculus-with-javascript-897f7e81f259">Lambda
+Calculus with JavaScript (Medium article)</a> by Alexandre Thebaldi</li>
+<li><a href="https://www.inf.fu-berlin.de/lehre/WS03/alpi/lambda.pdf">A
+Tutorial Introduction to the Lambda Calculus</a> by Raúl Rojas.
+Presented as “a short and painless introduction to the λ calculus.” I
+personally found it a little difficult to follow as my first
+introduction (your mileage may vary), but a good supplement to other
+more accessible readings.</li>
+<li><a
+href="http://www.nyu.edu/projects/barker/Lambda/barendregt.94.pdf">Introduction
+to Lambda Calculus</a> by Henk Barendregt and Erik Barendsen. I haven’t
+tried to get through this.</li>
+</ol>
+<h3 id="reading-print">Reading (print)</h3>
+<ol type="1">
+<li><a href="http://www.wikiwand.com/en/To_Mock_a_Mockingbird"><em>To
+Mock a Mockingbird</em></a> by Raymond Smullyan. Combinatory logic
+puzzles. I haven’t read this but I’ve heard it recommended enough times
+that I thought I’d add it here (also available from at least <a
+href="http://www.clamsnet.org/search~S1?/Xsmullyan&amp;searchscope=1&amp;SORT=D/Xsmullyan&amp;searchscope=1&amp;SORT=D&amp;SUBKEY=smullyan/1%2C4%2C4%2CB/frameset&amp;FF=Xsmullyan&amp;searchscope=1&amp;SORT=D&amp;2%2C2%2C">one
+Cape library</a>).</li>
+</ol></article>
+    </main>
+
+    <footer>
+      Built with Haskell using
+      <a href="https://github.com/ChrisPenner/slick">slick</a> (&
+      <a href="https://open-props.style/">open-props</a> & web components)
+    </footer>
+    
+    <script src="/js/main.js"></script>
+
+    <script src="/js/multicodeblock-tabs.js"></script>
+    <script src="/js/image-loader.js"></script>
+  </body>
+</html>

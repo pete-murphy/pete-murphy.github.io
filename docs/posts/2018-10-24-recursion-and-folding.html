@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head profile="http://www.w3.org/2005/10/profile">
+    <meta charset="UTF-8" />
+    <meta name="description" content="WIP" />
+    <meta name="author" content="Me" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Recursion and Folding in JavaScript">
+    <meta name="twitter:description" content="">
+        <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚧</text></svg>"
+    />
+    <title>Recursion and Folding in JavaScript | WIP</title>
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
+    <header class="nav-header">
+      <nav>
+        <a href="/" aria-label="Home"
+          >    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      class="icon"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z"
+        clip-rule="evenodd"
+      />
+    </svg>
+<span>Home</span></a
+        >
+      </nav>
+    </header>
+
+    <main>
+      <header class="title">
+        <div class="post">
+
+          <h1>Recursion and Folding in JavaScript</h1>
+
+          <div class="subheader">
+            <div class="inline-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="icon"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <time datetime="">Oct 24, 2018</time>
+            </div>
+            <div class="tags-container inline-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="icon"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.5 3A2.5 2.5 0 003 5.5v2.879a2.5 2.5 0 00.732 1.767l6.5 6.5a2.5 2.5 0 003.536 0l2.878-2.878a2.5 2.5 0 000-3.536l-6.5-6.5A2.5 2.5 0 008.38 3H5.5zM6 7a1 1 0 100-2 1 1 0 000 2z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <ul class="tags">
+              </ul>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <article class="post"><p>After much delay, I am finally getting around to writing a follow-up
+to our first in-person meetup! This time we were talking about
+<em>recursion</em> and a particular pattern that arises when applying
+recursion on JavaScript arrays, which I’ll call “folding” for now.
+There’s plenty to talk about with recursion, so for this post I’ll just
+concentrate on folding, but keep in mind that there are plenty of other
+use cases for recursion. You can look over the Git repo for the meetup
+<a
+href="https://github.com/ccfp/recursion-and-folding-in-js">here</a>—there
+are two branches: <code>master</code> was our starting point and
+solutions we worked out were pushed on to a separate branch,
+<code>solved</code>.</p>
+<h2 id="a-recursive-sum">A recursive <code>sum</code></h2>
+<p>Let’s suppose we wanted to write a recursive <code>sum</code>
+function that works on JavaScript arrays. So <code>sum([1, 3, 8])</code>
+should equal <code>1 + 3 + 8</code>, or <code>12</code>. If we want to
+think of this as a recursive function we want to re-frame it as a
+<em>function that calls itself</em> (we’ll take this as a minimal
+definition of recursion for now). OK, so instead of saying (in
+pseudo-code):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>([<span class="dv">1</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">8</span>]) <span class="op">=</span> <span class="dv">1</span> <span class="op">+</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">8</span></span></code></pre></div>
+<p>we could say</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>([<span class="dv">1</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">8</span>]) <span class="op">=</span> <span class="dv">1</span> <span class="op">+</span> <span class="fu">sum</span>([<span class="dv">3</span><span class="op">,</span> <span class="dv">8</span>])</span></code></pre></div>
+<p>Now it’s starting to look recursive! But how do we translate that
+into a function definition? Let’s try:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sum <span class="op">=</span> (arr) <span class="kw">=&gt;</span> {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> [num<span class="op">,</span> <span class="op">...</span>nums] <span class="op">=</span> arr<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> num <span class="op">+</span> <span class="fu">sum</span>(nums)<span class="op">;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>Here we’re using array destructuring to get the <em>head</em>, or
+first element (<code>num</code>), and <em>tail</em>, or everything but
+the first element (<code>nums</code>), of our array. We’re adding the
+<code>num</code> to the result of calling <code>sum</code> on the
+<code>nums</code> (kind of like what we were doing with
+<code>sum([1, 3, 8]) = 1 + sum([3, 8])</code>). If we try to call this
+function (you can just copy paste into the console of your browser to
+try it out) we get the following error:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>([<span class="dv">1</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">8</span>])<span class="op">;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">// -&gt; Uncaught RangeError: Maximum call stack size exceeded</span></span></code></pre></div>
+<p>This is a common error that arises when recursion goes wrong: we
+didn’t tell the function to <em>stop calling itself</em> at any point,
+and so it’ll keep calling <code>sum</code> on the tail
+(<code>nums</code>), even when <code>nums</code> is an empty array.</p>
+<p>To see what that means, let’s add a <code>console.log</code> in there
+and peek at the results.</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sum <span class="op">=</span> (arr) <span class="kw">=&gt;</span> {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> [num<span class="op">,</span> <span class="op">...</span>nums] <span class="op">=</span> arr<span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>({ arr<span class="op">,</span> num<span class="op">,</span> nums })<span class="op">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> num <span class="op">+</span> <span class="fu">sum</span>(nums)<span class="op">;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>Now if we call it</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>([<span class="dv">1</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">8</span>])<span class="op">;</span></span></code></pre></div>
+<p>we’ll get this printed to the console:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>{ <span class="dt">arr</span><span class="op">:</span> [ <span class="dv">1</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">8</span> ]<span class="op">,</span> <span class="dt">num</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">nums</span><span class="op">:</span> [ <span class="dv">3</span><span class="op">,</span> <span class="dv">8</span> ] }</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>{ <span class="dt">arr</span><span class="op">:</span> [ <span class="dv">3</span><span class="op">,</span> <span class="dv">8</span> ]<span class="op">,</span> <span class="dt">num</span><span class="op">:</span> <span class="dv">3</span><span class="op">,</span> <span class="dt">nums</span><span class="op">:</span> [ <span class="dv">8</span> ] }</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>{ <span class="dt">arr</span><span class="op">:</span> [ <span class="dv">8</span> ]<span class="op">,</span> <span class="dt">num</span><span class="op">:</span> <span class="dv">8</span><span class="op">,</span> <span class="dt">nums</span><span class="op">:</span> [] }</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>{ <span class="dt">arr</span><span class="op">:</span> []<span class="op">,</span> <span class="dt">num</span><span class="op">:</span> <span class="kw">undefined</span><span class="op">,</span> <span class="dt">nums</span><span class="op">:</span> [] }</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>{ <span class="dt">arr</span><span class="op">:</span> []<span class="op">,</span> <span class="dt">num</span><span class="op">:</span> <span class="kw">undefined</span><span class="op">,</span> <span class="dt">nums</span><span class="op">:</span> [] }</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>{ <span class="dt">arr</span><span class="op">:</span> []<span class="op">,</span> <span class="dt">num</span><span class="op">:</span> <span class="kw">undefined</span><span class="op">,</span> <span class="dt">nums</span><span class="op">:</span> [] }</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>{ <span class="dt">arr</span><span class="op">:</span> []<span class="op">,</span> <span class="dt">num</span><span class="op">:</span> <span class="kw">undefined</span><span class="op">,</span> <span class="dt">nums</span><span class="op">:</span> [] }</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>{ <span class="dt">arr</span><span class="op">:</span> []<span class="op">,</span> <span class="dt">num</span><span class="op">:</span> <span class="kw">undefined</span><span class="op">,</span> <span class="dt">nums</span><span class="op">:</span> [] }</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>{ <span class="dt">arr</span><span class="op">:</span> []<span class="op">,</span> <span class="dt">num</span><span class="op">:</span> <span class="kw">undefined</span><span class="op">,</span> <span class="dt">nums</span><span class="op">:</span> [] }</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> (and so on<span class="op">,</span> ad nauseam<span class="op">,</span> until the stack overfloweth)</span></code></pre></div>
+<p>We probably wanted to stop once we got down to the empty array, but
+as you can see, our function keeps destructuring and gets a new empty
+array and calls itself with that, and so on. We need some way of putting
+a stop to this!</p>
+<h2 id="the-base-casean-off-switch-for-the-recursive-call">The base
+case—an “off switch” for the recursive call</h2>
+<p>Let’s introduce a <em>base case</em>, which is just a condition that,
+once met, will give us a way of opting out of the recursive call.</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sum <span class="op">=</span> (arr) <span class="kw">=&gt;</span> {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (arr<span class="op">.</span><span class="at">length</span> <span class="op">===</span> <span class="dv">0</span>) <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> [num<span class="op">,</span> <span class="op">...</span>nums] <span class="op">=</span> arr<span class="op">;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> num <span class="op">+</span> <span class="fu">sum</span>(nums)<span class="op">;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>This should stop calling <code>sum</code> once we’ve reached the
+empty array <code>[]</code> (in other words, when
+<code>arr.length === 0</code>) and at that point just
+<code>return</code>—sounds good, right? Let’s give it a go:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>([<span class="dv">1</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">8</span>])<span class="op">;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">// -&gt; NaN</span></span></code></pre></div>
+<p>Bummer. Well, at least it’s not giving us a stack overflow, so we
+must be getting closer. Let’s reason through how this is evaluating:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>([<span class="dv">1</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">8</span>])<span class="op">;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">// which we said is equal to</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="op">+</span> <span class="fu">sum</span>([<span class="dv">3</span><span class="op">,</span> <span class="dv">8</span>])<span class="op">;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">// which is equal to</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="op">+</span> <span class="dv">3</span> <span class="op">+</span> <span class="fu">sum</span>([<span class="dv">8</span>])<span class="op">;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">// which is equal to</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="op">+</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">8</span> <span class="op">+</span> <span class="fu">sum</span>([])<span class="op">;</span></span></code></pre></div>
+<p>and <code>sum([])</code> is our base case, and we said that was equal
+to… well we just said we would <code>return</code> at that point, but
+anytime you <code>return</code> without a value in JavaScript, you’re
+implicitly returning <code>undefined</code>. So ultimately this is
+evaluating to</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="op">+</span> <span class="dv">3</span> <span class="op">+</span> <span class="dv">8</span> <span class="op">+</span> <span class="kw">undefined</span><span class="op">;</span></span></code></pre></div>
+<p>which is indeed <em>not a number</em> (<code>NaN</code>). If we want
+to return our sum, we need to replace <code>undefined</code> with a
+value that will have no effect on our summation (or addition in
+general), and that would be <code>0</code>:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sum <span class="op">=</span> (arr) <span class="kw">=&gt;</span> {</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (arr<span class="op">.</span><span class="at">length</span> <span class="op">===</span> <span class="dv">0</span>) <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> [num<span class="op">,</span> <span class="op">...</span>nums] <span class="op">=</span> arr<span class="op">;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> num <span class="op">+</span> <span class="fu">sum</span>(nums)<span class="op">;</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>And now it works:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>([<span class="dv">1</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">8</span>])<span class="op">;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">// -&gt; 12</span></span></code></pre></div>
+<p>Yay! 🎉</p>
+<h2 id="a-lesson-from-an-iterative-sum">A lesson from an iterative
+<code>sum</code></h2>
+<p>Even though we got our recursive <code>sum</code> function working,
+there’s something that doesn’t feel right about returning <code>0</code>
+on the last call—you’d think you’d be returning the <em>result</em> of
+your summation. Like, if I were to define <code>sum</code> iteratively,
+I might come up with</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sum <span class="op">=</span> (arr) <span class="kw">=&gt;</span> {</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> summedValue <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (<span class="kw">const</span> num <span class="kw">of</span> arr) {</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    summedValue <span class="op">+=</span> num<span class="op">;</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> summedValue<span class="op">;</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>And this feels more intuitive: we’re starting with <code>0</code>,
+adding each <code>num</code> as we go, and at the end we’re returning
+the total (<code>summedValue</code>). But, we can’t really do the same
+thing in our recursive function. If we were to declare
+<code>let summedValue = 0</code> in our function body, it would just get
+reset to <code>0</code> on each call. What we <em>can</em> do is pass it
+in as a second argument, and initialize it at <code>0</code> using ES6
+default parameter syntax:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sum <span class="op">=</span> (arr<span class="op">,</span> summedValue <span class="op">=</span> <span class="dv">0</span>) <span class="kw">=&gt;</span> {</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>And then on the next recursive call we add our <code>num</code> to
+the <code>summedValue</code>:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> <span class="fu">sum</span>(nums<span class="op">,</span> summedValue <span class="op">+</span> num)<span class="op">;</span></span></code></pre></div>
+<p>and in our base case, we just return the
+<code>summedValue</code>:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (arr<span class="op">.</span><span class="at">length</span> <span class="op">===</span> <span class="dv">0</span>) <span class="cf">return</span> summedValue<span class="op">;</span></span></code></pre></div>
+<p>Altogether it looks like:</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sum <span class="op">=</span> (arr<span class="op">,</span> summedValue <span class="op">=</span> <span class="dv">0</span>) <span class="kw">=&gt;</span> {</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> [num<span class="op">,</span> <span class="op">...</span>nums] <span class="op">=</span> arr<span class="op">;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (arr<span class="op">.</span><span class="at">length</span> <span class="op">===</span> <span class="dv">0</span>) <span class="cf">return</span> summedValue<span class="op">;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fu">sum</span>(nums<span class="op">,</span> summedValue <span class="op">+</span> num)<span class="op">;</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<h2 id="paring-it-down">Paring it down</h2>
+<p>If we try to refactor this to something more concise, we might
+get:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sum <span class="op">=</span> ([num<span class="op">,</span> <span class="op">...</span>nums]<span class="op">,</span> summedValue <span class="op">=</span> <span class="dv">0</span>) <span class="kw">=&gt;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  num <span class="op">===</span> <span class="kw">undefined</span> <span class="op">?</span> summedValue <span class="op">:</span> <span class="fu">sum</span>(nums<span class="op">,</span> summedValue <span class="op">+</span> num)<span class="op">;</span></span></code></pre></div>
+<p>If you don’t trust me that this still works, give it the ol’
+copy-paste into the console.<a href="#fn1" class="footnote-ref"
+id="fnref1" role="doc-noteref"><sup>1</sup></a> Now let’s see if we can
+use this as a template to define other array functions. <em>Errr…</em>
+I’m actually just going to go ahead and say that you <em>can in
+fact</em> use this as a template for defining other array functions. For
+example, if I just change a couple things, I’ve got
+<code>reverse</code>:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> reverse <span class="op">=</span> ([num<span class="op">,</span> <span class="op">...</span>nums]<span class="op">,</span> summedValue <span class="op">=</span> []) <span class="kw">=&gt;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  num <span class="op">===</span> <span class="kw">undefined</span> <span class="op">?</span> summedValue <span class="op">:</span> <span class="fu">reverse</span>(nums<span class="op">,</span> [num<span class="op">,</span> <span class="op">...</span>summedValue])<span class="op">;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">reverse</span>([<span class="dv">1</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">8</span>])<span class="op">;</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co">// -&gt; [8, 3, 1]</span></span></code></pre></div>
+<p>Or we can make the higher-order function <code>any</code>:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> any <span class="op">=</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  (predFn) <span class="kw">=&gt;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  ([num<span class="op">,</span> <span class="op">...</span>nums]<span class="op">,</span> summedValue <span class="op">=</span> <span class="kw">false</span>) <span class="kw">=&gt;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    num <span class="op">===</span> <span class="kw">undefined</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>      <span class="op">?</span> summedValue</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>      <span class="op">:</span> <span class="fu">any</span>(predFn)(nums<span class="op">,</span> <span class="fu">predFn</span>(num) <span class="op">||</span> summedValue)<span class="op">;</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="fu">any</span>(isOdd)([<span class="dv">1</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">8</span>])<span class="op">;</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="co">// -&gt; true</span></span></code></pre></div>
+<p>Of course, we’re not limited to talking about <code>num</code>s here,
+and it doesn’t make sense to say that a <code>summedValue</code> is the
+thing we’re returning, so I’m going to do something that you may find
+even more offensive (bear with me 🐻) and rename these variables to the
+more generic <code>x</code> and <code>acc</code> (short for
+<em>accumulated value</em> or <em>accumulator</em>):</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sum <span class="op">=</span> ([x<span class="op">,</span> <span class="op">...</span>xs]<span class="op">,</span> acc <span class="op">=</span> <span class="dv">0</span>) <span class="kw">=&gt;</span> (x <span class="op">===</span> <span class="kw">undefined</span> <span class="op">?</span> acc <span class="op">:</span> <span class="fu">sum</span>(xs<span class="op">,</span> acc <span class="op">+</span> x))<span class="op">;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> reverse <span class="op">=</span> ([x<span class="op">,</span> <span class="op">...</span>xs]<span class="op">,</span> acc <span class="op">=</span> []) <span class="kw">=&gt;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  x <span class="op">===</span> <span class="kw">undefined</span> <span class="op">?</span> acc <span class="op">:</span> <span class="fu">reverse</span>(xs<span class="op">,</span> [x<span class="op">,</span> <span class="op">...</span>acc])<span class="op">;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> any <span class="op">=</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  (predFn) <span class="kw">=&gt;</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  ([x<span class="op">,</span> <span class="op">...</span>xs]<span class="op">,</span> acc <span class="op">=</span> <span class="kw">false</span>) <span class="kw">=&gt;</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    x <span class="op">===</span> <span class="kw">undefined</span> <span class="op">?</span> acc <span class="op">:</span> <span class="fu">any</span>(predFn)(xs<span class="op">,</span> <span class="fu">predFn</span>(x) <span class="op">||</span> acc)<span class="op">;</span></span></code></pre></div>
+<p>Refactoring things to this minimal representation allows us to more
+easily see a pattern: notice that in each of these functions, we have
+some operation that combines our <code>x</code> with <code>acc</code>
+somehow—whether addition, concatenation or logical disjunction (the
+<code>||</code> operator)—and we’re initializing the <code>acc</code>
+variable with some value that is <em>neutral</em> in regards to that
+operation—<code>0</code> for <code>+</code>, <code>[]</code> for
+concatenation, and <code>false</code> for <code>||</code>.<a href="#fn2"
+class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>
+Aside from those two unique elements, everything else is repetition that
+we should be able to factor out into its own function. Let’s call it
+<code>fold</code>:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> fold <span class="op">=</span> ([x<span class="op">,</span> <span class="op">...</span>xs]<span class="op">,</span> acc<span class="op">,</span> foldingFn) <span class="kw">=&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  x <span class="op">===</span> <span class="kw">undefined</span> <span class="op">?</span> acc <span class="op">:</span> <span class="fu">fold</span>(xs<span class="op">,</span> <span class="fu">foldingFn</span>(acc<span class="op">,</span> x)<span class="op">,</span> foldingFn)<span class="op">;</span></span></code></pre></div>
+<p>This may seem like a lot to behold, but all that I’ve done is taken
+our template and changed it so that <code>acc</code> no longer has a
+default value (we’ll have to leave that to the caller to pass in, since
+it depends on what “combining” operation they are doing) and we’re also
+passing in an extra parameter: a <code>foldingFn</code>, or folding
+function, for lack of a better term—this is the same thing as the
+“combining” operation (addition/concatenation/disjunction) expressed as
+a function that takes <code>acc</code> and <code>x</code> (current
+value). Now I can re-write <code>sum</code>, <code>reverse</code>, and
+<code>any</code> in terms of <code>fold</code>:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sum <span class="op">=</span> (xs) <span class="kw">=&gt;</span> <span class="fu">fold</span>(xs<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> (acc<span class="op">,</span> x) <span class="kw">=&gt;</span> x <span class="op">+</span> acc)<span class="op">;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> reverse <span class="op">=</span> (xs) <span class="kw">=&gt;</span> <span class="fu">fold</span>(xs<span class="op">,</span> []<span class="op">,</span> (acc<span class="op">,</span> x) <span class="kw">=&gt;</span> [x<span class="op">,</span> <span class="op">...</span>acc])<span class="op">;</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> any <span class="op">=</span> (predFn) <span class="kw">=&gt;</span> (xs) <span class="kw">=&gt;</span> <span class="fu">fold</span>(xs<span class="op">,</span> <span class="kw">false</span><span class="op">,</span> (acc<span class="op">,</span> x) <span class="kw">=&gt;</span> <span class="fu">predFn</span>(x) <span class="op">||</span> acc)<span class="op">;</span></span></code></pre></div>
+<p>This works, but we can do a little better by arranging
+<code>fold</code> so it can be used <em>point free</em>:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> fold <span class="op">=</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  (foldingFn<span class="op">,</span> acc) <span class="kw">=&gt;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  ([x<span class="op">,</span> <span class="op">...</span>xs]) <span class="kw">=&gt;</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    x <span class="op">===</span> <span class="kw">undefined</span> <span class="op">?</span> acc <span class="op">:</span> <span class="fu">fold</span>(foldingFn<span class="op">,</span> <span class="fu">foldingFn</span>(acc<span class="op">,</span> x))(xs)<span class="op">;</span></span></code></pre></div>
+<p>This lets us clean up our other functions a little bit:</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sum <span class="op">=</span> <span class="fu">fold</span>((acc<span class="op">,</span> x) <span class="kw">=&gt;</span> x <span class="op">+</span> acc<span class="op">,</span> <span class="dv">0</span>)<span class="op">;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> reverse <span class="op">=</span> <span class="fu">fold</span>((acc<span class="op">,</span> x) <span class="kw">=&gt;</span> [x<span class="op">,</span> <span class="op">...</span>acc]<span class="op">,</span> [])<span class="op">;</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> any <span class="op">=</span> (predFn) <span class="kw">=&gt;</span> <span class="fu">fold</span>((acc<span class="op">,</span> x) <span class="kw">=&gt;</span> <span class="fu">predFn</span>(x) <span class="op">||</span> acc<span class="op">,</span> <span class="kw">false</span>)<span class="op">;</span></span></code></pre></div>
+<h2 id="fold-unmasked"><code>fold</code> unmasked</h2>
+<p>Turns out <code>fold</code> is something we already know and love in
+JavaScript—it’s just <code>reduce</code>!<a href="#fn3"
+class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> reduce <span class="op">=</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  (reducer<span class="op">,</span> acc) <span class="kw">=&gt;</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  ([x<span class="op">,</span> <span class="op">...</span>xs]) <span class="kw">=&gt;</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    x <span class="op">===</span> <span class="kw">undefined</span> <span class="op">?</span> acc <span class="op">:</span> <span class="fu">reduce</span>(reducer<span class="op">,</span> <span class="fu">reducer</span>(acc<span class="op">,</span> x))(xs)<span class="op">;</span></span></code></pre></div>
+<p>Granted it’s a standalone version, not a method on the
+<code>Array</code> prototype, but it works just the same. And we can
+define other array functions than just <code>sum</code>,
+<code>reverse</code> and <code>any</code> with it; in fact,
+<strong>any</strong> array transformation can be defined in terms of
+<code>reduce</code> (that’s an open challenge!), which is pretty
+powerful stuff.</p>
+<h2 id="big-words-to-google">Big words to google</h2>
+<p><em>Whew</em>, this has been a doozy of a post, and I’ve pretty much
+exhausted my knowledge about this stuff so I can’t say much more with
+certainty, but if you’re interested in learning more I’d say it might be
+worthwhile looking into how the <code>reduce</code>/<code>fold</code>
+function is generalized by the concept of a <em>catamorphism</em> (which
+is one of many <em>recursion schemes</em>).<a href="#fn4"
+class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> Of
+course <code>reduce</code> doesn’t have to be defined recursively, we
+could write it iteratively, it’s just an implementation detail,<a
+href="#fn5" class="footnote-ref" id="fnref5"
+role="doc-noteref"><sup>5</sup></a> but it gives us a way of abstracting
+out this very powerful pattern. And I <em>think</em> the power of
+recursion schemes in general is that you can abstract out such patterns
+not just for arrays but for any data structure (like linked lists,
+trees, maps, etc.)—but, not sure yet. To be continued… 🕵️‍♂️</p>
+<div class="erratum">
+<p><strong>Erratum:</strong> It’s been pointed out to me that
+<code>fold</code> does <em>not</em> work exactly like
+<code>reduce</code>, in that the <code>initialValue</code> is optional
+in the latter. A more faithful recursive version might be written:</p>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> fold <span class="op">=</span> (foldingFn<span class="op">,</span> acc) <span class="kw">=&gt;</span> ([x<span class="op">,</span> <span class="op">...</span>xs]) <span class="kw">=&gt;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  acc <span class="op">!==</span> <span class="kw">undefined</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>        <span class="op">?</span> x <span class="op">===</span> <span class="kw">undefined</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>          <span class="op">?</span> acc</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>          <span class="op">:</span> <span class="fu">fold</span>(foldingFn<span class="op">,</span> <span class="fu">foldingFn</span>(acc<span class="op">,</span> x))(xs)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">:</span> <span class="fu">fold</span>(foldingFn<span class="op">,</span> x)(xs)</span></code></pre></div>
+</div>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Notice that I’m doing the destructuring straightaway as
+part of the function call, which means I’ve lost my way to reference the
+whole array (<code>arr</code> is nowhere to be found) and so I’m
+checking for the head (<code>num</code>) to be <code>undefined</code>,
+which strictly speaking is not the same as the array having length
+<code>0</code>—if you’re working with a sparsely-defined array (like,
+<code>[1, , 8]</code> or <code>[1, undefined, 8]</code>) this won’t
+work—but for our purposes we’ll pretend they’re equivalent. 🤫<a
+href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>If I add <code>0</code> to any number, I’ll just get
+that number back. If I concatenate <code>[]</code> to any array, I’ll
+just get that array back. If I say <code>x || false</code> where
+<code>x</code> is some boolean, I’ll just get <code>x</code> back.<a
+href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Though it <em>is</em> often called <code>fold</code> in
+other languages.<a href="#fnref3" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>A <em>catamorphism</em> is described as a function that
+“destruct[s] a list” or other data structure (in other words, a function
+<em>from</em> a structure containing type <span
+class="math inline"><em>A</em></span> <em>to</em> a value of type <span
+class="math inline"><em>B</em></span>). See <a
+href="https://maartenfokkinga.github.io/utwente/mmf91m.pdf">“Functional
+Programming with Bananas, Lenses, Envelopes and Barbed Wire”</a>.<a
+href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Hope you don’t feel cheated by my mentioning that in the
+last paragraph!<a href="#fnref5" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></article>
+    </main>
+
+    <footer>
+      Built with Haskell using
+      <a href="https://github.com/ChrisPenner/slick">slick</a> (&
+      <a href="https://open-props.style/">open-props</a> & web components)
+    </footer>
+    
+    <script src="/js/main.js"></script>
+
+    <script src="/js/multicodeblock-tabs.js"></script>
+    <script src="/js/image-loader.js"></script>
+  </body>
+</html>
