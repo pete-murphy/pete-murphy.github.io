@@ -190,7 +190,8 @@ buildIndex allPosts allTags = do
 buildPosts :: Action [Post]
 buildPosts = do
   pPaths <- Shake.getDirectoryFiles "." ["site/posts//*.md"]
-  Shake.forP pPaths buildPost
+  posts <- Shake.forP pPaths buildPost
+  pure (sortByDate posts)
 
 -- | Load a post, process metadata, write it to output, then return the post object
 -- Detects changes to either post content or template
