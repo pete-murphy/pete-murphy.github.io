@@ -2,12 +2,11 @@
 author: Me
 date: May 30, 2023
 tags: [haskell, purescript, cont]
-isDraft: true
 ---
 
 # A syntax-driven intuition for Cont
 
-Based on the [internal accessor `(>>-)`](https://hackage.haskell.org/package/managed-1.0.10/docs/src/Control.Monad.Managed.html#Managed) from Gabriella Gonzalez's `managed` library.
+Based on the [internal accessor `(>>-)`](https://hackage.haskell.org/package/managed-1.0.10/docs/src/Control.Monad.Managed.html#Managed) from Gabriella Gonzalez's `managed` library. _Edit:_ I re-discovered that Gabriella had [posted about "renaming things" like this](https://www.haskellforall.com/2014/04/how-continuation-monad-works.html) to get an intuition for `ContT` on her blog. She also has another relevant post [explaining how to use `Cont` in depth](https://www.haskellforall.com/2012/12/the-continuation-monad.html).
 
 PureScript allows us to override the default `bind` implementation and re-purpose the `do` syntax sugar (we could do the same in Haskell with `RebindableSyntax` enabled).
 
