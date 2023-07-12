@@ -84,7 +84,13 @@
       <article class="post"><p>Based on the <a
 href="https://hackage.haskell.org/package/managed-1.0.10/docs/src/Control.Monad.Managed.html#Managed">internal
 accessor <code>(&gt;&gt;-)</code></a> from Gabriella Gonzalez’s
-<code>managed</code> library.</p>
+<code>managed</code> library. <em>Edit:</em> I re-discovered that
+Gabriella had <a
+href="https://www.haskellforall.com/2014/04/how-continuation-monad-works.html">posted
+about “renaming things” like this</a> to get an intuition for
+<code>ContT</code> on her blog. She also has another relevant post <a
+href="https://www.haskellforall.com/2012/12/the-continuation-monad.html">explaining
+how to use <code>Cont</code> in depth</a>.</p>
 <p>PureScript allows us to override the default <code>bind</code>
 implementation and re-purpose the <code>do</code> syntax sugar (we could
 do the same in Haskell with <code>RebindableSyntax</code> enabled).</p>

@@ -39,6 +39,15 @@ code {
   font-family: var(--mono-font);
 }
 
+kbd,
+var {
+  font-size: var(--font-size-1);
+  border-color: var(--surface-3);
+  border-radius: var(--radius-2);
+  border-width: var(--border-size-1);
+  padding: 0.1em var(--size-1);
+}
+
 h1 > code,
 h2 > code,
 h3 > code,

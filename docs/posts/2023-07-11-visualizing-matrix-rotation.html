@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head profile="http://www.w3.org/2005/10/profile">
+    <meta charset="UTF-8" />
+    <meta name="description" content="WIP" />
+    <meta name="author" content="Me" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="In-place matrix rotation (a visual aid)">
+    <meta name="twitter:description" content="">
+        <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚧</text></svg>"
+    />
+    <title>In-place matrix rotation (a visual aid) | WIP</title>
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
+    <header class="nav-header">
+      <nav>
+        <a href="/" aria-label="Home"
+          >    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      class="icon"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z"
+        clip-rule="evenodd"
+      />
+    </svg>
+<span>Home</span></a
+        >
+      </nav>
+    </header>
+
+    <main>
+      <header class="title">
+        <div class="post">
+
+          <h1>In-place matrix rotation (a visual aid)</h1>
+
+          <div class="subheader">
+            <div class="inline-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="icon"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <time datetime="">Jul 11, 2023</time>
+            </div>
+            <div class="tags-container inline-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="icon"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.5 3A2.5 2.5 0 003 5.5v2.879a2.5 2.5 0 00.732 1.767l6.5 6.5a2.5 2.5 0 003.536 0l2.878-2.878a2.5 2.5 0 000-3.536l-6.5-6.5A2.5 2.5 0 008.38 3H5.5zM6 7a1 1 0 100-2 1 1 0 000 2z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <ul class="tags">
+                <li class="tag typescript">typescript</li>
+                <li class="tag react">react</li>
+                <li class="tag framer-motion">framer-motion</li>
+                <li class="tag algorithm">algorithm</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <article class="post"><p>I made a little React app for visualizing how an in-place matrix
+rotation algorithm works, because the existing textual (or even
+image/video-based) explanations I came across felt lacking.</p>
+<p>You can click a square to select it, press <kbd>Enter</kbd> once
+you’ve got four selected to swap them in order of selection, and
+<kbd>Esc</kbd> to clear the selection. A green background means that
+square has been correctly rotated.</p>
+<video controls autoplay>
+<source src="../images/2023-07-12-matrix.mp4" type="video/mp4">
+</video>
+<p>Here it is in a CodeSandbox:</p>
+<iframe style="border: 1px solid rgba(0, 0, 0, 0.1);border-radius:2px;" width="800" height="450" src="https://codesandbox.io/p/sandbox/solitary-feather-9zp9gc?embed=1" allowfullscreen>
+</iframe>
+<p>At my job we were briefly using array rotation as an interview prompt
+where the in-place algorithm was a “bonus” exercise, so this visual aid
+was good to have on hand to help with an intuition if a candidate was
+stuck.</p></article>
+    </main>
+
+    <footer>
+      Built with Haskell using
+      <a href="https://github.com/ChrisPenner/slick">slick</a> (&
+      <a href="https://open-props.style/">open-props</a> & web components)
+    </footer>
+    
+    <script src="/js/main.js"></script>
+
+    <script src="/js/multicodeblock-tabs.js"></script>
+    <script src="/js/image-loader.js"></script>
+  </body>
+</html>

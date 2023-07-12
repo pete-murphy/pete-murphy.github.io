@@ -9,6 +9,34 @@
   <id>https://ptrfrncsmrph.github.io/</id>
 
   <entry>
+    <title>In-place matrix rotation (a visual aid)</title>
+    <link href="https://ptrfrncsmrph.github.ioposts/2023-07-11-visualizing-matrix-rotation.html"/>
+    <id>https://ptrfrncsmrph.github.ioposts/2023-07-11-visualizing-matrix-rotation.html</id>
+    <updated>2023-07-11T00:00:00Z</updated>
+    <category term="typescript"/>
+    <category term="react"/>
+    <category term="framer-motion"/>
+    <category term="algorithm"/>
+    <summary></summary>
+    <content type="html"><![CDATA[<p>I made a little React app for visualizing how an in-place matrix
+rotation algorithm works, because the existing textual (or even
+image/video-based) explanations I came across felt lacking.</p>
+<p>You can click a square to select it, press <kbd>Enter</kbd> once
+you’ve got four selected to swap them in order of selection, and
+<kbd>Esc</kbd> to clear the selection. A green background means that
+square has been correctly rotated.</p>
+<video controls autoplay>
+<source src="../images/2023-07-12-matrix.mp4" type="video/mp4">
+</video>
+<p>Here it is in a CodeSandbox:</p>
+<iframe style="border: 1px solid rgba(0, 0, 0, 0.1);border-radius:2px;" width="800" height="450" src="https://codesandbox.io/p/sandbox/solitary-feather-9zp9gc?embed=1" allowfullscreen>
+</iframe>
+<p>At my job we were briefly using array rotation as an interview prompt
+where the in-place algorithm was a “bonus” exercise, so this visual aid
+was good to have on hand to help with an intuition if a candidate was
+stuck.</p>]]></content>
+  </entry>
+  <entry>
     <title>A syntax-driven intuition for Cont</title>
     <link href="https://ptrfrncsmrph.github.ioposts/2023-05-30-cont-and-managed.html"/>
     <id>https://ptrfrncsmrph.github.ioposts/2023-05-30-cont-and-managed.html</id>
@@ -20,7 +48,13 @@
     <content type="html"><![CDATA[<p>Based on the <a
 href="https://hackage.haskell.org/package/managed-1.0.10/docs/src/Control.Monad.Managed.html#Managed">internal
 accessor <code>(&gt;&gt;-)</code></a> from Gabriella Gonzalez’s
-<code>managed</code> library.</p>
+<code>managed</code> library. <em>Edit:</em> I re-discovered that
+Gabriella had <a
+href="https://www.haskellforall.com/2014/04/how-continuation-monad-works.html">posted
+about “renaming things” like this</a> to get an intuition for
+<code>ContT</code> on her blog. She also has another relevant post <a
+href="https://www.haskellforall.com/2012/12/the-continuation-monad.html">explaining
+how to use <code>Cont</code> in depth</a>.</p>
 <p>PureScript allows us to override the default <code>bind</code>
 implementation and re-purpose the <code>do</code> syntax sugar (we could
 do the same in Haskell with <code>RebindableSyntax</code> enabled).</p>
