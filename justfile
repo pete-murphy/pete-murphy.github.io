@@ -1,4 +1,7 @@
 # https://just.systems
 
-default:
-    echo 'Hello, world!'
+@help:
+    just --list
+
+@build:
+    cabal exec build-site
