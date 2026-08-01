@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head profile="http://www.w3.org/2005/10/profile">
+    <meta charset="UTF-8" />
+    <meta name="description" content="WIP" />
+    <meta name="author" content="Me" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Free monad in plain English">
+    <meta name="twitter:description" content="">
+        <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚧</text></svg>"
+    />
+    <title>Free monad in plain English | WIP</title>
+    <link rel="stylesheet" href="/css/main.css" />
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-1VF7NQEE4E"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+    
+      gtag("config", "G-1VF7NQEE4E");
+    </script>
+  </head>
+  <body>
+    <header class="nav-header">
+      <nav>
+        <a href="/" aria-label="Home"
+          >    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      class="icon"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z"
+        clip-rule="evenodd"
+      />
+    </svg>
+<span>Home</span></a
+        >
+      </nav>
+    </header>
+
+    <main>
+      <header class="title">
+        <div class="post">
+
+          <h1>Free monad in plain English</h1>
+
+          <div class="subheader">
+            <div class="inline-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="icon"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <time datetime="">Jul 31, 2026</time>
+            </div>
+            <div class="tags-container inline-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="icon"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.5 3A2.5 2.5 0 003 5.5v2.879a2.5 2.5 0 00.732 1.767l6.5 6.5a2.5 2.5 0 003.536 0l2.878-2.878a2.5 2.5 0 000-3.536l-6.5-6.5A2.5 2.5 0 008.38 3H5.5zM6 7a1 1 0 100-2 1 1 0 000 2z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <ul class="tags">
+                <li class="tag haskell">haskell</li>
+                <li class="tag free">free</li>
+                <li class="tag monad">monad</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <article class="post"><p>Here’s a probably imprecise understanding of “free monad” (or free
+structures in general) that I’m still shaping. I should disclaim I don’t
+really get the math, my intuition is rooted in Haskell, and so code
+examples and explanations will use Haskell.</p>
+<h2 id="free-as-in-beer">Free … as in beer?</h2>
+<p>Why is it called a <em>“free”</em> monad? Is it, “free as in beer”?
+“Free as in speech”? “Free as in [some other thing]”?</p>
+<p>To answer this, I think it’s helpful to look at some other “free”
+things. Haskellers are also known to say, “<code>List</code> is the free
+<code>Monoid</code>”. Can we draw some generalizations from these two
+examples? <code>List</code> and <code>Free</code> are type constructors,
+<code>Monoid</code> and <code>Monad</code> are type classes. So I’m
+going to assert this: when a Haskeller says, <strong>“<code>Foo</code>
+is the free <code>Bloop</code>”</strong>, they are saying the
+following:</p>
+<ol type="1">
+<li><code>Foo</code> is a <em>type constructor</em> (meaning, it takes
+some other type as input, and returns a type). Specifically,
+<code>Foo</code> has kind <code>inkind → outkind</code> for some kinds
+<code>inkind</code> &amp; <code>outkind</code>.</li>
+<li><code>Bloop</code> is a <em>type class</em> for types of kind
+<code>outkind</code> (the kind that you get from partially-applying
+<code>Foo</code>)</li>
+<li>You can write a <code>Bloop</code> instance for <code>Foo</code>
+applied to any input type of kind <code>inkind</code> (without knowing
+anything about that input type)</li>
+</ol>
+<p>In <strong>“<code>List</code> is the free
+<code>Monoid</code>”</strong>. <code>List</code> is a type constructor,
+and I can write a <code>Monoid</code> instance for <code>List a</code>
+<em>for any type <code>a</code>,</em> without knowing anything about
+<code>a</code>. In other words, the <code>Monoid</code> instance doesn’t
+use anything specific to <code>a</code>, it just uses <code>List</code>
+operations.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">List</span> item) <span class="kw">where</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  (<span class="op">&lt;&gt;</span>) <span class="ot">=</span> (<span class="op">++</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mempty</span> <span class="ot">=</span> []</span></code></pre></div>
+<p>What are some other ones?</p>
+<ul>
+<li><code>NonEmptyList</code> is the free <code>Semigroup</code> for
+similar reasons</li>
+<li><code>Maybe</code> is the free <code>Default</code> because I can
+choose <code>def = Nothing</code> for any type</li>
+<li><code>Compose Set List</code> is the free <code>Semiring</code></li>
+</ul>
+<p>So I think of this as “free as in beer”: these are instances you get
+“for free” just by putting <code>a</code> into the structure of the type
+constructor, you don’t need any further constraints on the
+<code>a</code>.</p>
+<p>Note that “<code>Free</code> is the free <code>Monad</code>” is an
+outlier in a few ways:</p>
+<ul>
+<li>the <code>inkind</code> kind is <code>Type → Type</code> (the other
+examples have <code>inkind ∷ Type</code>)—i.e. it’s a type constructor
+that takes a type constructor</li>
+<li>“free” is the name of the data type, but really it’s not any
+<em>more</em> free than the other types listed above—this seems like
+plain bad naming to me</li>
+<li>in fact, it’s not even quite <em>as</em> free as the others—it
+requires a <code>Functor</code> constraint on its input type (more on
+this below)</li>
+</ul>
+<h2 id="why-though">Why though</h2>
+<p>This doesn’t really satisfy the question of <em>why</em> you might
+want to do this—what are you getting for free by using any of these free
+structures?</p>
+<p>Here’s a dumb but maybe illustrative example. Say you regularly play
+<em>Super Smash Bros</em> (the N64 game) with your friends. You keep
+track of who’s the best player by who has had the most KOs in a game.
+Maybe you write this down on a white board. As soon as someone scores
+higher than the current champion, you clear the board and write the new
+champion’s name and score.</p>
+<p>As more games are played, there’s a tie for highest score. To break
+the tie, you’d like to change the criteria for best player: instead of
+all-time highest KOs, it should be whoever has won the most games total.
+Too bad! Nobody remembers how many games each player has won, all you’ve
+kept track of is KOs.</p>
+<p>What you could have done instead, is kept a log of all the scores of
+each game (a <code>List Results</code>, where <code>Results</code>
+contains the game results: place/ranking and KOs per player). That way
+you can calculate the best player afterwards, using whatever criteria
+you’d like.</p>
+<p>Calculating best player in different ways is like plugging in a
+different <code>Monoid</code> in a <code>foldMap</code> over the
+<code>List Result</code> log.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">foldMap</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  ::</span> <span class="dt">Monoid</span> m</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m) <span class="co">-- this lets you pick the criteria</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">-&gt;</span> [a]      <span class="co">-- your logs</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">-&gt;</span> m        <span class="co">-- your result (best player)</span></span></code></pre></div>
+<p>If you use a function that turns <code>Results</code> into
+<code>(Max Int, First Player)</code> as your <code>(a -&gt; m)</code>
+that’s your max KOs, if you use
+<code>Results -&gt; Map Player (Sum Int)</code> that would show you who
+has won the most games, etc.</p>
+<p>There’s a similar thing in <code>Free</code> called
+<code>foldFree</code></p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>foldFree</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  ::</span> <span class="dt">Monad</span> m</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=&gt;</span> (<span class="kw">forall</span> x<span class="op">.</span> f x <span class="ot">-&gt;</span> m x) <span class="co">-- this lets you pick how your AST is interpreted</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">-&gt;</span> <span class="dt">Free</span> f a               <span class="co">-- your AST</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">-&gt;</span> m a                    <span class="co">-- your result</span></span></code></pre></div>
+<p>Again, the naming kinda gets in the way: <code>foldFree</code> seems
+to be doing just as much “mapping” as <code>foldMap</code>, and as we
+saw both <code>Free</code> and <code>[]</code> are “free”.</p>
+<p>Aside: Hm, maybe this is “free as in speech” after all?</p>
+<h2 id="freer">Freer</h2>
+<p>Remember when we said that <code>Free</code> was an outlier because
+it required a <code>Functor</code> constraint on <code>f</code>? Turns
+out you can get <code>f</code>’s <code>Functor</code> instance “for
+free” (I think?) using something called <code>Coyoneda</code>. I don’t
+yet understand what this is about, but apparently it’s in this paper:
+https://okmij.org/ftp/Haskell/extensible/more.pdf</p></article>
+    </main>
+
+    <footer>
+      Built with Haskell using
+      <a href="https://github.com/ChrisPenner/slick">slick</a> (&
+      <a href="https://open-props.style/">open-props</a> & web components)
+    </footer>
+    
+    <script src="/js/main.js"></script>
+
+    <script src="/js/multicodeblock-tabs.js"></script>
+    <script src="/js/image-loader.js"></script>
+  </body>
+</html>

@@ -6,13 +6,13 @@
     <meta name="author" content="Me" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Traversing with errors: a decision tree">
+    <meta name="twitter:title" content="Collecting successes and errors">
     <meta name="twitter:description" content="">
         <link
       rel="icon"
       href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚧</text></svg>"
     />
-    <title>Traversing with errors: a decision tree | WIP</title>
+    <title>Collecting successes and errors | WIP</title>
     <link rel="stylesheet" href="/css/main.css" />
     <!-- Google tag (gtag.js) -->
     <script
@@ -54,7 +54,7 @@
       <header class="title">
         <div class="post">
 
-          <h1>Traversing with errors: a decision tree</h1>
+          <h1>Collecting successes and errors</h1>
 
           <div class="subheader">
             <div class="inline-container">
@@ -86,6 +86,7 @@
                 />
               </svg>
               <ul class="tags">
+                <li class="tag traverse">traverse</li>
                 <li class="tag haskell">haskell</li>
                 <li class="tag purescript">purescript</li>
                 <li class="tag fp-ts">fp-ts</li>
@@ -96,18 +97,20 @@
         </div>
       </header>
 
-      <article class="post"><p>Often we want to iterate through a collection of items, performing
+      <article class="post"><h2 id="traverse-map-with-effects"><code>traverse</code>
+(“<code>map</code> with effects”)</h2>
+<p>Often we want to iterate through a collection of items, performing
 some effect for each item. This means we want some function that looks
 like</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>(a <span class="ot">-&gt;</span> f b) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> result</span></code></pre></div>
 <p>where <code>a -&gt; f b</code> is our effectful computation,
-<code>t a</code> is our collection (of <code>a</code>s) and
-<code>result</code> could take a few different shapes depending on the
-requirements of our program, especially in the common case when the
-effect <code>f</code> encapsulates some notion of failure (like
-<code>TaskEither</code> in <code>fp-ts</code>, or anything with
-<code>ExceptT</code> in its stack in <code>Haskell</code>).</p>
+<code>t a</code> is our collection (typically a list or an array of
+<code>a</code>s) and <code>result</code> could take a few different
+shapes depending on the requirements of our program, especially in the
+common case when the effect <code>f</code> encapsulates some notion of
+failure (like <code>TaskEither</code> in <code>fp-ts</code>, or anything
+with <code>ExceptT</code> in its stack in <code>Haskell</code>).</p>
 <aside data-admonition="tip">
 <p>The <strong>tl;dr</strong> is that you almost <em>always</em> want
 (some version of) <code>traverse</code> in this situation—so often that
@@ -115,308 +118,94 @@ effect <code>f</code> encapsulates some notion of failure (like
 href="https://impurepics.com/posts/2020-10-03-always-traverse.html">“the
 answer is always <code>traverse</code>” has become a meme</a>.</p>
 </aside>
-<h2 id="are-you-going-to-branch-on-the-result-of-the-computation">Are
-you going to branch on the result of the computation?</h2>
-<details>
-<summary>
-Yes, I want to distinguish between a single success and failure case at
-the end
-</summary>
-<h3 id="is-there-a-notion-of-partial-success-succeed-with-a-warning">Is
-there a notion of <em>partial</em> success (succeed with a
-warning)?</h3>
-<details>
-<summary>
-Yes
-</summary>
-<p>Use <code>traverse</code> with <code>These</code>.</p>
-<p>If <em>everything</em> at least partially succeeds, collect
-<em>all</em> successes and <em>all</em> warnings. Otherwise report
-<em>all</em> failures and <em>all</em> warnings.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { task <span class="im">as</span> T<span class="op">,</span> taskThese <span class="im">as</span> TTh<span class="op">,</span> readonlyArray <span class="im">as</span> RA } <span class="im">from</span> <span class="st">&quot;fp-ts&quot;</span><span class="op">;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { flow<span class="op">,</span> pipe } <span class="im">from</span> <span class="st">&quot;fp-ts/function&quot;</span><span class="op">;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> f <span class="op">=</span> (str<span class="op">:</span> <span class="dt">string</span>) <span class="kw">=&gt;</span> {</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> n <span class="op">=</span> <span class="pp">parseInt</span>(str)<span class="op">;</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="pp">isNaN</span>(n)) {</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> TTh<span class="op">.</span><span class="fu">left</span>(<span class="vs">`</span><span class="sc">${</span>str<span class="sc">}</span><span class="vs"> is not a number`</span>)<span class="op">;</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (n <span class="op">&lt;</span> <span class="dv">4</span>) {</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> TTh<span class="op">.</span><span class="fu">right</span>(n)<span class="op">;</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> TTh<span class="op">.</span><span class="fu">both</span>(<span class="vs">`</span><span class="sc">${</span>n<span class="sc">}</span><span class="vs"> is not less than 4`</span><span class="op">,</span> n)<span class="op">;</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> allSuccesses <span class="op">=</span> <span class="fu">pipe</span>(</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  [<span class="st">&quot;1&quot;</span><span class="op">,</span> <span class="st">&quot;2&quot;</span><span class="op">,</span> <span class="st">&quot;3&quot;</span>]<span class="op">,</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  RA<span class="op">.</span><span class="fu">traverse</span>(TTh<span class="op">.</span><span class="fu">getApplicative</span>(T<span class="op">.</span><span class="at">ApplyPar</span><span class="op">,</span> RA<span class="op">.</span><span class="fu">getSemigroup</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;</span>()))(</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">flow</span>(f<span class="op">,</span> TTh<span class="op">.</span><span class="fu">mapLeft</span>(RA<span class="op">.</span><span class="at">of</span>))<span class="op">,</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  )<span class="op">,</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> someWarnings <span class="op">=</span> <span class="fu">pipe</span>(</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  [<span class="st">&quot;1&quot;</span><span class="op">,</span> <span class="st">&quot;2&quot;</span><span class="op">,</span> <span class="st">&quot;3&quot;</span><span class="op">,</span> <span class="st">&quot;4&quot;</span><span class="op">,</span> <span class="st">&quot;5&quot;</span>]<span class="op">,</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  RA<span class="op">.</span><span class="fu">traverse</span>(TTh<span class="op">.</span><span class="fu">getApplicative</span>(T<span class="op">.</span><span class="at">ApplyPar</span><span class="op">,</span> RA<span class="op">.</span><span class="fu">getSemigroup</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;</span>()))(</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">flow</span>(f<span class="op">,</span> TTh<span class="op">.</span><span class="fu">mapLeft</span>(RA<span class="op">.</span><span class="at">of</span>))<span class="op">,</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  )<span class="op">,</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> someFailures <span class="op">=</span> <span class="fu">pipe</span>(</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  [<span class="st">&quot;1&quot;</span><span class="op">,</span> <span class="st">&quot;2&quot;</span><span class="op">,</span> <span class="st">&quot;c&quot;</span><span class="op">,</span> <span class="st">&quot;4&quot;</span><span class="op">,</span> <span class="st">&quot;e&quot;</span>]<span class="op">,</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  RA<span class="op">.</span><span class="fu">traverse</span>(TTh<span class="op">.</span><span class="fu">getApplicative</span>(T<span class="op">.</span><span class="at">ApplyPar</span><span class="op">,</span> RA<span class="op">.</span><span class="fu">getSemigroup</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;</span>()))(</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">flow</span>(f<span class="op">,</span> TTh<span class="op">.</span><span class="fu">mapLeft</span>(RA<span class="op">.</span><span class="at">of</span>))<span class="op">,</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  )<span class="op">,</span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="fu">allSuccesses</span>()<span class="op">.</span><span class="fu">then</span>(<span class="bu">console</span><span class="op">.</span><span class="fu">log</span>)<span class="op">;</span></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="co">// { _tag: &#39;Right&#39;, right: [ 1, 2, 3 ] }</span></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="fu">someWarnings</span>()<span class="op">.</span><span class="fu">then</span>(<span class="bu">console</span><span class="op">.</span><span class="fu">log</span>)<span class="op">;</span></span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="co">// {</span></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="co">//   _tag: &#39;Both&#39;,</span></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="co">//   left: [ &#39;4 is not less than 4&#39;, &#39;5 is not less than 4&#39; ],</span></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="co">//   right: [ 1, 2, 3, 4, 5 ]</span></span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="co">// }</span></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="fu">someFailures</span>()<span class="op">.</span><span class="fu">then</span>(<span class="bu">console</span><span class="op">.</span><span class="fu">log</span>)<span class="op">;</span></span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="co">// {</span></span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="co">//   _tag: &#39;Left&#39;,</span></span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="co">//   left: [ &#39;c is not a number&#39;, &#39;4 is not less than 4&#39;, &#39;e is not a number&#39; ]</span></span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a><span class="co">// }</span></span></code></pre></div>
-</details>
-<!-- Partial? Yes -->
-<details>
-<summary>
-No
-</summary>
-<details>
-<summary>
-If <em>everything</em> succeeds I want to collect <em>all</em>
-successes.
-</summary>
-<details>
-<summary>
-Otherwise report <em>first</em> failure.
-</summary>
-<p>Use <code>traverse</code> with default <code>Either</code>
-<code>Applicative</code> instance.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { taskEither <span class="im">as</span> TE<span class="op">,</span> readonlyArray <span class="im">as</span> RA } <span class="im">from</span> <span class="st">&quot;fp-ts&quot;</span><span class="op">;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { pipe } <span class="im">from</span> <span class="st">&quot;fp-ts/function&quot;</span><span class="op">;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> f <span class="op">=</span> (str<span class="op">:</span> <span class="dt">string</span>) <span class="kw">=&gt;</span> {</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> n <span class="op">=</span> <span class="pp">parseInt</span>(str)<span class="op">;</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="pp">isNaN</span>(n)) {</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> TE<span class="op">.</span><span class="fu">left</span>(<span class="vs">`</span><span class="sc">${</span>str<span class="sc">}</span><span class="vs"> is not a number`</span>)<span class="op">;</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> TE<span class="op">.</span><span class="fu">right</span>(n)<span class="op">;</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> allSuccesses <span class="op">=</span> <span class="fu">pipe</span>(</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  [<span class="st">&quot;1&quot;</span><span class="op">,</span> <span class="st">&quot;2&quot;</span><span class="op">,</span> <span class="st">&quot;3&quot;</span><span class="op">,</span> <span class="st">&quot;4&quot;</span><span class="op">,</span> <span class="st">&quot;5&quot;</span>]<span class="op">,</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  RA<span class="op">.</span><span class="fu">traverse</span>(TE<span class="op">.</span><span class="at">ApplicativePar</span>)(f)<span class="op">,</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> someFailures <span class="op">=</span> <span class="fu">pipe</span>(</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  [<span class="st">&quot;1&quot;</span><span class="op">,</span> <span class="st">&quot;2&quot;</span><span class="op">,</span> <span class="st">&quot;c&quot;</span><span class="op">,</span> <span class="st">&quot;4&quot;</span><span class="op">,</span> <span class="st">&quot;e&quot;</span>]<span class="op">,</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  RA<span class="op">.</span><span class="fu">traverse</span>(TE<span class="op">.</span><span class="at">ApplicativePar</span>)(f)<span class="op">,</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="fu">allSuccesses</span>()<span class="op">.</span><span class="fu">then</span>(<span class="bu">console</span><span class="op">.</span><span class="fu">log</span>)<span class="op">;</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co">// { _tag: &#39;Right&#39;, right: [ 1, 2, 3, 4, 5 ] }</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="fu">someFailures</span>()<span class="op">.</span><span class="fu">then</span>(<span class="bu">console</span><span class="op">.</span><span class="fu">log</span>)<span class="op">;</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co">// { _tag: &#39;Left&#39;, left: &#39;c is not a number&#39; }</span></span></code></pre></div>
-</details>
-<!-- Otherwise report _first_ failure. -->
-<details>
-<summary>
-Otherwise report <em>all</em> failures.
-</summary>
-<p>Use <code>traverse</code> with validation <code>Applicative</code>
-instance.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { taskEither <span class="im">as</span> TE<span class="op">,</span> task <span class="im">as</span> T<span class="op">,</span> readonlyArray <span class="im">as</span> RA } <span class="im">from</span> <span class="st">&quot;fp-ts&quot;</span><span class="op">;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { flow<span class="op">,</span> pipe } <span class="im">from</span> <span class="st">&quot;fp-ts/function&quot;</span><span class="op">;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> f <span class="op">=</span> (str<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> TE<span class="op">.</span><span class="at">TaskEither</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">number</span><span class="op">&gt;</span> <span class="kw">=&gt;</span> {</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> n <span class="op">=</span> <span class="pp">parseInt</span>(str)<span class="op">;</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="pp">isNaN</span>(n)) {</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> TE<span class="op">.</span><span class="fu">left</span>(<span class="vs">`</span><span class="sc">${</span>str<span class="sc">}</span><span class="vs"> is not a number`</span>)<span class="op">;</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> TE<span class="op">.</span><span class="fu">right</span>(n)<span class="op">;</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> allSuccesses <span class="op">=</span> <span class="fu">pipe</span>(</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  [<span class="st">&quot;1&quot;</span><span class="op">,</span> <span class="st">&quot;2&quot;</span><span class="op">,</span> <span class="st">&quot;3&quot;</span><span class="op">,</span> <span class="st">&quot;4&quot;</span><span class="op">,</span> <span class="st">&quot;5&quot;</span>]<span class="op">,</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  RA<span class="op">.</span><span class="fu">traverse</span>(</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    TE<span class="op">.</span><span class="fu">getApplicativeTaskValidation</span>(</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>      T<span class="op">.</span><span class="at">ApplicativePar</span><span class="op">,</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>      RA<span class="op">.</span><span class="fu">getSemigroup</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;</span>()<span class="op">,</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    )<span class="op">,</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  )(<span class="fu">flow</span>(f<span class="op">,</span> TE<span class="op">.</span><span class="fu">mapError</span>(RA<span class="op">.</span><span class="at">of</span>)))<span class="op">,</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> someFailures <span class="op">=</span> <span class="fu">pipe</span>(</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  [<span class="st">&quot;1&quot;</span><span class="op">,</span> <span class="st">&quot;2&quot;</span><span class="op">,</span> <span class="st">&quot;c&quot;</span><span class="op">,</span> <span class="st">&quot;4&quot;</span><span class="op">,</span> <span class="st">&quot;e&quot;</span>]<span class="op">,</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  RA<span class="op">.</span><span class="fu">traverse</span>(</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    TE<span class="op">.</span><span class="fu">getApplicativeTaskValidation</span>(</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>      T<span class="op">.</span><span class="at">ApplicativePar</span><span class="op">,</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>      RA<span class="op">.</span><span class="fu">getSemigroup</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;</span>()<span class="op">,</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    )<span class="op">,</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  )(<span class="fu">flow</span>(f<span class="op">,</span> TE<span class="op">.</span><span class="fu">mapError</span>(RA<span class="op">.</span><span class="at">of</span>)))<span class="op">,</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="fu">allSuccesses</span>()<span class="op">.</span><span class="fu">then</span>(<span class="bu">console</span><span class="op">.</span><span class="fu">log</span>)<span class="op">;</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co">// { _tag: &#39;Right&#39;, right: [ 1, 2, 3, 4, 5 ] }</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="fu">someFailures</span>()<span class="op">.</span><span class="fu">then</span>(<span class="bu">console</span><span class="op">.</span><span class="fu">log</span>)<span class="op">;</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co">// { _tag: &#39;Left&#39;, left: [ &#39;c is not a number&#39;, &#39;e is not a number&#39; ] }</span></span></code></pre></div>
-</details>
-<!-- Otherwise report _all_ failures. -->
-</details>
-<!-- If _everything_ succeeds I want to ... -->
-<details>
-<summary>
-If <em>anything</em> succeeds I want to collect <em>first</em> success.
-</summary>
-<p>Both these examples are a bit awkward in <code>fp-ts</code> because
-it requires a <code>startWith</code> argument. In Haskell, there’s a
-<code>Foldable1</code> class for non-empty foldable containers, which
-could use <a
-href="https://hackage.haskell.org/package/semigroupoids-6.0.0.1/docs/Data-Semigroup-Foldable.html#v:asum1"><code>asum1</code></a>
-to avoid needing a “starting” value.</p>
-<details>
-<summary>
-Otherwise report <em>last</em> failure.
-</summary>
-<p>Use <code>altAll</code></p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { alt <span class="im">as</span> Alt<span class="op">,</span> taskEither <span class="im">as</span> TE<span class="op">,</span> readonlyArray <span class="im">as</span> RA } <span class="im">from</span> <span class="st">&quot;fp-ts&quot;</span><span class="op">;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { pipe } <span class="im">from</span> <span class="st">&quot;fp-ts/function&quot;</span><span class="op">;</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> f <span class="op">=</span> (str<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> TE<span class="op">.</span><span class="at">TaskEither</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">number</span><span class="op">&gt;</span> <span class="kw">=&gt;</span> {</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> n <span class="op">=</span> <span class="pp">parseInt</span>(str)<span class="op">;</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="pp">isNaN</span>(n)) {</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> TE<span class="op">.</span><span class="fu">left</span>(<span class="vs">`</span><span class="sc">${</span>str<span class="sc">}</span><span class="vs"> is not a number`</span>)<span class="op">;</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> TE<span class="op">.</span><span class="fu">right</span>(n)<span class="op">;</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> allSuccesses <span class="op">=</span> <span class="fu">pipe</span>(</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  [<span class="st">&quot;2&quot;</span><span class="op">,</span> <span class="st">&quot;3&quot;</span><span class="op">,</span> <span class="st">&quot;4&quot;</span><span class="op">,</span> <span class="st">&quot;5&quot;</span>]<span class="op">,</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  RA<span class="op">.</span><span class="fu">map</span>(f)<span class="op">,</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  Alt<span class="op">.</span><span class="fu">altAll</span>(TE<span class="op">.</span><span class="at">Alt</span>)(<span class="fu">f</span>(<span class="st">&quot;1&quot;</span>))<span class="op">,</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> startWithFailure <span class="op">=</span> <span class="fu">pipe</span>(</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  [<span class="st">&quot;2&quot;</span><span class="op">,</span> <span class="st">&quot;c&quot;</span><span class="op">,</span> <span class="st">&quot;4&quot;</span><span class="op">,</span> <span class="st">&quot;e&quot;</span>]<span class="op">,</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  RA<span class="op">.</span><span class="fu">map</span>(f)<span class="op">,</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  Alt<span class="op">.</span><span class="fu">altAll</span>(TE<span class="op">.</span><span class="at">Alt</span>)(<span class="fu">f</span>(<span class="st">&quot;a&quot;</span>))<span class="op">,</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> allFailures <span class="op">=</span> <span class="fu">pipe</span>([<span class="st">&quot;b&quot;</span><span class="op">,</span> <span class="st">&quot;c&quot;</span>]<span class="op">,</span> RA<span class="op">.</span><span class="fu">map</span>(f)<span class="op">,</span> Alt<span class="op">.</span><span class="fu">altAll</span>(TE<span class="op">.</span><span class="at">Alt</span>)(<span class="fu">f</span>(<span class="st">&quot;a&quot;</span>)))<span class="op">;</span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="fu">allSuccesses</span>()<span class="op">.</span><span class="fu">then</span>(<span class="bu">console</span><span class="op">.</span><span class="fu">log</span>)<span class="op">;</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co">// { _tag: &#39;Right&#39;, right: 1 }</span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="fu">startWithFailure</span>()<span class="op">.</span><span class="fu">then</span>(<span class="bu">console</span><span class="op">.</span><span class="fu">log</span>)<span class="op">;</span></span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="co">// { _tag: &#39;Right&#39;, right: 2 }</span></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="fu">allFailures</span>()<span class="op">.</span><span class="fu">then</span>(<span class="bu">console</span><span class="op">.</span><span class="fu">log</span>)<span class="op">;</span></span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="co">// { _tag: &#39;Left&#39;, left: &#39;c is not a number&#39; }</span></span></code></pre></div>
-</details>
-<!-- Otherwise report _last_ failure. -->
-<details>
-<summary>
-Otherwise report <em>all</em> failures.
-</summary>
-<p>Use <code>altAll</code> with validation <code>Alt</code>
-instance.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { alt <span class="im">as</span> Alt<span class="op">,</span> taskEither <span class="im">as</span> TE<span class="op">,</span> readonlyArray <span class="im">as</span> RA } <span class="im">from</span> <span class="st">&quot;fp-ts&quot;</span><span class="op">;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { flow<span class="op">,</span> pipe } <span class="im">from</span> <span class="st">&quot;fp-ts/function&quot;</span><span class="op">;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> f <span class="op">=</span> (str<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> TE<span class="op">.</span><span class="at">TaskEither</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">number</span><span class="op">&gt;</span> <span class="kw">=&gt;</span> {</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> n <span class="op">=</span> <span class="pp">parseInt</span>(str)<span class="op">;</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="pp">isNaN</span>(n)) {</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> TE<span class="op">.</span><span class="fu">left</span>(<span class="vs">`</span><span class="sc">${</span>str<span class="sc">}</span><span class="vs"> is not a number`</span>)<span class="op">;</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> TE<span class="op">.</span><span class="fu">right</span>(n)<span class="op">;</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> g <span class="op">=</span> <span class="fu">flow</span>(f<span class="op">,</span> TE<span class="op">.</span><span class="fu">mapError</span>(RA<span class="op">.</span><span class="at">of</span>))<span class="op">;</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> allSuccesses <span class="op">=</span> <span class="fu">pipe</span>(</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  [<span class="st">&quot;2&quot;</span><span class="op">,</span> <span class="st">&quot;3&quot;</span><span class="op">,</span> <span class="st">&quot;4&quot;</span><span class="op">,</span> <span class="st">&quot;5&quot;</span>]<span class="op">,</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  RA<span class="op">.</span><span class="fu">map</span>(g)<span class="op">,</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  Alt<span class="op">.</span><span class="fu">altAll</span>(TE<span class="op">.</span><span class="fu">getAltTaskValidation</span>(RA<span class="op">.</span><span class="fu">getSemigroup</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;</span>()))(<span class="fu">g</span>(<span class="st">&quot;1&quot;</span>))<span class="op">,</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> startWithFailure <span class="op">=</span> <span class="fu">pipe</span>(</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  [<span class="st">&quot;2&quot;</span><span class="op">,</span> <span class="st">&quot;c&quot;</span><span class="op">,</span> <span class="st">&quot;4&quot;</span><span class="op">,</span> <span class="st">&quot;e&quot;</span>]<span class="op">,</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  RA<span class="op">.</span><span class="fu">map</span>(g)<span class="op">,</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  Alt<span class="op">.</span><span class="fu">altAll</span>(TE<span class="op">.</span><span class="fu">getAltTaskValidation</span>(RA<span class="op">.</span><span class="fu">getSemigroup</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;</span>()))(<span class="fu">g</span>(<span class="st">&quot;a&quot;</span>))<span class="op">,</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> allFailures <span class="op">=</span> <span class="fu">pipe</span>(</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  [<span class="st">&quot;b&quot;</span><span class="op">,</span> <span class="st">&quot;c&quot;</span>]<span class="op">,</span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>  RA<span class="op">.</span><span class="fu">map</span>(g)<span class="op">,</span></span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  Alt<span class="op">.</span><span class="fu">altAll</span>(TE<span class="op">.</span><span class="fu">getAltTaskValidation</span>(RA<span class="op">.</span><span class="fu">getSemigroup</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;</span>()))(<span class="fu">g</span>(<span class="st">&quot;a&quot;</span>))<span class="op">,</span></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="fu">allSuccesses</span>()<span class="op">.</span><span class="fu">then</span>(<span class="bu">console</span><span class="op">.</span><span class="fu">log</span>)<span class="op">;</span></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="co">// { _tag: &#39;Right&#39;, right: 1 }</span></span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="fu">startWithFailure</span>()<span class="op">.</span><span class="fu">then</span>(<span class="bu">console</span><span class="op">.</span><span class="fu">log</span>)<span class="op">;</span></span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="co">// { _tag: &#39;Right&#39;, right: 2 }</span></span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="fu">allFailures</span>()<span class="op">.</span><span class="fu">then</span>(<span class="bu">console</span><span class="op">.</span><span class="fu">log</span>)<span class="op">;</span></span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a><span class="co">// {</span></span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="co">//   _tag: &#39;Left&#39;,</span></span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a><span class="co">//   left: [ &#39;a is not a number&#39;, &#39;b is not a number&#39;, &#39;c is not a number&#39; ]</span></span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="co">// }</span></span></code></pre></div>
-</details>
-<!-- Otherwise report _all_ failures. -->
-</details>
-<!-- If _anything_ succeeds I want to ... -->
-</details>
-<!-- Partial? No -->
-<p><br></p>
-</details>
-<!-- Yes, I want to distinguish between a single success and failure case at the end -->
-<details>
-<summary>
-No, I just want to run the computation and collect all successes and all
-failures
-</summary>
-<p>Use <code>wilt</code></p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { taskEither <span class="im">as</span> TE<span class="op">,</span> task <span class="im">as</span> T<span class="op">,</span> readonlyArray <span class="im">as</span> RA } <span class="im">from</span> <span class="st">&quot;fp-ts&quot;</span><span class="op">;</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { pipe } <span class="im">from</span> <span class="st">&quot;fp-ts/function&quot;</span><span class="op">;</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> f <span class="op">=</span> (str<span class="op">:</span> <span class="dt">string</span>) <span class="kw">=&gt;</span> {</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> n <span class="op">=</span> <span class="pp">parseInt</span>(str)<span class="op">;</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="pp">isNaN</span>(n)) {</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> TE<span class="op">.</span><span class="fu">left</span>(<span class="vs">`</span><span class="sc">${</span>str<span class="sc">}</span><span class="vs"> is not a number`</span>)<span class="op">;</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> TE<span class="op">.</span><span class="fu">right</span>(n)<span class="op">;</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> allSuccesses <span class="op">=</span> <span class="fu">pipe</span>(</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  [<span class="st">&quot;1&quot;</span><span class="op">,</span> <span class="st">&quot;2&quot;</span><span class="op">,</span> <span class="st">&quot;3&quot;</span><span class="op">,</span> <span class="st">&quot;4&quot;</span><span class="op">,</span> <span class="st">&quot;5&quot;</span>]<span class="op">,</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  RA<span class="op">.</span><span class="fu">wilt</span>(T<span class="op">.</span><span class="at">ApplicativePar</span>)(f)<span class="op">,</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> someFailures <span class="op">=</span> <span class="fu">pipe</span>(</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  [<span class="st">&quot;1&quot;</span><span class="op">,</span> <span class="st">&quot;2&quot;</span><span class="op">,</span> <span class="st">&quot;c&quot;</span><span class="op">,</span> <span class="st">&quot;4&quot;</span><span class="op">,</span> <span class="st">&quot;e&quot;</span>]<span class="op">,</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  RA<span class="op">.</span><span class="fu">wilt</span>(T<span class="op">.</span><span class="at">ApplicativePar</span>)(f)<span class="op">,</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="fu">allSuccesses</span>()<span class="op">.</span><span class="fu">then</span>(<span class="bu">console</span><span class="op">.</span><span class="fu">log</span>)<span class="op">;</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="co">// { left: [], right: [ 1, 2, 3, 4, 5 ] }</span></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="fu">someFailures</span>()<span class="op">.</span><span class="fu">then</span>(<span class="bu">console</span><span class="op">.</span><span class="fu">log</span>)<span class="op">;</span></span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="co">// {</span></span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="co">//   left: [ &#39;c is not a number&#39;, &#39;e is not a number&#39; ],</span></span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="co">//   right: [ 1, 2, 4 ]</span></span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a><span class="co">// }</span></span></code></pre></div>
-</details></article>
+<h2 id="a-decision-tree">A decision tree</h2>
+<ul class="decision-tree">
+<li>
+<strong>Is there a notion of “partial” success (succeed with a
+warning)?</strong>
+<ul>
+<li>
+<strong>Yes:</strong> Use <code>traverse</code> with <code>These</code>.
+</li>
+<li>
+<strong>No:</strong> Continue.
+</li>
+</ul>
+</li>
+<li>
+<strong>If everything succeeds, do you want to collect <em>all</em>
+successes?</strong>
+<ul>
+<li>
+<strong>Yes:</strong>
+<ul>
+<li>
+<strong>…and in case of failure I want to report just the first
+failure.</strong>
+<p>
+Use <code>traverse</code> with <code>Either</code>/<code>ExceptT</code>.
+</p>
+</li>
+<li>
+<strong>…and in case of failure I want to report <em>all</em>
+failures.</strong>
+<p>
+Use <code>traverse</code> with <code>Validation</code>.
+</p>
+</li>
+</ul>
+</li>
+<li>
+<strong>No:</strong> Continue.
+</li>
+</ul>
+</li>
+<li>
+<strong>Do you want just the <em>first</em> success (if anything
+succeeds)?</strong>
+<ul>
+<li>
+<strong>Yes:</strong>
+<ul>
+<li>
+<strong>…and in case of failure I want to report just the last
+failure.</strong>
+<p>
+Use <code>altAll</code>/<code>asum</code>/
+<code>choice</code>/<code>oneOf</code> with
+<code>Either</code>/<code>ExceptT</code>.
+</p>
+</li>
+<li>
+<strong>…and in case of failure I want to report <em>all</em>
+failures.</strong>
+<p>
+Use <code>altAll</code>/<code>asum</code>/
+<code>choice</code>/<code>oneOf</code> with <code>Validation</code>.
+</p>
+</li>
+</ul>
+</li>
+<li>
+<strong>No:</strong> Continue.
+</li>
+</ul>
+</li>
+<li>
+<strong>You want to just collect all successes and all
+failures?</strong>
+<p>
+Use <code>wilt</code> (or <code>partitionMap</code> if the only “effect”
+is error handling).
+</p>
+</li>
+</ul>
+<h2 id="section"></h2>
+<p><code>wilt</code> is from the <code>Witherable</code> type class in
+PureScript and <code>fp-ts</code>, and appears as <a
+href="https://hackage.haskell.org/package/filtrable-0.1.6.0/docs/Data-Filtrable.html#v:mapEitherA"><code>mapEitherA</code></a>
+in Haskell. Conceptually, “<code>partitionMap</code> with effects.” It’s
+a rarer bird than <code>traverse</code>.</p></article>
     </main>
 
     <footer>

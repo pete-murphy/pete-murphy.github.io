@@ -7,6 +7,20 @@
   margin: 0;
 }
 
+p,
+li {
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: balance;
+}
+
 html {
   block-size: 100%;
   background-color: var(--surface-1);
@@ -265,4 +279,37 @@ multicodeblock-tabs:not(:defined),
 multicodeblock-tab:not(:defined),
 multicodeblock-panel:not(:defined) {
   display: block;
+}
+
+.decision-tree {
+  /* outline: 1px solid red; */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  ul,
+  li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  ul li {
+    padding-block: 0.5rem;
+    padding-inline: 1rem;
+  }
+  > li > ul {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem;
+    > li {
+      grid-row: 1;
+      &:first-of-type {
+        grid-column: 2;
+        background-color: oklch(from green l c h / 0.2);
+      }
+      &:last-of-type {
+        grid-column: 1;
+        background-color: oklch(from red l c h / 0.2);
+      }
+    }
+  }
 }
