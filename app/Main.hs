@@ -42,6 +42,7 @@ import Development.Shake.FilePath ((-<.>), (</>))
 import Development.Shake.FilePath qualified as Shake.FilePath
 import Development.Shake.Forward qualified as Shake.Forward
 import GHC.Generics (Generic)
+import Admonition qualified
 import Multicodeblock qualified
 import Slick qualified
 import Slick.Pandoc qualified
@@ -200,10 +201,12 @@ buildPost srcPath = Shake.Forward.cacheAction ("build" :: Text, srcPath) do
   Shake.liftIO (putStrLn ("Rebuilding post: " <> srcPath))
   postContent <- Shake.readFile' srcPath
   -- pre-process markdown to replace `<Multicodeblock>` tags with
-  -- `<multicodeblock-tab>` and `<multicodeblock-panel>` custom elements
+  -- `<multicodeblock-tab>` and `<multicodeblock-panel>` custom elements,
+  -- and `> [!TIP]`-style blockquotes with `<aside data-admonition="tip">` etc.
   -- TODO: Could this be a PandocReader?
   (title, sanitizedTitle, rest) <- Title.parse postContent
   postContentWithCodeBlocks <- Multicodeblock.parse rest
+  postContentWithAdmonitions <- Admonition.parse postContentWithCodeBlocks
   let wordCount = length (words rest)
       readingTime = round (((/) `Function.on` fromIntegral) wordCount 200)
       withReadingTime = _Object . at "readingTime" ?~ Number (fromIntegral readingTime)
@@ -216,7 +219,7 @@ buildPost srcPath = Shake.Forward.cacheAction ("build" :: Text, srcPath) do
   let postURL = Text.pack (Shake.FilePath.dropDirectory1 (srcPath -<.> "html"))
       withPostURL = _Object . at "url" ?~ String postURL
 
-  postData <- Slick.Pandoc.markdownToHTML (Text.pack postContentWithCodeBlocks)
+  postData <- Slick.Pandoc.markdownToHTML (Text.pack postContentWithAdmonitions)
 
   -- Add additional metadata we've been able to compute
   let fullPostData =

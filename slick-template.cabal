@@ -13,6 +13,7 @@ source-repository head
 executable build-site
   main-is: Main.hs
   other-modules:
+      Admonition
       Multicodeblock
       Slick
       Slick.Caching
@@ -44,4 +45,16 @@ executable build-site
     , text
     , time
     , unordered-containers
+  default-language: Haskell2010
+
+test-suite blog-tests
+  type: exitcode-stdio-1.0
+  main-is: AdmonitionSpec.hs
+  hs-source-dirs: app, test
+  other-modules: Admonition
+  build-depends:
+      base
+    , megaparsec
+    , tasty
+    , tasty-hunit
   default-language: Haskell2010

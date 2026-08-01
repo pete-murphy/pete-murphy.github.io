@@ -46,6 +46,7 @@ parser =
               "typescript" -> "TypeScript"
               "ts" -> "TypeScript"
               "rust" -> "Rust"
+              "elm" -> "Elm"
               (c : str) -> Char.toUpper c : str
               "" -> ""
         let title = Maybe.fromMaybe languageTitle maybeTitle
