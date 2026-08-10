@@ -14,6 +14,7 @@ executable build-site
   main-is: Main.hs
   other-modules:
       Admonition
+      Diffblock
       Multicodeblock
       Slick
       Slick.Caching
@@ -45,6 +46,18 @@ executable build-site
     , text
     , time
     , unordered-containers
+  default-language: Haskell2010
+
+test-suite diff-tests
+  type: exitcode-stdio-1.0
+  main-is: DiffblockSpec.hs
+  hs-source-dirs: app, test
+  other-modules: Diffblock
+  build-depends:
+      base
+    , megaparsec
+    , tasty
+    , tasty-hunit
   default-language: Haskell2010
 
 test-suite blog-tests

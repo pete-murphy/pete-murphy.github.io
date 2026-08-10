@@ -43,10 +43,12 @@ import Development.Shake.FilePath qualified as Shake.FilePath
 import Development.Shake.Forward qualified as Shake.Forward
 import GHC.Generics (Generic)
 import Admonition qualified
+import Diffblock qualified
 import Multicodeblock qualified
 import Slick qualified
 import Slick.Pandoc qualified
 import Title qualified
+import Debug.Trace qualified as Trace
 
 ---Config-----------------------------------------------------------------------
 
@@ -54,10 +56,10 @@ siteMeta :: SiteMeta
 siteMeta =
   SiteMeta
     { siteAuthor = "Pete",
-      baseURL = "https://ptrfrncsmrph.github.io",
+      baseURL = "https://pete-murphy.github.io",
       siteTitle = "WIP",
       twitterHandle = Nothing,
-      githubUser = Just "ptrfrncsmrph"
+      githubUser = Just "pete-murphy"
     }
 
 outputFolder :: FilePath
@@ -190,7 +192,8 @@ buildIndex allPosts allTags = do
 -- | Find and build all posts
 buildPosts :: Action [Post]
 buildPosts = do
-  pPaths <- Shake.getDirectoryFiles "." ["site/posts//*.md"]
+  pPaths <- Shake.getDirectoryFiles "." ["site/posts/*.md"]
+  Trace.traceM ("Found posts: " <> show pPaths)
   posts <- Shake.forP pPaths buildPost
   pure (sortByDate posts)
 
@@ -198,15 +201,18 @@ buildPosts = do
 -- Detects changes to either post content or template
 buildPost :: FilePath -> Action Post
 buildPost srcPath = Shake.Forward.cacheAction ("build" :: Text, srcPath) do
+  Trace.traceM ("Building post: " <> srcPath)
   Shake.liftIO (putStrLn ("Rebuilding post: " <> srcPath))
   postContent <- Shake.readFile' srcPath
   -- pre-process markdown to replace `<Multicodeblock>` tags with
   -- `<multicodeblock-tab>` and `<multicodeblock-panel>` custom elements,
-  -- and `> [!TIP]`-style blockquotes with `<aside data-admonition="tip">` etc.
+  -- ```{.lang .diff}` code blocks with diff-highlighted code, and
+  -- `> [!TIP]`-style blockquotes with `<aside data-admonition="tip">` etc.
   -- TODO: Could this be a PandocReader?
   (title, sanitizedTitle, rest) <- Title.parse postContent
   postContentWithCodeBlocks <- Multicodeblock.parse rest
-  postContentWithAdmonitions <- Admonition.parse postContentWithCodeBlocks
+  postContentWithDiffs <- Diffblock.parse postContentWithCodeBlocks
+  postContentWithAdmonitions <- Admonition.parse postContentWithDiffs
   let wordCount = length (words rest)
       readingTime = round (((/) `Function.on` fromIntegral) wordCount 200)
       withReadingTime = _Object . at "readingTime" ?~ Number (fromIntegral readingTime)

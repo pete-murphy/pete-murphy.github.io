@@ -1,143 +1,218 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>WIP</title>
-  <link href="https://ptrfrncsmrph.github.io" rel="self" type="application/rss+xml" />
+  <link href="https://pete-murphy.github.io" rel="self" type="application/rss+xml" />
   <updated></updated>
   <author>
     <name>Pete</name>
   </author>
-  <id>https://ptrfrncsmrph.github.io/</id>
+  <id>https://pete-murphy.github.io/</id>
 
   <entry>
-    <title>Free monad in plain English</title>
-    <link href="https://ptrfrncsmrph.github.ioposts/2026-07-31-free-monad-in-plain-english.html"/>
-    <id>https://ptrfrncsmrph.github.ioposts/2026-07-31-free-monad-in-plain-english.html</id>
+    <title>Notes on free monads</title>
+    <link href="https://pete-murphy.github.ioposts/2026-07-31-free-monad-in-plain-english.html"/>
+    <id>https://pete-murphy.github.ioposts/2026-07-31-free-monad-in-plain-english.html</id>
     <updated>2026-07-31T00:00:00Z</updated>
     <category term="haskell"/>
     <category term="free"/>
     <category term="monad"/>
     <summary></summary>
-    <content type="html"><![CDATA[<p>Here’s a probably imprecise understanding of “free monad” (or free
-structures in general) that I’m still shaping. I should disclaim I don’t
-really get the math, my intuition is rooted in Haskell, and so code
-examples and explanations will use Haskell.</p>
-<h2 id="free-as-in-beer">Free … as in beer?</h2>
-<p>Why is it called a <em>“free”</em> monad? Is it, “free as in beer”?
-“Free as in speech”? “Free as in [some other thing]”?</p>
-<p>To answer this, I think it’s helpful to look at some other “free”
-things. Haskellers are also known to say, “<code>List</code> is the free
-<code>Monoid</code>”. Can we draw some generalizations from these two
-examples? <code>List</code> and <code>Free</code> are type constructors,
-<code>Monoid</code> and <code>Monad</code> are type classes. So I’m
-going to assert this: when a Haskeller says, <strong>“<code>Foo</code>
-is the free <code>Bloop</code>”</strong>, they are saying the
-following:</p>
-<ol type="1">
-<li><code>Foo</code> is a <em>type constructor</em> (meaning, it takes
-some other type as input, and returns a type). Specifically,
-<code>Foo</code> has kind <code>inkind → outkind</code> for some kinds
-<code>inkind</code> &amp; <code>outkind</code>.</li>
-<li><code>Bloop</code> is a <em>type class</em> for types of kind
-<code>outkind</code> (the kind that you get from partially-applying
-<code>Foo</code>)</li>
-<li>You can write a <code>Bloop</code> instance for <code>Foo</code>
-applied to any input type of kind <code>inkind</code> (without knowing
-anything about that input type)</li>
-</ol>
-<p>In <strong>“<code>List</code> is the free
-<code>Monoid</code>”</strong>. <code>List</code> is a type constructor,
-and I can write a <code>Monoid</code> instance for <code>List a</code>
-<em>for any type <code>a</code>,</em> without knowing anything about
-<code>a</code>. In other words, the <code>Monoid</code> instance doesn’t
-use anything specific to <code>a</code>, it just uses <code>List</code>
-operations.</p>
+    <content type="html"><![CDATA[<p>Free monads are things that I’ve heard about, and feel like I mostly
+get, but I haven’t had an opportunity to use them <em>in anger</em> to
+really cement the intuition. So I’m writing down a bunch of related
+thoughts and intuitions that have helped, to refer back to in lieu of
+experience.</p>
+<h2 id="a-tree-with-f-shaped-branches">A tree with <code>f</code>-shaped
+branches</h2>
+<p><a
+href="https://www.reddit.com/r/haskell/comments/2znhjk/comment/cplwj3e/">Kmett
+says</a>, “you can think of <code>Free f a</code> as a tree with an
+<code>f</code>-shaped branching structure.” <a
+href="https://www.youtube.com/watch?v=eKkxmVFcd74">Nate Faubion’s “Free
+from tree” presentation</a> elaborates on this: plug in
+<code>Pair</code> for <code>f</code> and you’ve got a binary search tree
+(though more practically, you’d want <code>Compose Pair Maybe</code> to
+allow for trees with more than just an even number of branches at each
+node).</p>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monoid</span> (<span class="dt">List</span> item) <span class="kw">where</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  (<span class="op">&lt;&gt;</span>) <span class="ot">=</span> (<span class="op">++</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mempty</span> <span class="ot">=</span> []</span></code></pre></div>
-<p>What are some other ones?</p>
-<ul>
-<li><code>NonEmptyList</code> is the free <code>Semigroup</code> for
-similar reasons</li>
-<li><code>Maybe</code> is the free <code>Default</code> because I can
-choose <code>def = Nothing</code> for any type</li>
-<li><code>Compose Set List</code> is the free <code>Semiring</code></li>
-</ul>
-<p>So I think of this as “free as in beer”: these are instances you get
-“for free” just by putting <code>a</code> into the structure of the type
-constructor, you don’t need any further constraints on the
-<code>a</code>.</p>
-<p>Note that “<code>Free</code> is the free <code>Monad</code>” is an
-outlier in a few ways:</p>
-<ul>
-<li>the <code>inkind</code> kind is <code>Type → Type</code> (the other
-examples have <code>inkind ∷ Type</code>)—i.e. it’s a type constructor
-that takes a type constructor</li>
-<li>“free” is the name of the data type, but really it’s not any
-<em>more</em> free than the other types listed above—this seems like
-plain bad naming to me</li>
-<li>in fact, it’s not even quite <em>as</em> free as the others—it
-requires a <code>Functor</code> constraint on its input type (more on
-this below)</li>
-</ul>
-<h2 id="why-though">Why though</h2>
-<p>This doesn’t really satisfy the question of <em>why</em> you might
-want to do this—what are you getting for free by using any of these free
-structures?</p>
-<p>Here’s a dumb but maybe illustrative example. Say you regularly play
-<em>Super Smash Bros</em> (the N64 game) with your friends. You keep
-track of who’s the best player by who has had the most KOs in a game.
-Maybe you write this down on a white board. As soon as someone scores
-higher than the current champion, you clear the board and write the new
-champion’s name and score.</p>
-<p>As more games are played, there’s a tie for highest score. To break
-the tie, you’d like to change the criteria for best player: instead of
-all-time highest KOs, it should be whoever has won the most games total.
-Too bad! Nobody remembers how many games each player has won, all you’ve
-kept track of is KOs.</p>
-<p>What you could have done instead, is kept a log of all the scores of
-each game (a <code>List Results</code>, where <code>Results</code>
-contains the game results: place/ranking and KOs per player). That way
-you can calculate the best player afterwards, using whatever criteria
-you’d like.</p>
-<p>Calculating best player in different ways is like plugging in a
-different <code>Monoid</code> in a <code>foldMap</code> over the
-<code>List Result</code> log.</p>
+class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Pair</span> a <span class="ot">=</span> <span class="dt">Pair</span> a a</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Free</span> f a</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Pure</span> a</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">Roll</span> (f (<span class="dt">Free</span> f a))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">BST</span> a <span class="ot">=</span> <span class="dt">Free</span> <span class="dt">Pair</span> a</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ot">tree ::</span> <span class="dt">BST</span> <span class="dt">Int</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">=</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Roll</span> (<span class="dt">Pair</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    (<span class="dt">Roll</span> (<span class="dt">Pair</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>      (<span class="dt">Pure</span> <span class="dv">1</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>      (<span class="dt">Pure</span> <span class="dv">3</span>)))</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    (<span class="dt">Pure</span> <span class="dv">7</span>))</span></code></pre></div>
+<h2 id="static-analysis">Static analysis</h2>
+<p>One of the perceived benefits of expressing your program in terms of
+<code>Free</code> is that you might be able to statically analyze it (as
+a pure data structure), or do a “dry run”. This is true for an AST built
+out of operators like</p>
 <div class="sourceCode" id="cb2"><pre
-class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">foldMap</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  ::</span> <span class="dt">Monoid</span> m</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m) <span class="co">-- this lets you pick the criteria</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">-&gt;</span> [a]      <span class="co">-- your logs</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">-&gt;</span> m        <span class="co">-- your result (best player)</span></span></code></pre></div>
-<p>If you use a function that turns <code>Results</code> into
-<code>(Max Int, First Player)</code> as your <code>(a -&gt; m)</code>
-that’s your max KOs, if you use
-<code>Results -&gt; Map Player (Sum Int)</code> that would show you who
-has won the most games, etc.</p>
-<p>There’s a similar thing in <code>Free</code> called
-<code>foldFree</code></p>
+class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Operator</span> a</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Add</span> a a</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">Sub</span> a a</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">Mul</span> a a</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">Neg</span> a</span></code></pre></div>
+<p>But, it doesn’t seem particularly useful to wrap
+<code>Operation</code> in <code>Free</code>? <code>do</code> notation
+doesn’t add anything.</p>
+<p>In the case where <code>f</code> in your <code>Free f</code> contains
+a continuation (<code>f</code> has any data constructors that take a
+lambda), for example</p>
 <div class="sourceCode" id="cb3"><pre
-class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>foldFree</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  ::</span> <span class="dt">Monad</span> m</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=&gt;</span> (<span class="kw">forall</span> x<span class="op">.</span> f x <span class="ot">-&gt;</span> m x) <span class="co">-- this lets you pick how your AST is interpreted</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">-&gt;</span> <span class="dt">Free</span> f a               <span class="co">-- your AST</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">-&gt;</span> m a                    <span class="co">-- your result</span></span></code></pre></div>
-<p>Again, the naming kinda gets in the way: <code>foldFree</code> seems
-to be doing just as much “mapping” as <code>foldMap</code>, and as we
-saw both <code>Free</code> and <code>[]</code> are “free”.</p>
-<p>Aside: Hm, maybe this is “free as in speech” after all?</p>
-<h2 id="freer">Freer</h2>
-<p>Remember when we said that <code>Free</code> was an outlier because
-it required a <code>Functor</code> constraint on <code>f</code>? Turns
-out you can get <code>f</code>’s <code>Functor</code> instance “for
-free” (I think?) using something called <code>Coyoneda</code>. I don’t
-yet understand what this is about, but apparently it’s in this paper:
-https://okmij.org/ftp/Haskell/extensible/more.pdf</p>]]></content>
+class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">CmdF</span> next</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">PutLine</span> <span class="dt">String</span> next</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">GetLine</span> (<span class="dt">String</span> <span class="ot">-&gt;</span> next)</span></code></pre></div>
+<p>the program would not be introspectable, and you would need to
+provide all your inputs up front to do a dry run. Probably obvious, but
+something Kovanikov notes in his talk as a “weird thing” that gets
+overlooked in tutorials.</p>
+<h2 id="monad-is-to-monoid-as-foldfree-is-to-foldmap"><code>Monad</code>
+is to <code>Monoid</code> as <code>foldFree</code> is to
+<code>foldMap</code></h2>
+<p><code>List</code> is called the “free monoid”, and
+<code>foldFree</code> is kinda like <code>foldMap</code> if you squint
+(and use squiggly arrow <code>~&gt;</code> for natural
+transformations)</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">foldMap</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  ::</span> <span class="dt">Monoid</span> m</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="ot">-&gt;</span> <span class="dt">FreeMonoid</span> a  <span class="co">-- aka [a]</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">-&gt;</span> m</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>foldFree</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ot">  ::</span> <span class="dt">Monad</span> m</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=&gt;</span> (f <span class="op">~&gt;</span> m)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">-&gt;</span> <span class="dt">FreeMonad</span> f</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="op">~&gt;</span> m</span></code></pre></div>
+<p>Preserve your data (or AST) fully intact in the <code>Free*</code>
+structure, and then plug in different <code>a -&gt; m</code> or
+<code>f ~&gt; m</code> functions to get different interpretations of
+it.</p>
+<h2 id="performance">Performance</h2>
+<p><a
+href="https://youtu.be/3GKQ4ni2pS0?si=e-18CYU-C711Yu6K&amp;t=2371">There
+is a claim that Church-encoded free monads are “fast”</a>. From what I
+understand, the idea is that nested <code>&gt;&gt;=</code>’s are
+quadratic when using the ordinary <code>Free</code> type, but can be
+improved (to linear) when using Church encoding. There are maybe several
+possible Church encodings? The canonical reference is Janis
+Voigtländer’s <a
+href="https://janis-voigtlaender.eu/papers/AsymptoticImprovementOfComputationsOverFreeMonads.pdf">“Asymptotic
+Improvement of Computations over Free Monads”</a>, and then Kmett has
+more to say in his <a
+href="https://ekmett.github.io/reader/2011/free-monads-for-less/">“Free
+monads for less” series</a>.</p>
+<h2 id="freer">freer</h2>
+<p><code>Free</code>’s <code>Monad</code> instance requires a
+<code>Functor</code> constraint on <code>f</code>, <code>freer</code>
+somehow bypasses this using <code>Coyoneda</code>. See <a
+href="https://okmij.org/ftp/Haskell/extensible/more.pdf">“Freer Monads,
+More Extensible Effects”</a>.</p>
+<!-- Although `Free` is a tree (with `f`-shaped branches), in most cases you'll have a constructor for `f` that contains a lambda. -->
+<!--
+
+
+There's [a common pedagogical mistake](https://byorgey.wordpress.com/2009/01/12/abstraction-intuition-and-the-monad-tutorial-fallacy/) that teachers make when teaching about monads, which is to concentrate on some abstract intution that the teacher has reached, instead of the many concrete examples that helped them to reach that intuition. Something like mightybyte's [Monad Challenges](https://mightybyte.github.io/monad-challenges/pages/ex1-3.html) is a good example of the opposite approach: start with a few problems that you are likely to encounter in day-to-day programming (generating random numbers from a seed, handling sequences of failing computations, exploring all possible combinations of some set of values) and showing how they are similar and that the "monad" concept abstracts over all these use cases. The intuition is hardened by repeated exposure to similar examples, and
+
+  -->
+<p><!--
+
+
+Pretty early on in my Haskell-learning, I heard about "free monads" and was mystified. I bounced off some Kmett blog posts, and when I asked for a simple explanation or some more beginner-friendly material to read up on (in the haskell-beginners Slack) I was told something like "it's a tree of `bind`s", but that didn't help my understanding at all. I continued to bounce off of different blog posts and explanations, playing out the [monad tutorial fallacy](), but with nothing really concrete to sink my teeth into (I have had plenty use cases for _plain_ monads, but no real uses for free monads after all).
+
+I have struggled for a while with wrapping my head around what "free monad" means. I'm not even sure how to formulate that last sentence: is it "_the_ free monad"? or "free monads" (plural)? I have no idea, and will likely continue to mix those up through the rest of this piece.
+
+I have read Kmett's lengthy Reddit post,
+
+There's a understanding of "free monad" (or free structures in general) that I've latched onto. I should disclaim I don't really get the math, my intuition is rooted in Haskell, and so code examples and explanations will use Haskell.
+
+## Free ... as in beer?
+
+Why is it called a _"free"_ monad? Is it, "free as in beer"? "Free as in speech"? "Free as in \[some other thing\]"?
+
+To answer this, I think it's helpful to look at some other "free" things. Haskellers are also known to say, "`List` is the free `Monoid`". Can we draw some generalizations from these two examples? `List` and `Free` are type constructors, `Monoid` and `Monad` are type classes. So I'm going to assert this: when a Haskeller says, **"`Foo` is the free `Bloop`"**, they are saying the following:
+
+1. `Foo` is a _type constructor_ (meaning, it takes some other type as input, and returns a type). Specifically, `Foo` has kind `inkind → outkind` for some kinds `inkind` & `outkind`.
+2. `Bloop` is a _type class_ for types of kind `outkind` (the kind that you get from partially-applying `Foo`)
+3. You can write a `Bloop` instance for `Foo` applied to any input type of kind `inkind` (without knowing anything about that input type)
+
+In **"`List` is the free `Monoid`"**. `List` is a type constructor, and I can write a `Monoid` instance for `List a` _for any type `a`,_ without knowing anything about `a`. In other words, the `Monoid` instance doesn't use anything specific to `a`, it just uses `List` operations.
+
+```haskell
+instance Monoid (List item) where
+  (<>)   = (++)
+  mempty = []
+```
+
+What are some other ones?
+
+- `NonEmptyList` is the free `Semigroup` for similar reasons
+- `Maybe` is the free `Default` because I can choose `def = Nothing` for any type
+- `Compose Set List` is the free `Semiring`
+
+So I think of this as "free as in beer": these are instances you get "for free" just by putting `a` into the structure of the type constructor, you don't need any further constraints on the `a`.
+
+Note that "`Free` is the free `Monad`" is an outlier in a few ways:
+
+- the `inkind` kind is `Type → Type` (the other examples have `inkind ∷ Type`)—i.e. it's a type constructor that takes a type constructor
+- "free" is the name of the data type, but really it's not any _more_ free than the other types listed above—this seems like plain bad naming to me
+- in fact, it's not even quite _as_ free as the others—it requires a `Functor` constraint on its input type (more on this below)
+
+## Why though
+
+This doesn't really satisfy the question of _why_ you might want to do this—what are you getting for free by using any of these free structures?
+
+Here's a dumb but maybe illustrative example. Say you regularly play _Super Smash Bros_ (the N64 game) with your friends. You keep track of who's the best player by who has had the most KOs in a game. Maybe you write this down on a white board. As soon as someone scores higher than the current champion, you clear the board and write the new champion's name and score.
+
+As more games are played, there's a tie for highest score. To break the tie, you'd like to change the criteria for best player: instead of all-time highest KOs, it should be whoever has won the most games total. Too bad! Nobody remembers how many games each player has won, all you've kept track of is KOs.
+
+What you could have done instead, is kept a log of all the scores of each game (a `List Results`, where `Results` contains the game results: place/ranking and KOs per player). That way you can calculate the best player afterwards, using whatever criteria you'd like.
+
+Calculating best player in different ways is like plugging in a different `Monoid` in a `foldMap` over the `List Result` log.
+
+```haskell
+foldMap
+  :: Monoid m
+  => (a -> m) -- this lets you pick the criteria
+  -> [a]      -- your logs
+  -> m        -- your result (best player)
+```
+
+If you use a function that turns `Results` into `(Max Int, First Player)` as your `(a -> m)` that's your max KOs, if you use `Results -> Map Player (Sum Int)` that would show you who has won the most games, etc.
+
+There's a similar thing in `Free` called `foldFree`
+
+```haskell
+foldFree
+  :: Monad m
+  => (forall x. f x -> m x) -- this lets you pick how your AST is interpreted
+  -> Free f a               -- your AST
+  -> m a                    -- your result
+```
+
+Again, the naming kinda gets in the way: `foldFree` seems to be doing just as much "mapping" as `foldMap`, and as we saw both `Free` and `[]` are "free".
+
+Aside: Hm, maybe this is "free as in speech" after all?
+
+## Freer
+
+Remember when we said that `Free` was an outlier because it required a `Functor` constraint on `f`? Turns out you can get `f`'s `Functor` instance "for free" (I think?) using something called `Coyoneda`. I don't yet understand what this is about, but apparently it's in this paper: https://okmij.org/ftp/Haskell/extensible/more.pdf
+ --></p>]]></content>
   </entry>
   <entry>
     <title>Collecting successes and errors</title>
-    <link href="https://ptrfrncsmrph.github.ioposts/2024-04-25-traversing-with-errors.html"/>
-    <id>https://ptrfrncsmrph.github.ioposts/2024-04-25-traversing-with-errors.html</id>
+    <link href="https://pete-murphy.github.ioposts/2024-04-25-traversing-with-errors.html"/>
+    <id>https://pete-murphy.github.ioposts/2024-04-25-traversing-with-errors.html</id>
     <updated>2024-04-25T00:00:00Z</updated>
     <category term="traverse"/>
     <category term="haskell"/>
@@ -257,8 +332,8 @@ a rarer bird than <code>traverse</code>.</p>]]></content>
   </entry>
   <entry>
     <title>A syntax-driven intuition for Cont</title>
-    <link href="https://ptrfrncsmrph.github.ioposts/2023-05-30-cont-and-managed.html"/>
-    <id>https://ptrfrncsmrph.github.ioposts/2023-05-30-cont-and-managed.html</id>
+    <link href="https://pete-murphy.github.ioposts/2023-05-30-cont-and-managed.html"/>
+    <id>https://pete-murphy.github.ioposts/2023-05-30-cont-and-managed.html</id>
     <updated>2023-05-30T00:00:00Z</updated>
     <category term="haskell"/>
     <category term="purescript"/>
@@ -357,8 +432,8 @@ class="sourceCode purescript"><code class="sourceCode purescript"><span id="cb2-
   </entry>
   <entry>
     <title>React Router and View Transitions</title>
-    <link href="https://ptrfrncsmrph.github.ioposts/2023-05-17-react-router-view-transitions-api.html"/>
-    <id>https://ptrfrncsmrph.github.ioposts/2023-05-17-react-router-view-transitions-api.html</id>
+    <link href="https://pete-murphy.github.ioposts/2023-05-17-react-router-view-transitions-api.html"/>
+    <id>https://pete-murphy.github.ioposts/2023-05-17-react-router-view-transitions-api.html</id>
     <updated>2023-05-17T00:00:00Z</updated>
     <category term="react"/>
     <category term="react-router"/>

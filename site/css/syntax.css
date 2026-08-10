@@ -15,6 +15,12 @@ html {
   --code-outline-light: var(--stone-1);
   --code-background-light: var(--stone-0);
 
+  /* diff highlights */
+  --diff-add-bg-light: hsl(120 45% 95%);
+  --diff-add-accent-light: hsl(120 45% 42%);
+  --diff-del-bg-light: hsl(0 60% 96%);
+  --diff-del-accent-light: hsl(0 55% 48%);
+
   /* dark */
   --code-keyword-dark: var(--blue-4);
   --code-datatype-dark: var(--orange-5);
@@ -30,6 +36,12 @@ html {
 
   --code-outline-dark: var(--stone-11);
   --code-background-dark: var(--stone-12);
+
+  /* diff highlights */
+  --diff-add-bg-dark: hsl(120 30% 14%);
+  --diff-add-accent-dark: hsl(120 50% 55%);
+  --diff-del-bg-dark: hsl(0 30% 15%);
+  --diff-del-accent-dark: hsl(0 50% 55%);
 }
 
 :root {
@@ -48,6 +60,11 @@ html {
 
   --code-outline: var(--code-outline-light);
   --code-background: var(--code-background-light);
+
+  --diff-add-bg: var(--diff-add-bg-light);
+  --diff-add-accent: var(--diff-add-accent-light);
+  --diff-del-bg: var(--diff-del-bg-light);
+  --diff-del-accent: var(--diff-del-accent-light);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -68,6 +85,11 @@ html {
 
     --code-outline: var(--code-outline-dark);
     --code-background: var(--code-background-dark);
+
+    --diff-add-bg: var(--diff-add-bg-dark);
+    --diff-add-accent: var(--diff-add-accent-dark);
+    --diff-del-bg: var(--diff-del-bg-dark);
+    --diff-del-accent: var(--diff-del-accent-dark);
   }
 }
 
@@ -88,6 +110,11 @@ html {
 
   --code-outline: var(--code-outline-light);
   --code-background: var(--code-background-light);
+
+  --diff-add-bg: var(--diff-add-bg-light);
+  --diff-add-accent: var(--diff-add-accent-light);
+  --diff-del-bg: var(--diff-del-bg-light);
+  --diff-del-accent: var(--diff-del-accent-light);
 }
 
 [color-scheme="dark"] {
@@ -107,6 +134,11 @@ html {
 
   --code-outline: var(--code-outline-dark);
   --code-background: var(--code-background-dark);
+
+  --diff-add-bg: var(--diff-add-bg-dark);
+  --diff-add-accent: var(--diff-add-accent-dark);
+  --diff-del-bg: var(--diff-del-bg-dark);
+  --diff-del-accent: var(--diff-del-accent-dark);
 }
 
 pre {
